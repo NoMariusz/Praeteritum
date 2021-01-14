@@ -6,6 +6,9 @@ from django.utils.translation import gettext_lazy as _
 class CardModel(models.Model):
     ''' Class describes card in game, and contains enums related to card '''
 
+    def __str__(self):
+        return self.name
+
     class CardTypes(models.IntegerChoices):
         SPEARMAN = 0, _('Spearman')
         INFANTRYMAN = 1, _('Infantryman')
@@ -20,17 +23,20 @@ class CardModel(models.Model):
         LEGENDARY = 4, _('Legendary')
         MYTHIC = 5, _('Mythic')
 
+    class CardEffects(models.IntegerChoices):
+        pass
+
     name = models.CharField(max_length=50, null=False, unique=True)
     category = models.IntegerField(choices=CardTypes.choices, null=False)
     rarity = models.IntegerField(choices=CardRarities.choices, null=False)
-    # attack = models.IntegerField(null=False)
     attack = models.PositiveIntegerField(null=False)
-    # hp = models.IntegerField(null=False)
     hp = models.PositiveIntegerField(null=False)
-    image = models.CharField(max_length=150, null=True, unique=True)
+    image = models.CharField(max_length=150, null=True)
     defaultInCollection = models.BooleanField(null=False, default=False)
     defaultInDeck = models.BooleanField(null=False, default=False)
-    effect = models.IntegerField(null=True)
+    effect = models.IntegerField(
+        choices=CardEffects.choices, null=True, default=None
+    )
 
 
 class CollectionCardsModel(models.Model):
