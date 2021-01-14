@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'frontend.apps.FrontendConfig',
     'authentication.apps.AuthenticationConfig',
+    'cards.apps.CardsConfig',
     'rest_framework'
 ]
 
