@@ -4,6 +4,22 @@ from rest_framework import generics, status
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from .serializers import UserSerializer, CreateUserSerializer
+from cards.models import CardModel, CollectionCardsModel, DeckCardsModel
+
+def initUserData(user):
+    # add base cards collection
+    base_collection = CardModel.objects.filter(defaultInCollection=True)
+    for collection_card in base_collection:
+        collection_model = CollectionCardsModel(
+            user=user, card=collection_card
+        )
+        collection_model.save()
+    
+    # add base cards deck
+    base_deck = CardModel.objects.filter(defaultInDeck=True)
+    for deck_card in base_deck:
+        deck_model = DeckCardsModel(user=user, card=deck_card)
+        deck_model.save()
 
 
 class RegisterUser(APIView):
@@ -16,9 +32,10 @@ class RegisterUser(APIView):
             password = serializer.validated_data["password"]
             email = serializer.validated_data["email"]
 
-            User.objects.create_user(
+            user = User.objects.create_user(
                 username=username, password=password, email=email
             )
+            initUserData(user)
 
             # auto login after create user
             user = authenticate(request, username=username, password=password)
@@ -50,10 +67,12 @@ class LoginUser(APIView):
                 {"error": "logged failed"}, status=status.HTTP_400_BAD_REQUEST
             )
 
+
 class LogoutUser(APIView):
     def post(self, request, format=None):
         logout(request)
         return redirect("/")
+
 
 class CheckAuthenticated(APIView):
     def get(self, request, format=None):

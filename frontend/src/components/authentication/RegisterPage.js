@@ -32,13 +32,7 @@ export const RegisterPage = (props) => {
                 })
             }
             fetch("/authentication/register", requestOptions)
-            .then(res => {
-                if (res.ok){
-                    return res.json()
-                } else {
-                    return {error: "Can not register, try again"}
-                }
-            })
+            .then(res => res.json())
             .then(data => {
                 if (data.error){
                     showError(data.error)
@@ -50,10 +44,12 @@ export const RegisterPage = (props) => {
     }
 
     const showError = (errorObj) => {
+        console.log(errorObj);
         let errorMessage = ""
         for (const [key, value] of Object.entries(errorObj)){
             errorMessage += `${key}: ${value.join(", ")} `
         }
+        errorMessage = errorMessage || "App error"
         setError(errorMessage);
     }
 
