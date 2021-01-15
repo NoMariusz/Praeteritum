@@ -4,22 +4,7 @@ from rest_framework import generics, status
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from .serializers import UserSerializer, CreateUserSerializer
-from cards.models import CardModel
-from playerdata.models import PlayerData
-
-
-def initUserData(user):
-    # init userdata
-    playerdata = PlayerData(user=user)
-    playerdata.save()
-
-    # add base cards collection
-    base_collection = CardModel.objects.filter(defaultInCollection=True)
-    playerdata.collection.set(base_collection)
-    
-    # add base cards deck
-    base_deck = CardModel.objects.filter(defaultInDeck=True)
-    playerdata.deck.set(base_deck)
+from playerdata.utils import startUserDataThread
 
 
 class RegisterUser(APIView):
@@ -35,7 +20,7 @@ class RegisterUser(APIView):
             user = User.objects.create_user(
                 username=username, password=password, email=email
             )
-            initUserData(user)
+            startUserDataThread(user)
 
             # auto login after create user
             user = authenticate(request, username=username, password=password)
