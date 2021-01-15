@@ -1,13 +1,9 @@
 from django.db import models
-from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
 
 
 class CardModel(models.Model):
     ''' Class describes card in game, and contains enums related to card '''
-
-    def __str__(self):
-        return self.name
 
     class CardTypes(models.IntegerChoices):
         SPEARMAN = 0, _('Spearman')
@@ -38,16 +34,5 @@ class CardModel(models.Model):
         choices=CardEffects.choices, null=True, default=None
     )
 
-
-class CollectionCardsModel(models.Model):
-    ''' Model enables many to many user card relation to store user cards
-    collection '''
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    card = models.ForeignKey(CardModel, on_delete=models.CASCADE)
-
-
-class DeckCardsModel(models.Model):
-    ''' Model enables many to many user card relation to store user cards
-    deck used to play matches '''
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    card = models.ForeignKey(CardModel, on_delete=models.CASCADE)
+    def __str__(self):
+        return self.name

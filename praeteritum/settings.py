@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'frontend.apps.FrontendConfig',
     'authentication.apps.AuthenticationConfig',
     'cards.apps.CardsConfig',
+    'playerdata.apps.PlayerdataConfig',
     'rest_framework'
 ]
 
