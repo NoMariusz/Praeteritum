@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { Container, Grid, Box } from "@material-ui/core";
 import HomeNavBar from "./HomeNavBar";
-import FindMatchPanel from "./FindMatchPanel";
+import SearchMatchPanel from "./SearchMatchPanel";
 
-export const HomePage = () => {
+export const HomePage = (props) => {
     const [isLogged, setIsLogged] = useState(false);
     const [username, setUsername] = useState("???");
 
@@ -19,6 +19,10 @@ export const HomePage = () => {
                 setUsername(data.username);
             });
     };
+
+    const goToMatchCallback = (matchId) => {
+        props.history.push(`/game/${matchId}`);
+    }
 
     checkIfLogged();
 
@@ -40,7 +44,7 @@ export const HomePage = () => {
                 >
                     {isLogged ? (
                         <Grid item xs={12}>
-                            <FindMatchPanel />
+                            <SearchMatchPanel goToMatchCallback={goToMatchCallback}/>
                         </Grid>
                     ) : null}
                 </Grid>

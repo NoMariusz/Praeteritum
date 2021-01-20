@@ -25,7 +25,7 @@ SECRET_KEY = 'b1)+n#j)5)r7@9-bm73hvr7&3ll!+r!pfqz+!#-2!^ajckii4#'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["192.168.8.101", "127.0.0.1"]
+ALLOWED_HOSTS = ["192.168.8.107", "127.0.0.1"]
 
 
 # Application definition
@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'authentication.apps.AuthenticationConfig',
     'cards.apps.CardsConfig',
     'playerdata.apps.PlayerdataConfig',
+    'match.apps.MatchConfig',
     'rest_framework'
 ]
 

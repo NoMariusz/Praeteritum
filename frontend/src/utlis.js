@@ -17,6 +17,5 @@ const getCookie = (name) => {
 
 
 export const getCSRF = () => {
-    console.log("CSRF");
     return getCookie('csrftoken');
 }

@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect
 from rest_framework.views import APIView, Response
 from rest_framework import generics, status
 from django.contrib.auth.models import User
@@ -30,9 +30,9 @@ class RegisterUser(APIView):
             return Response(
                 {"message": "User created"}, status=status.HTTP_201_CREATED
             )
-            
+
         return Response(
-            {"error": serializer.errors}, 
+            {"error": serializer.errors},
             status=status.HTTP_400_BAD_REQUEST
         )
 
@@ -72,4 +72,3 @@ class CheckAuthenticated(APIView):
 class UserView(generics.ListAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-
