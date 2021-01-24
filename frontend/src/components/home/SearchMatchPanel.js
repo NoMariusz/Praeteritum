@@ -39,7 +39,7 @@ export const SearchMatchPanel = ({goToMatchCallback}) => {
         fetch("/match/cancel-search", requestOptions)
             .then((res) => res.json())
             .then((data) => {
-                console.log(`cancel search: ${data}`);
+                console.log(`cancel search: ${data.message}`);
             });
     };
 

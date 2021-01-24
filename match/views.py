@@ -1,24 +1,39 @@
 from rest_framework.views import APIView, Response
-# from django.contrib.auth.decorators import login_required
 from rest_framework import status
 from .utils.MatchFinder import MatchFinder
 from .utils.MatchManager import match_manager
+from asgiref.sync import sync_to_async
+from django.http import HttpResponse
+import asyncio
+import json
 
 
-class FindMatch(APIView):
-    # @login_required(login_url='/authentication/login/')
-    def post(self, request, format=None):
-        user = request.user
-        finder = MatchFinder(user)
-        match_id = finder.find_match()
-        if (match_id is not None):
-            return Response({"match_id": match_id}, status=status.HTTP_200_OK)
-        return Response(
-            {'error': 'match not found'}, status=status.HTTP_404_NOT_FOUND)
+def setAsync(fun):
+    fun._is_coroutine = asyncio.coroutines._is_coroutine
+    return fun
+
+
+@sync_to_async
+def get_user_from_request(request):
+    ''' Function returns request.user as async '''
+    return request.user if bool(request.user) else None
+
+
+@setAsync
+async def find_match(request):
+    user = await get_user_from_request(request)
+    finder = MatchFinder(user)
+    match_id = await finder.find_match()
+    if (match_id is not None):
+        return HttpResponse(
+            json.dumps({"match_id": match_id}), status=status.HTTP_200_OK)
+    return HttpResponse(
+        {"error": "MatchFinder not find any match"},
+        status=status.HTTP_500_INTERNAL_SERVER_ERROR
+    )
 
 
 class CancelFindMatch(APIView):
-    # @login_required(login_url='/authentication/login/')
     def post(self, request, format=None):
         user = request.user
         print('math.views CancelFindMatch')

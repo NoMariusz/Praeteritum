@@ -1,4 +1,4 @@
-import time
+import asyncio
 import weakref
 from django.contrib.auth.models import User
 from .MatchManager import match_manager
@@ -17,9 +17,10 @@ class MatchFinder:
         self.match_id = None
         self.waiting_players_list.append(self.player)
 
-    def find_match(self):
+    async def find_match(self):
         while self.search_for_match:
-            time.sleep(5)
+            print(self.waiting_players_list)
+            await asyncio.sleep(5)
             if (self.match_id is not None):
                 return self.match_id
             # make in future finding more fitted enemy to player
