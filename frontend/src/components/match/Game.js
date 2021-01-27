@@ -1,30 +1,44 @@
-import React from "react";
+import React, {useState} from "react";
 import { Container, Grid, Box } from "@material-ui/core";
 
 export const Game = (props) => {
     let matchId = props.match.params.matchId;
+    const [players, setPlayers] = useState([]);
+    const [matchSocket, setMatchSocket] = useState(null);
 
-    const chatSocket = new WebSocket(
-        `ws://${window.location.host}/match/${matchId}/`
-    );
+    if (matchSocket == null){
+        setMatchSocket(
+            new WebSocket(
+                `ws://${window.location.host}/match/${matchId}/`
+            )
+        );
+    } else {
+        matchSocket.onmessage = (e) => {
+            const data = JSON.parse(e.data);
+            console.log(`websocket onmessage: ${data.message}`);
+            switch (data.message.name) {
+                case 'players-list':
+                    setPlayers(data.message.players);
+                    break;
+            }
+        };
 
-    chatSocket.onmessage = (e) => {
-        const data = JSON.parse(e.data);
-        console.log(`websocket onmessage: ${data.message}`);
-    };
+        matchSocket.onclose = (e) => {
+            console.warn('Match socket closed unexpectedly');
+        };
 
-    chatSocket.onclose = (e) => {
-        console.warn('Match socket closed unexpectedly');
-    };
-
-    chatSocket.onopen = (e) => {
-        chatSocket.send(JSON.stringify({'message': 'show'}))
-        chatSocket.send(JSON.stringify({'message': 'initial_message'}))
+        matchSocket.onopen = (e) => {
+            matchSocket.send(JSON.stringify({'message': 'get-players'}));
+        };
     }
 
-
     return (
-        <p>game: {matchId}</p>
+        <Container>
+            <p>game: {matchId}</p>
+            {players.map(player =>
+                <p>player: {player}</p>
+            )}
+        </Container>
     );
 };
 

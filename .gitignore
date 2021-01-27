@@ -131,6 +131,9 @@ dmypy.json
 # VSCode
 .vscode
 
+# idea - pycharm
+.idea/*
+
 # React stuff
 .DS_*
 logs

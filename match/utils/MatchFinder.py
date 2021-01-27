@@ -13,15 +13,14 @@ class MatchFinder:
 
         self.player = player
         self.search_for_match = True
-        # store match id for playere when is found by other finder
+        # store match id for players when is found by other finder
         self.match_id = None
         self.waiting_players_list.append(self.player)
 
     async def find_match(self):
         while self.search_for_match:
-            print(self.waiting_players_list)
             await asyncio.sleep(5)
-            if (self.match_id is not None):
+            if self.match_id is not None:
                 return self.match_id
             # make in future finding more fitted enemy to player
             filered_list = list(
@@ -44,7 +43,7 @@ class MatchFinder:
 
     @classmethod
     def cancel(cls, for_player):
-        ''' cancel all finders work for player '''
+        """ cancel all finders work for player """
         finders_for_player = list(filter(
             lambda inst: inst.player == for_player, cls.instances
         ))

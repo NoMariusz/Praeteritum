@@ -17,8 +17,9 @@ class MatchManager:
         return match_id
 
     def get_match_by_id(self, _id):
-        return list(
-            filter(lambda match: match.match_id == _id, self.matches))[0]
+        match_list = list(
+            filter(lambda match: match.match_id == _id, self.matches))
+        return match_list[0] if len(match_list) > 0 else None
 
 
 # some kind of singleton managing matches
