@@ -62,7 +62,8 @@ class MatchConsumer(WebsocketConsumer):
         message = text_data_json['message']
 
         if message == "get-players":
-            players = list(map(lambda player: player.username, self.get_match().players))
+            players = list(map(
+                lambda player: player.username, self.get_match().players))
             async_to_sync(self.channel_layer.group_send)(
                 self.match_name,
                 {
@@ -83,4 +84,6 @@ class MatchConsumer(WebsocketConsumer):
         }))
 
     def get_match(self):
-        return match_manager.get_match_by_id(self.match_id)
+        return async_to_sync(
+            lambda: match_manager.get_match_by_id(self.match_id)
+        )()

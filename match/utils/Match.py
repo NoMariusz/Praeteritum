@@ -2,9 +2,9 @@ import random
 
 
 class Match:
-    def __init__(self, _id, players):
+    def __init__(self, id_, players):
         self.channel_layer = None
-        self.match_id = _id
+        self.id_ = id_
         self.players = players
         self.player_turn = random.randint(0, 1)
 

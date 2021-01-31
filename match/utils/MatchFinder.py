@@ -32,7 +32,7 @@ class MatchFinder:
             if len(filered_list) > 0:
                 second_player = filered_list[0]
 
-                match_id = match_manager.make_match(
+                match_id = await match_manager.make_match(
                     [self.player, second_player])
                 self.set_found(for_player=second_player, match_id=match_id)
 
