@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.contrib.auth.models import User
 from .utils.MatchFinder import MatchFinder
 from .utils.MatchManager import match_manager
-from utils.asyncs import run_as_async
+from asgiref.sync import sync_to_async
 import asyncio
 
 
@@ -17,12 +17,10 @@ class FindMatch(TestCase):
             match_ids.append(await coroutine)
 
         # make users
-        user1 = await run_as_async(
-            User.objects.create_user, username='test1', password='test1',
-            email='test1@tt.com')
-        user2 = await run_as_async(
-            User.objects.create_user, username='test2', password='test2',
-            email='test2@tt.com')
+        user1 = await sync_to_async(User.objects.create_user)(
+            username='test1', password='test1', email='test1@tt.com')
+        user2 = await sync_to_async(User.objects.create_user)(
+            username='test2', password='test2', email='test2@tt.com')
         # start finding match to users
         for user in [user1, user2]:
             finder = MatchFinder(user)

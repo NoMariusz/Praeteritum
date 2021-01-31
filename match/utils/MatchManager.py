@@ -1,6 +1,5 @@
 from .Match import Match
 from asgiref.sync import sync_to_async
-from utils.asyncs import run_as_async
 
 
 class MatchManager:
@@ -20,8 +19,8 @@ class MatchManager:
         return match.id_
 
     async def get_match_by_id(self, id_):
-        match_list = await run_as_async(
-            list, filter(lambda match: match.id_ == id_, self.matches))
+        match_list = await sync_to_async(list)(
+            filter(lambda match: match.id_ == id_, self.matches))
         return match_list[0] if len(match_list) > 0 else None
 
 

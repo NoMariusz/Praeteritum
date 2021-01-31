@@ -25,7 +25,7 @@ class MatchConsumer(WebsocketConsumer):
     def connect(self):
         # get data
         user = self.scope["user"]
-        print("MatchConsumer start %s" % user)
+        print("MatchConsumer start for %s" % user)
 
         # check if match exists
         self.match_id = self.scope['url_route']['kwargs']['match_id']
@@ -39,7 +39,7 @@ class MatchConsumer(WebsocketConsumer):
             return False
 
         self.match_name = "match%s" % self.match_id
-        print("consumer connect match_name %s" % self.match_name)
+        print("consumer connect to match_name: %s" % self.match_name)
 
         # Join match group
         async_to_sync(self.channel_layer.group_add)(

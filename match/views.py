@@ -11,7 +11,7 @@ from utils.AsyncView import AsyncView
 class FindMatch(AsyncView):
     async def post(self, request, format=None):
         user = await self.get_user_from_request(request)
-        print("user %s" % user)
+        # print("user %s" % user)
         finder = MatchFinder(user)
         match_id = await finder.find_match()
 

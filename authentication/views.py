@@ -10,7 +10,8 @@ from django.http import HttpResponse
 from .serializers import UserSerializer, CreateUserSerializer
 from .utils import create_user
 from utils.AsyncView import AsyncView
-from utils.asyncs import run_as_async
+from asgiref.sync import sync_to_async
+
 
 
 class RegisterUser(AsyncView):
@@ -19,8 +20,8 @@ class RegisterUser(AsyncView):
     async def post(self, request, format=None):
         """ Async because it took time to register user """
         serializer = self.serializer_class(
-            data=await run_as_async(json.loads, request.body))
-        if await run_as_async(serializer.is_valid):
+            data=await sync_to_async(json.loads)(request.body))
+        if await sync_to_async(serializer.is_valid)():
             username = serializer.validated_data["username"]
             password = serializer.validated_data["password"]
             email = serializer.validated_data["email"]
@@ -29,10 +30,10 @@ class RegisterUser(AsyncView):
                 username=username, password=password, email=email)
 
             # auto login after create user
-            user = await run_as_async(
-                authenticate, request, username=username, password=password)
+            user = await sync_to_async(authenticate)(
+                request, username=username, password=password)
             if user is not None:
-                await run_as_async(login, request, user)
+                await sync_to_async(login)(request, user)
 
             return HttpResponse(
                 json.dumps({"message": "User created"}),
