@@ -6,7 +6,7 @@ class Match:
         self.channel_layer = None
         self.id_ = id_
         self.players = players
-        self.player_turn = random.randint(0, 1)
+        self.turn = random.randint(0, 1)
 
     def connect_socket(self, channel_layer, user):
         if user not in self.players:

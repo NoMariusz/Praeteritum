@@ -24,13 +24,13 @@ export const FormWrapper = (props) => {
 
     return <Box classes={{root: classes.root}}>
         <Box pt={3}>
-        <Container maxWidth="xs">
-            <Paper variant="outlined" elevation={3}>
-                <Box p={1}>
-                    {props.children}
-                </Box>
-            </Paper>
-        </Container>
+            <Container maxWidth="xs">
+                <Paper variant="outlined" elevation={3}>
+                    <Box p={1}>
+                        {props.children}
+                    </Box>
+                </Paper>
+            </Container>
         </Box>
     </Box>
 }
