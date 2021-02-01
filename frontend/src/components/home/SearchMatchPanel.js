@@ -14,7 +14,7 @@ export const SearchMatchPanel = ({goToMatchCallback}) => {
                 "X-CSRFToken": getCSRF(),
             },
         };
-        fetch("/match/search", requestOptions)
+        fetch("/match-api/search", requestOptions)
             .then((res) => {
                 if (res.ok){
                     res.json().then(data => {
@@ -36,7 +36,7 @@ export const SearchMatchPanel = ({goToMatchCallback}) => {
                 "X-CSRFToken": getCSRF(),
             },
         };
-        fetch("/match/cancel-search", requestOptions)
+        fetch("/match-api/cancel-search", requestOptions)
             .then((res) => res.json())
             .then((data) => {
                 console.log(`cancel search: ${data.message}`);

@@ -14,7 +14,7 @@ export const Match = (props) => {
     if (matchSocket == null){
         setMatchSocket(
             new WebSocket(
-                `ws://${window.location.host}/match/${matchId}/`
+                `ws://${window.location.host}/match-api/${matchId}/`
             )
         );
     } else {

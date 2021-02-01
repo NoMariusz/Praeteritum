@@ -12,7 +12,7 @@ const App = () => {
         <Switch>
             <Route path="/login" component={LoginPage}/>
             <Route path="/register" component={RegisterPage}/>
-            <Route path="/game/:matchId" component={Match}/>
+            <Route path="/match/:matchId" component={Match}/>
             <Route path="/" component={HomePage}/>
         </Switch>
     </BrowserRouter>

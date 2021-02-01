@@ -21,7 +21,7 @@ export const HomePage = (props) => {
     };
 
     const goToMatchCallback = (matchId) => {
-        props.history.push(`/game/${matchId}`);
+        props.history.push(`/match/${matchId}`);
     }
 
     checkIfLogged();
@@ -33,7 +33,7 @@ export const HomePage = (props) => {
                 username={username}
                 checkIfLogged={checkIfLogged}
             />
-            <Box mt={3} />            {/* To make margin */}
+            <Box mt={3} />
             {/* container to store homapage content */}
             <Container maxWidth="xs">
                 <Grid
