@@ -4,6 +4,7 @@ import { Container, Grid, Box } from "@material-ui/core";
 import { MATCH_CONNECTION_STATUSES } from "../constants.js";
 import MatchLoading from "./MatchLoading.js";
 import MatchConnectError from "./MatchConnectError.js";
+import ChangeOrientationInfo from "./ChangeOrientationInfol.js";
 
 export const Match = (props) => {
     let matchId = props.match.params.matchId;
@@ -25,12 +26,11 @@ export const Match = (props) => {
             )}
         </Container>
 
-        return isLandscape ? mainMatchComponent : <p>Please change orientation</p>
+        return isLandscape ? mainMatchComponent : <ChangeOrientationInfo/>
     }
 
     // socket connection
     if (matchSocket == null){
-        console.log('connecting to match socket');
         setMatchSocket(
             new WebSocket(
                 `ws://${window.location.host}/match-api/${matchId}/`
