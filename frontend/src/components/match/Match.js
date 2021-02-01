@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import { Container, Grid, Box } from "@material-ui/core";
 
 import { MATCH_CONNECTION_STATUSES } from "../constants.js";
@@ -10,8 +10,27 @@ export const Match = (props) => {
     const [players, setPlayers] = useState([]);
     const [matchSocket, setMatchSocket] = useState(null);
     const [connectStatus, setConnectStatus] = useState(MATCH_CONNECTION_STATUSES.connecting);
+    const [isLandscape, setIsLandscape] = useState(false);
+    
+    const checkScreenOrientation = () => {
+        let isLanscapeMediaMatch = window.matchMedia("(orientation: landscape)").matches
+        setIsLandscape(isLanscapeMediaMatch)
+    }
+    
+    const renderBaseGame = () => {
+        let mainMatchComponent = <Container>
+            <p>game: {matchId}</p>
+            {players.map(player =>
+                <p>player: {player}</p>
+            )}
+        </Container>
 
+        return isLandscape ? mainMatchComponent : <p>Please change orientation</p>
+    }
+
+    // socket connection
     if (matchSocket == null){
+        console.log('connecting to match socket');
         setMatchSocket(
             new WebSocket(
                 `ws://${window.location.host}/match-api/${matchId}/`
@@ -39,15 +58,13 @@ export const Match = (props) => {
         };
     }
 
-    const renderBaseGame = () => {
-        return <Container>
-            <p>game: {matchId}</p>
-            {players.map(player =>
-                <p>player: {player}</p>
-            )}
-        </Container>
-    }
+    // page orientation
+    window.addEventListener("resize", checkScreenOrientation);
+    useEffect(() => {
+        checkScreenOrientation()
+    })
 
+    // rendering
     switch (connectStatus) {
         case MATCH_CONNECTION_STATUSES.connecting:
             return <MatchLoading/>;

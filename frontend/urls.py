@@ -6,5 +6,5 @@ urlpatterns = [
     path('', index, name="home"),
     path('login/', index),
     path('register/', index),
-    path('game/<int:match_id>/', index)
+    path('match/<int:match_id>/', index)
 ]
