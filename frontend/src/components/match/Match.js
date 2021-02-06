@@ -5,7 +5,7 @@ import { MATCH_CONNECTION_STATUSES } from "../constants.js";
 import MatchLoading from "./MatchLoading.js";
 import MatchConnectError from "./MatchConnectError.js";
 import ChangeOrientationInfo from "./ChangeOrientationInfol.js";
-import PlayerMatchBlock from "./components/PlayerMatchBlock.js";
+import PlayerInfoMatchBlock from "./components/PlayerInfoMatchBlock.js";
 import TurnsBlock from "./components/TurnsBlock.js";
 import Board from "./components/Board.js";
 import DecksCards from "./components/DecksCards.js";
@@ -15,7 +15,8 @@ import OptionsBlock from "./components/OptionsBlock.js";
 
 export const Match = (props) => {
     let matchId = props.match.params.matchId;
-    const [players, setPlayers] = useState([]);
+    const [player, setPlayer] = useState("");
+    const [enemy, setEnemy] = useState("");
     const [matchSocket, setMatchSocket] = useState(null);
     const [connectStatus, setConnectStatus] = useState(
         MATCH_CONNECTION_STATUSES.connecting
@@ -39,7 +40,8 @@ export const Match = (props) => {
         );
     } else {
         matchSocket.onopen = (e) => {
-            matchSocket.send(JSON.stringify({ message: "get-players" }));
+            matchSocket.send(JSON.stringify({ message: "get-initial-data" }));
+            matchSocket.send(JSON.stringify({ message: "client-connect" }));
             setConnectStatus(MATCH_CONNECTION_STATUSES.connected);
         };
 
@@ -52,9 +54,12 @@ export const Match = (props) => {
             const data = JSON.parse(e.data);
             console.log(`websocket onmessage: ${data.message}`);
             switch (data.message.name) {
-                case "players-list":
-                    setPlayers(data.message.players);
+                case "get-initial-data":
+                    setPlayer(data.message.data.players.player);
+                    setEnemy(data.message.data.players.enemy);
                     break;
+                case "client-connect":
+                    console.log(`Client connect to socket: ${data.message.player}`);
             }
         };
     }
@@ -78,9 +83,9 @@ export const Match = (props) => {
                         justifyContent="space-between"
                         height="100vh"
                     >
-                        <PlayerMatchBlock />
+                        <PlayerInfoMatchBlock player={enemy} />
                         <TurnsBlock />
-                        <PlayerMatchBlock />
+                        <PlayerInfoMatchBlock player={player} />
                     </Box>
                 </Grid>
                 {/* Middle block with board */}

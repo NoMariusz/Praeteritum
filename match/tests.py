@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
-from .utils.MatchFinder import MatchFinder
-from .utils.MatchManager import match_manager
+from .match.MatchFinder import MatchFinder
+from .match.MatchManager import match_manager
 from asgiref.sync import sync_to_async
 import asyncio
 

@@ -1,7 +1,7 @@
 import json
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
-from .utils.MatchManager import match_manager
+from .match.MatchManager import match_manager
 
 ''' place to put WebsocketConsumers code '''
 
@@ -19,8 +19,16 @@ class MatchConsumer(WebsocketConsumer):
      channelGroup, that message should be handled by custom functions in
      Consumer, and then data should be send to clients
     """
-    match_id = None
-    match_name = "None"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.recieve_commands = {
+            "get-initial-data": self.get_initial_match_data,
+            "client-connect": self.on_client_connect
+        }
+        self.match_id = None
+        self.match_name = "None"
+        self.player_index = None
 
     def connect(self):
         # get data
@@ -38,14 +46,17 @@ class MatchConsumer(WebsocketConsumer):
             self.close()
             return False
 
+        # Join match group
         self.match_name = "match%s" % self.match_id
         print("consumer connect to match_name: %s" % self.match_name)
 
-        # Join match group
         async_to_sync(self.channel_layer.group_add)(
             self.match_name,
             self.channel_name
         )
+
+        # prepare consumer to futher work
+        self.load_player_index()
 
         self.accept()
 
@@ -60,20 +71,8 @@ class MatchConsumer(WebsocketConsumer):
     def receive(self, text_data):
         text_data_json = json.loads(text_data)
         message = text_data_json['message']
-
-        if message == "get-players":
-            players = list(map(
-                lambda player: player.username, self.get_match().players))
-            async_to_sync(self.channel_layer.group_send)(
-                self.match_name,
-                {
-                    'type': 'send_to_socket',
-                    'message': {
-                        'name': 'players-list',
-                        'players': players
-                    }
-                }
-            )
+        if message in self.recieve_commands.keys():
+            self.recieve_commands[message]()
 
     # Receive message from room group
     def send_to_socket(self, event):
@@ -83,7 +82,37 @@ class MatchConsumer(WebsocketConsumer):
             'message': message
         }))
 
+    def load_player_index(self):
+        username = self.scope["user"].username
+        match = self.get_match()
+        self.player_index = match.get_player_index_by_name(username)
+        if self.player_index == -1:
+            raise Exception("Socket can not find his player_index")
+
     def get_match(self):
         return async_to_sync(
             lambda: match_manager.get_match_by_id(self.match_id)
         )()
+
+    # utils related to recieve/send
+    def get_initial_match_data(self):
+        match = self.get_match()
+        data = match.get_initial_data(self.player_index)
+        self.send(text_data=json.dumps({
+            'message': {
+                'name': 'get-initial-data',
+                'data': data
+            }
+        }))
+
+    def on_client_connect(self):
+        async_to_sync(self.channel_layer.group_send)(
+            self.match_name,
+            {
+                'type': 'send_to_socket',
+                'message': {
+                    'name': 'client-connect',
+                    'player': self.scope["user"].username
+                }
+            }
+        )

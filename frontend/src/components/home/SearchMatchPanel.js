@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Button, Typography, Grid, Paper } from "@material-ui/core";
-import { getCSRF } from "../../utlis";
+import { getCSRF } from "../../utils";
 
 export const SearchMatchPanel = ({goToMatchCallback}) => {
     const [isSearching, setIsSearching] = useState(false);

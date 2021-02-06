@@ -4,7 +4,7 @@ import {
 } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
 import FormWrapper from "./FormWrapper";
-import { getCSRF } from "../../utlis";
+import { getCSRF } from "../../utils";
 
 
 export const LoginPage = (props) => {

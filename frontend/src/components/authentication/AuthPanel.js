@@ -1,6 +1,6 @@
 import React from "react";
 import { Button, ButtonGroup, Box, Typography, Grid } from "@material-ui/core";
-import { getCSRF } from "../../utlis";
+import { getCSRF } from "../../utils";
 
 export const AuthPanel = (props) => {
     const handleLogout = () => {

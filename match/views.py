@@ -4,7 +4,7 @@ from rest_framework.views import APIView, Response
 from rest_framework import status
 from django.http import HttpResponse
 
-from .utils.MatchFinder import MatchFinder
+from .match.MatchFinder import MatchFinder
 from utils.AsyncView import AsyncView
 
 

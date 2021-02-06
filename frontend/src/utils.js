@@ -13,9 +13,8 @@ const getCookie = (name) => {
         }
     }
     return cookieValue;
-}
-
+};
 
 export const getCSRF = () => {
     return getCookie('csrftoken');
-}
+};
