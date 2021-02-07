@@ -38,13 +38,12 @@ export const PlayerInfoMatchBlock = ({playerData, positionInBox}) => {
     </Grid>
 
     return (
-        <Container>
             <Box
                 display="flex"
                 alignItems="center"
                 justifyContent="center"
                 flexDirection="column"
-                p={3}
+                p={"5%"}
             >
                 {(positionInBox == PLAYER_INFO_POSITIONS.top) ? playerCard : playerPoints}
                 {/* to make margin, without force centering block */}
@@ -52,7 +51,6 @@ export const PlayerInfoMatchBlock = ({playerData, positionInBox}) => {
                     {(positionInBox == PLAYER_INFO_POSITIONS.top) ? playerPoints : playerCard}
                 </Box>
             </Box>
-        </Container>
     );
 };
 

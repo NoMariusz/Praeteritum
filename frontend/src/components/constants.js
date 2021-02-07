@@ -9,4 +9,4 @@ export const PLAYER_INFO_POSITIONS = Object.freeze({
     bottom: 1,
 });
 
-export const MATCH_BOARD_SIZE = "80vh";
+export const MATCH_BOARD_SIZE = "70vh";
