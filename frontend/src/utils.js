@@ -18,3 +18,11 @@ const getCookie = (name) => {
 export const getCSRF = () => {
     return getCookie('csrftoken');
 };
+
+export const formatIfTooLong = (toFormat, maxLen) => {
+    // formatting too long strings in format looking like tooLongSt...
+    if (toFormat.length > maxLen){
+        return toFormat.slice(0, maxLen-3) + "..."
+    }
+    return toFormat
+}

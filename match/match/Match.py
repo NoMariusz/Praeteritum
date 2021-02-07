@@ -1,4 +1,5 @@
 import random
+from ..constatnts import DEFAULT_BASE_POINTS
 
 
 class Match:
@@ -6,6 +7,12 @@ class Match:
         self.channel_layer = None
         self.id_ = id_
         self.players = players
+        self.players_data = [
+            {"username": players[0].username,
+                "base_points": DEFAULT_BASE_POINTS},
+            {"username": players[1].username,
+                "base_points": DEFAULT_BASE_POINTS},
+        ]
         self.turn = random.randint(0, 1)
 
     def connect_socket(self, channel_layer, user):
@@ -24,10 +31,9 @@ class Match:
     def get_enemy_index(self, player_index):
         return (player_index + 1) % 2
 
-    def get_initial_data(self, player_index):
-        players = list(map(
-            lambda player: player.username, self.players))
-        return {"players": {
-            "player": players[player_index],
-            "enemy": players[self.get_enemy_index(player_index)]
+    # return data to prepare socket client
+    def give_initial_data(self, player_index):
+        return {"players_data": {
+            "player": self.players_data[player_index],
+            "enemy": self.players_data[self.get_enemy_index(player_index)]
         }}

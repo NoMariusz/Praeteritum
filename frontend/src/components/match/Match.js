@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Container, Grid, Box } from "@material-ui/core";
 
-import { MATCH_CONNECTION_STATUSES } from "../constants.js";
+import {
+    MATCH_CONNECTION_STATUSES,
+    PLAYER_INFO_POSITIONS,
+} from "../constants.js";
 import MatchLoading from "./MatchLoading.js";
 import MatchConnectError from "./MatchConnectError.js";
 import ChangeOrientationInfo from "./ChangeOrientationInfol.js";
@@ -15,8 +18,8 @@ import OptionsBlock from "./components/OptionsBlock.js";
 
 export const Match = (props) => {
     let matchId = props.match.params.matchId;
-    const [player, setPlayer] = useState("");
-    const [enemy, setEnemy] = useState("");
+    const [playerData, setPlayerData] = useState({username: ""});
+    const [enemyData, setEnemyData] = useState({username: ""});
     const [matchSocket, setMatchSocket] = useState(null);
     const [connectStatus, setConnectStatus] = useState(
         MATCH_CONNECTION_STATUSES.connecting
@@ -55,11 +58,13 @@ export const Match = (props) => {
             console.log(`websocket onmessage: ${data.message}`);
             switch (data.message.name) {
                 case "get-initial-data":
-                    setPlayer(data.message.data.players.player);
-                    setEnemy(data.message.data.players.enemy);
+                    setPlayerData(data.message.data.players_data.player);
+                    setEnemyData(data.message.data.players_data.enemy);
                     break;
                 case "client-connect":
-                    console.log(`Client connect to socket: ${data.message.player}`);
+                    console.log(
+                        `Client connect to socket: ${data.message.player}`
+                    );
             }
         };
     }
@@ -83,9 +88,15 @@ export const Match = (props) => {
                         justifyContent="space-between"
                         height="100vh"
                     >
-                        <PlayerInfoMatchBlock player={enemy} />
+                        <PlayerInfoMatchBlock
+                            playerData={enemyData}
+                            positionInBox={PLAYER_INFO_POSITIONS.top}
+                        />
                         <TurnsBlock />
-                        <PlayerInfoMatchBlock player={player} />
+                        <PlayerInfoMatchBlock
+                            playerData={playerData}
+                            positionInBox={PLAYER_INFO_POSITIONS.bottom}
+                        />
                     </Box>
                 </Grid>
                 {/* Middle block with board */}

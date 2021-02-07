@@ -97,7 +97,7 @@ class MatchConsumer(WebsocketConsumer):
     # utils related to recieve/send
     def get_initial_match_data(self):
         match = self.get_match()
-        data = match.get_initial_data(self.player_index)
+        data = match.give_initial_data(self.player_index)
         self.send(text_data=json.dumps({
             'message': {
                 'name': 'get-initial-data',
