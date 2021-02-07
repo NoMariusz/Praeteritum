@@ -18,12 +18,17 @@ import OptionsBlock from "./components/OptionsBlock.js";
 
 export const Match = (props) => {
     let matchId = props.match.params.matchId;
-    const [playerData, setPlayerData] = useState({username: ""});
-    const [enemyData, setEnemyData] = useState({username: ""});
+
     const [matchSocket, setMatchSocket] = useState(null);
     const [connectStatus, setConnectStatus] = useState(
         MATCH_CONNECTION_STATUSES.connecting
     );
+
+    const [playerData, setPlayerData] = useState({ username: "" });
+    const [enemyData, setEnemyData] = useState({ username: "" });
+    const [hasTurn, setHasTurn] = useState(false);
+    const [turnProgress, setTurnProgress] = useState(0);
+
     const [isLandscape, setIsLandscape] = useState(false);
 
     const checkScreenOrientation = () => {
@@ -58,8 +63,10 @@ export const Match = (props) => {
             console.log(`websocket onmessage: ${data.message}`);
             switch (data.message.name) {
                 case "get-initial-data":
-                    setPlayerData(data.message.data.players_data.player);
-                    setEnemyData(data.message.data.players_data.enemy);
+                    let messageData = data.message.data;
+                    setPlayerData(messageData.players_data.player);
+                    setEnemyData(messageData.players_data.enemy);
+                    setHasTurn(messageData.has_turn);
                     break;
                 case "client-connect":
                     console.log(
@@ -92,7 +99,10 @@ export const Match = (props) => {
                             playerData={enemyData}
                             positionInBox={PLAYER_INFO_POSITIONS.top}
                         />
-                        <TurnsBlock />
+                        <TurnsBlock
+                            hasTurn={hasTurn}
+                            turnProgress={turnProgress}
+                        />
                         <PlayerInfoMatchBlock
                             playerData={playerData}
                             positionInBox={PLAYER_INFO_POSITIONS.bottom}

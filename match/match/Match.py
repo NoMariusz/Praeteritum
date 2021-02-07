@@ -13,7 +13,7 @@ class Match:
             {"username": players[1].username,
                 "base_points": DEFAULT_BASE_POINTS},
         ]
-        self.turn = random.randint(0, 1)
+        self.player_turn = random.randint(0, 1)
 
     def connect_socket(self, channel_layer, user):
         if user not in self.players:
@@ -36,4 +36,4 @@ class Match:
         return {"players_data": {
             "player": self.players_data[player_index],
             "enemy": self.players_data[self.get_enemy_index(player_index)]
-        }}
+        }, "has_turn": self.player_turn == player_index}
