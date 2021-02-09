@@ -47,7 +47,7 @@ class MatchConsumer(WebsocketConsumer):
             return False
 
         # Join match group
-        self.match_name = "match%s" % self.match_id
+        self.match_name = match.match_name
         print("consumer connect to match_name: %s" % self.match_name)
 
         async_to_sync(self.channel_layer.group_add)(
@@ -90,9 +90,7 @@ class MatchConsumer(WebsocketConsumer):
             raise Exception("Socket can not find his player_index")
 
     def get_match(self):
-        return async_to_sync(
-            lambda: match_manager.get_match_by_id(self.match_id)
-        )()
+        return async_to_sync(match_manager.get_match_by_id)(self.match_id)
 
     # utils related to recieve/send
     def get_initial_match_data(self):

@@ -33,22 +33,23 @@ export const HomePage = (props) => {
                 username={username}
                 checkIfLogged={checkIfLogged}
             />
-            <Box mt={3} />
-            {/* container to store homapage content */}
-            <Container maxWidth="xs">
-                <Grid
-                    container
-                    spacing={3}
-                    justify="center"
-                    alignItems="center"
-                >
-                    {isLogged ? (
-                        <Grid item xs={12}>
-                            <SearchMatchPanel goToMatchCallback={goToMatchCallback}/>
-                        </Grid>
-                    ) : null}
-                </Grid>
-            </Container>
+            <Box my={3}>
+                {/* container to store homapage content */}
+                <Container maxWidth="xs">
+                    <Grid
+                        container
+                        spacing={3}
+                        justify="center"
+                        alignItems="center"
+                    >
+                        {isLogged ? (
+                            <Grid item xs={12}>
+                                <SearchMatchPanel goToMatchCallback={goToMatchCallback}/>
+                            </Grid>
+                        ) : null}
+                    </Grid>
+                </Container>
+            </Box>
         </Box>
     );
 };

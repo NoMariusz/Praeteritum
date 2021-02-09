@@ -17,12 +17,9 @@ class FindMatch(TestCase):
             match_ids.append(await coroutine)
 
         # make users
-        user1 = await sync_to_async(User.objects.create_user)(
-            username='test1', password='test1', email='test1@tt.com')
-        user2 = await sync_to_async(User.objects.create_user)(
-            username='test2', password='test2', email='test2@tt.com')
         # start finding match to users
-        for user in [user1, user2]:
+        test_players = await make_test_users()
+        for user in test_players:
             finder = MatchFinder(user)
             finder_coros.append(finder.find_match())
         # wait to all users recieve match id
@@ -38,9 +35,20 @@ class CreateMatch(TestCase):
     async def test_match_not_forgot(self):
         """if match remember his properties, because if I try to migrate them
         to model it was issues"""
-        match_id = await match_manager.make_match(['player1', 'player2'])
+        test_players = await make_test_users()
+        match_id = await match_manager.make_match(test_players)
 
         match = await match_manager.get_match_by_id(match_id)
         match.channel_layer = 'test_channel_layer'
         match2 = await match_manager.get_match_by_id(match_id)
         self.assertEqual(match2.channel_layer, 'test_channel_layer')
+
+
+# utils for tests
+async def make_test_users():
+    """ Make two test players in base and return list of them """
+    user1 = await sync_to_async(User.objects.create_user)(
+        username='test1', password='test1', email='test1@tt.com')
+    user2 = await sync_to_async(User.objects.create_user)(
+        username='test2', password='test2', email='test2@tt.com')
+    return [user1, user2]

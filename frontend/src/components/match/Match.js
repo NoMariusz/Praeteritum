@@ -60,7 +60,7 @@ export const Match = (props) => {
 
         matchSocket.onmessage = (e) => {
             const data = JSON.parse(e.data);
-            console.log(`websocket onmessage: ${data.message}`);
+            console.log(`websocket onmessage: ${data.message.name}`);
             switch (data.message.name) {
                 case "get-initial-data":
                     let messageData = data.message.data;

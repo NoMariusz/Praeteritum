@@ -4,8 +4,11 @@ from ..constatnts import DEFAULT_BASE_POINTS
 
 class Match:
     def __init__(self, id_, players):
-        self.channel_layer = None
         self.id_ = id_
+
+        self.channel_layer = None
+        self.match_name = "match%s" % self.id_
+
         self.players = players
         self.players_data = [
             {"username": players[0].username,
@@ -28,12 +31,15 @@ class Match:
                 return i
         return -1
 
-    def get_enemy_index(self, player_index):
+    def _get_enemy_index(self, player_index):
         return (player_index + 1) % 2
 
     # return data to prepare socket client
     def give_initial_data(self, player_index):
-        return {"players_data": {
-            "player": self.players_data[player_index],
-            "enemy": self.players_data[self.get_enemy_index(player_index)]
-        }, "has_turn": self.player_turn == player_index}
+        return {
+            "players_data": {
+                "player": self.players_data[player_index],
+                "enemy": self.players_data[self._get_enemy_index(player_index)]
+            },
+            "has_turn": self.player_turn == player_index
+        }
