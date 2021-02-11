@@ -22,10 +22,12 @@ class MatchConsumer(WebsocketConsumer):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
         self.recieve_commands = {
             "get-initial-data": self.get_initial_match_data,
             "client-connect": self.on_client_connect
         }
+
         self.match_id = None
         self.match_name = "None"
         self.player_index = None
@@ -37,7 +39,7 @@ class MatchConsumer(WebsocketConsumer):
 
         # check if match exists
         self.match_id = self.scope['url_route']['kwargs']['match_id']
-        match = self.get_match()
+        match = self._get_match()
         if match is None:
             self.close()
             return False
@@ -55,8 +57,8 @@ class MatchConsumer(WebsocketConsumer):
             self.channel_name
         )
 
-        # prepare consumer to futher work
-        self.load_player_index()
+        # prepare consumer to further work
+        self._load_player_index()
 
         self.accept()
 
@@ -82,19 +84,40 @@ class MatchConsumer(WebsocketConsumer):
             'message': message
         }))
 
-    def load_player_index(self):
+    # receive message from group and customize properties to be more
+    # customized for this socket client
+    def send_to_socket_and_modify_message(self, event):
+        # copy message and message['data'] dict to not affect in event dict to
+        # other sockets
+        message: dict = event['message'].copy()
+        message_data: dict = message["data"].copy()
+
+        # modify to send turn info customized for player
+        if "turn" in message_data.keys():
+            player_turn_idx: int = message_data.pop("turn", None)
+            message_data["has_turn"] = player_turn_idx == self.player_index
+
+        # set copied message_data dict to message dict
+        message["data"] = message_data
+
+        # Send message to WebSocket
+        self.send(text_data=json.dumps({
+            'message': message
+        }))
+
+    def _load_player_index(self):
         username = self.scope["user"].username
-        match = self.get_match()
+        match = self._get_match()
         self.player_index = match.get_player_index_by_name(username)
         if self.player_index == -1:
             raise Exception("Socket can not find his player_index")
 
-    def get_match(self):
+    def _get_match(self):
         return async_to_sync(match_manager.get_match_by_id)(self.match_id)
 
     # utils related to recieve/send
     def get_initial_match_data(self):
-        match = self.get_match()
+        match = self._get_match()
         data = match.give_initial_data(self.player_index)
         self.send(text_data=json.dumps({
             'message': {

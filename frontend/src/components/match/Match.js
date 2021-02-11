@@ -61,9 +61,11 @@ export const Match = (props) => {
         matchSocket.onmessage = (e) => {
             const data = JSON.parse(e.data);
             console.log(`websocket onmessage: ${data.message.name}`);
+
+            const messageData = data.message.data;
+            console.log("message data: ", data.message.data);
             switch (data.message.name) {
                 case "get-initial-data":
-                    let messageData = data.message.data;
                     setPlayerData(messageData.players_data.player);
                     setEnemyData(messageData.players_data.enemy);
                     setHasTurn(messageData.has_turn);
@@ -72,6 +74,13 @@ export const Match = (props) => {
                     console.log(
                         `Client connect to socket: ${data.message.player}`
                     );
+                    break;
+                case "turn_changed":
+                    setHasTurn(messageData.has_turn);
+                    break;
+                case "turn_progress_changed":
+                    setTurnProgress(messageData.progress);
+                    break;
             }
         };
     }
