@@ -3,6 +3,7 @@ import json
 from rest_framework.views import APIView, Response
 from rest_framework import status
 from django.http import HttpResponse
+from django.contrib.auth.models import User
 
 from .match.MatchFinder import MatchFinder
 from utils.AsyncView import AsyncView
@@ -10,10 +11,9 @@ from utils.AsyncView import AsyncView
 
 class FindMatch(AsyncView):
     async def post(self, request, format=None):
-        user = await self.get_user_from_request(request)
-        # print("user %s" % user)
+        user: User = await self.get_user_from_request(request)
         finder = MatchFinder(user)
-        match_id = await finder.find_match()
+        match_id: int = await finder.find_match()
 
         if match_id is not None:
             return HttpResponse(
@@ -26,7 +26,7 @@ class FindMatch(AsyncView):
 
 class CancelFindMatch(APIView):
     def post(self, request, format=None):
-        user = request.user
+        user: User = request.user
         print('math.views CancelFindMatch')
         MatchFinder.cancel(for_player=user)
         return Response(

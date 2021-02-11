@@ -10,7 +10,7 @@ class MatchManager:
         self.matches = []
         self.id_counter: int = 0
 
-    async def make_match(self, for_players) -> int:
+    async def make_match(self, for_players: list) -> int:
         """ making match for specified players, and return its id """
         match_id = self.id_counter
         match = Match(match_id, for_players)

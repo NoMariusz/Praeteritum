@@ -1,22 +1,25 @@
 import random
 import time
-import threading
+from threading import Thread
 from datetime import datetime
 from asgiref.sync import async_to_sync
+from django.contrib.auth.models import User
+from channels_redis.core import RedisChannelLayer
 from ..constatnts import DEFAULT_BASE_POINTS, TURN_TIME, \
     TURN_STATUS_REFRESH_TIME
 
 
 class Match:
-    def __init__(self, id_, players):
-        self.live = True
+    def __init__(self, id_: int, players: list):
+        self.live: bool = True
         self.id_: int = id_
 
-        self.channel_layer = None
-        self.match_name = "match%s" % self.id_
+        self.channel_layer: RedisChannelLayer = None
+        self.match_name: str = "match%s" % self.id_
 
-        self.players = players
-        self.players_data = [
+        # list of Users in match
+        self.players: list = players
+        self.players_data: list = [
             {"username": players[0].username,
                 "base_points": DEFAULT_BASE_POINTS},
             {"username": players[1].username,
@@ -24,10 +27,10 @@ class Match:
         ]
         self.player_turn: int = random.randint(0, 1)
         self.turn_progress: float = 0
-        self._last_turn_start_time = datetime.now()
+        self._last_turn_start_time: datetime = datetime.now()
 
         # start thread with timer to change turn
-        self.turn_timer_thread = threading.Thread(
+        self.turn_timer_thread: Thread = Thread(
             target=self._start_turn_timer_loop, daemon=True)
         self.turn_timer_thread.start()
 
@@ -35,7 +38,8 @@ class Match:
         # to stop thread
         self.live = False
 
-    def connect_socket(self, channel_layer, user):
+    def connect_socket(
+            self, channel_layer: RedisChannelLayer, user: User) -> bool:
         if user not in self.players:
             return False
         self.channel_layer = channel_layer
@@ -62,13 +66,13 @@ class Match:
         )
 
     # player index stuff
-    def get_player_index_by_name(self, username):
+    def get_player_index_by_name(self, username: str) -> int:
         for i, player in enumerate(self.players):
             if player.username == username:
                 return i
         return -1
 
-    def _get_enemy_index(self, player_index: int) -> int:
+    def get_enemy_index(self, player_index: int) -> int:
         return (player_index + 1) % 2
 
     # turns stuff
@@ -77,8 +81,9 @@ class Match:
             # sleep task
             time.sleep(TURN_STATUS_REFRESH_TIME)
             # get how much time passes
-            now = datetime.now()
-            seconds_from_start = (now - self._last_turn_start_time).seconds
+            now: datetime = datetime.now()
+            seconds_from_start: int = (
+                now - self._last_turn_start_time).seconds
             # update progress
             self.turn_progress = seconds_from_start / TURN_TIME * 100
 
@@ -112,11 +117,11 @@ class Match:
         self._send_to_sockets(message, modify=True)
 
     # return data to prepare socket client
-    def give_initial_data(self, player_index):
+    def give_initial_data(self, player_index: int) -> dict:
         return {
             "players_data": {
                 "player": self.players_data[player_index],
-                "enemy": self.players_data[self._get_enemy_index(player_index)]
+                "enemy": self.players_data[self.get_enemy_index(player_index)]
             },
             "has_turn": self.player_turn == player_index
         }

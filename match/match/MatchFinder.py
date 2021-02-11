@@ -11,13 +11,13 @@ class MatchFinder:
     def __init__(self, player: User):
         self.instances.append(weakref.proxy(self))
 
-        self.player = player
+        self.player: User = player
         self.search_for_match = True
         # store match id for players when is found by other finder
         self.match_id = None
         self.waiting_players_list.append(self.player)
 
-    async def find_match(self):
+    async def find_match(self) -> int:
         while self.search_for_match:
             await asyncio.sleep(5)
             if self.match_id is not None:
@@ -42,7 +42,7 @@ class MatchFinder:
                 return match_id
 
     @classmethod
-    def cancel(cls, for_player):
+    def cancel(cls, for_player: User):
         """ cancel all finders work for player """
         finders_for_player = list(filter(
             lambda inst: inst.player == for_player, cls.instances
@@ -52,7 +52,7 @@ class MatchFinder:
             cls.instances.remove(finder)
 
     @classmethod
-    def set_found(cls, for_player, match_id):
+    def set_found(cls, for_player: User, match_id: int):
         finders_for_player = list(filter(
             lambda inst: inst.player == for_player, cls.instances
         ))
