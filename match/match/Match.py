@@ -88,11 +88,14 @@ class Match:
             self.turn_progress = seconds_from_start / TURN_TIME * 100
 
             if self.turn_progress >= 100:
-                self._set_next_turn()
-                self.turn_progress = 0
-                self._last_turn_start_time = datetime.now()
+                self._start_next_turn()
 
             self._send_progress_changed()
+
+    def _start_next_turn(self):
+        self._set_next_turn()
+        self.turn_progress = 0
+        self._last_turn_start_time = datetime.now()
 
     def _set_next_turn(self):
         self.player_turn = 1 if self.player_turn == 0 else 0
@@ -125,3 +128,12 @@ class Match:
             },
             "has_turn": self.player_turn == player_index
         }
+
+    # end turn for specified player
+    def end_turn(self, player_index: int) -> bool:
+        # if is not the player turn he can not end turn
+        if self.player_turn != player_index:
+            return False
+
+        self._start_next_turn()
+        return True

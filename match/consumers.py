@@ -2,6 +2,7 @@ import json
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
 from .match.MatchManager import match_manager
+from .match.Match import Match
 
 ''' place to put WebsocketConsumers code '''
 
@@ -25,7 +26,8 @@ class MatchConsumer(WebsocketConsumer):
 
         self.recieve_commands = {
             "get-initial-data": self.get_initial_match_data,
-            "client-connect": self.on_client_connect
+            "client-connect": self.on_client_connect,
+            "end-turn": self.end_turn
         }
 
         self.match_id = None
@@ -112,7 +114,7 @@ class MatchConsumer(WebsocketConsumer):
         if self.player_index == -1:
             raise Exception("Socket can not find his player_index")
 
-    def _get_match(self):
+    def _get_match(self) -> Match:
         return async_to_sync(match_manager.get_match_by_id)(self.match_id)
 
     # utils related to recieve/send
@@ -137,3 +139,15 @@ class MatchConsumer(WebsocketConsumer):
                 }
             }
         )
+
+    def end_turn(self):
+        match = self._get_match()
+        if_ended_turn = match.end_turn(self.player_index)
+        self.send(text_data=json.dumps({
+            'message': {
+                'name': 'end-turn',
+                'data': {
+                    'result': if_ended_turn
+                }
+            }
+        }))

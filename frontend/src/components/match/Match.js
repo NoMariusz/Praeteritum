@@ -41,6 +41,10 @@ export const Match = (props) => {
         return isLandscape ? mainMatchComponent : <ChangeOrientationInfo />;
     };
 
+    const endTurnCallback = () => {
+        matchSocket.send(JSON.stringify({ message: "end-turn" }))
+    }
+
     // socket connection
     if (matchSocket == null) {
         setMatchSocket(
@@ -111,6 +115,7 @@ export const Match = (props) => {
                         <TurnsBlock
                             hasTurn={hasTurn}
                             turnProgress={turnProgress}
+                            endTurnCallback={endTurnCallback}
                         />
                         <PlayerInfoMatchBlock
                             playerData={playerData}

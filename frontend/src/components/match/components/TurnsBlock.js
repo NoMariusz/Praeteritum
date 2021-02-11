@@ -1,11 +1,7 @@
 import React from "react";
 import { Box, Grid, Button, Radio, CircularProgress } from "@material-ui/core";
 
-export const TurnsBlock = ({ hasTurn, turnProgress }) => {
-    const handleEndTurnClick = () => {
-        console.log("Player try end turn");
-    };
-
+export const TurnsBlock = ({ hasTurn, turnProgress, endTurnCallback }) => {
     return (
         <Box
             display="flex"
@@ -33,7 +29,8 @@ export const TurnsBlock = ({ hasTurn, turnProgress }) => {
                             value={turnProgress}
                         />
                         <Button
-                            onClick={handleEndTurnClick}
+                            onClick={endTurnCallback}
+                            disabled={!hasTurn}
                             variant="outlined"
                             color="primary"
                         >
