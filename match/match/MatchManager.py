@@ -13,7 +13,7 @@ class MatchManager:
     async def make_match(self, for_players: list) -> int:
         """ making match for specified players, and return its id """
         match_id = self.id_counter
-        match = Match(match_id, for_players)
+        match = await sync_to_async(Match)(match_id, for_players)
         self.id_counter += 1
         self.matches.append(match)
         return match.id_

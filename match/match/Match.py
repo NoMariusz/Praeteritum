@@ -5,6 +5,7 @@ from datetime import datetime
 from asgiref.sync import async_to_sync
 from django.contrib.auth.models import User
 from channels_redis.core import RedisChannelLayer
+from cards.utlis import get_deck_cards_ids_for_player
 from ..constatnts import DEFAULT_BASE_POINTS, TURN_TIME, \
     TURN_STATUS_REFRESH_TIME
 
@@ -19,25 +20,37 @@ class Match:
 
         # list of Users in match
         self.players: list = players
-        self.players_data: list = [
-            {"username": players[0].username,
-                "base_points": DEFAULT_BASE_POINTS},
-            {"username": players[1].username,
-                "base_points": DEFAULT_BASE_POINTS},
+        # data relaed players
+        self._players_data: list = [
+            {
+                "username": players[0].username,
+                "base_points": DEFAULT_BASE_POINTS,
+                "hand_cards_ids": [],
+                "deck_cards_ids": self._get_player_cards(0),
+            },
+            {
+                "username": players[1].username,
+                "base_points": DEFAULT_BASE_POINTS,
+                "hand_cards_ids": [],
+                "deck_cards_ids": self._get_player_cards(1),
+            },
         ]
+
+        # turns related stuff
         self.player_turn: int = random.randint(0, 1)
         self.turn_progress: float = 0
         self._last_turn_start_time: datetime = datetime.now()
 
         # start thread with timer to change turn
-        self.turn_timer_thread: Thread = Thread(
+        self._turn_timer_thread: Thread = Thread(
             target=self._start_turn_timer_loop, daemon=True)
-        self.turn_timer_thread.start()
+        self._turn_timer_thread.start()
 
     def __del__(self):
         # to stop thread
         self.live = False
 
+    # sockets stuff
     def connect_socket(
             self, channel_layer: RedisChannelLayer, user: User) -> bool:
         if user not in self.players:
@@ -103,7 +116,7 @@ class Match:
 
     def _send_progress_changed(self):
         message = {
-            'name': 'turn_progress_changed',
+            'name': 'turn-progress-changed',
             'data': {
                 'progress': self.turn_progress
             }
@@ -112,22 +125,44 @@ class Match:
 
     def _send_to_sockets_turn_change(self):
         message = {
-            'name': 'turn_changed',
+            'name': 'turn-changed',
             'data': {
                 'turn': self.player_turn
             }
         }
         self._send_to_sockets(message, modify=True)
 
-    # return data to prepare socket client
-    def give_initial_data(self, player_index: int) -> dict:
+    # cards related stuff
+    def _get_player_cards(self, player_index: int) -> list:
+        player: User = self.players[player_index]
+        return get_deck_cards_ids_for_player(player)
+
+    # overall utils
+    def _get_safe_player_data_dict(self, player_index: int) -> dict:
+        enemy_index: int = self.get_enemy_index(player_index)
+
+        player_data: dict = self._players_data[player_index]
+        enemy_data: dict = self._players_data[enemy_index]
         return {
             "players_data": {
-                "player": self.players_data[player_index],
-                "enemy": self.players_data[self.get_enemy_index(player_index)]
+                "player": {
+                    "username": player_data["username"],
+                    "base_points": player_data["base_points"],
+                    "deck_cards_count": len(player_data["deck_cards_ids"])
+                },
+                "enemy": {
+                    "username": enemy_data["username"],
+                    "base_points": enemy_data["base_points"],
+                    "deck_cards_count": len(enemy_data["deck_cards_ids"])
+                }
             },
             "has_turn": self.player_turn == player_index
         }
+
+    """ Section with public methods returning data to sockets """
+    # return data to prepare socket client
+    def give_initial_data(self, player_index: int) -> dict:
+        return self._get_safe_player_data_dict(player_index)
 
     # end turn for specified player
     def end_turn(self, player_index: int) -> bool:

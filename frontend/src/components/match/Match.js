@@ -11,7 +11,7 @@ import ChangeOrientationInfo from "./ChangeOrientationInfol.js";
 import PlayerInfoMatchBlock from "./components/PlayerInfoMatchBlock.js";
 import TurnsBlock from "./components/TurnsBlock.js";
 import Board from "./components/Board.js";
-import DecksCards from "./components/DecksCards.js";
+import DecksBlock from "./components/deck/DecksBlock.js";
 import EnemyHand from "./components/EnemyHand.js";
 import PlayerHand from "./components/PlayerHand.js";
 import OptionsBlock from "./components/OptionsBlock.js";
@@ -24,8 +24,9 @@ export const Match = (props) => {
         MATCH_CONNECTION_STATUSES.connecting
     );
 
-    const [playerData, setPlayerData] = useState({ username: "" });
-    const [enemyData, setEnemyData] = useState({ username: "" });
+    const playersDataTemplate = { username: "", base_points: 0, deck_cards_count: 0};
+    const [playerData, setPlayerData] = useState(playersDataTemplate);
+    const [enemyData, setEnemyData] = useState(playersDataTemplate);
     const [hasTurn, setHasTurn] = useState(false);
     const [turnProgress, setTurnProgress] = useState(0);
 
@@ -79,10 +80,10 @@ export const Match = (props) => {
                         `Client connect to socket: ${data.message.player}`
                     );
                     break;
-                case "turn_changed":
+                case "turn-changed":
                     setHasTurn(messageData.has_turn);
                     break;
-                case "turn_progress_changed":
+                case "turn-progress-changed":
                     setTurnProgress(messageData.progress);
                     break;
             }
@@ -136,7 +137,10 @@ export const Match = (props) => {
                         justifyContent="center"
                         height="100%"
                     >
-                        <DecksCards />
+                        <DecksBlock
+                            playerData={playerData}
+                            enemyData={enemyData}
+                        />
                     </Box>
                 </Grid>
             </Grid>

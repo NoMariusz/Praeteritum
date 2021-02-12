@@ -11,9 +11,9 @@ async def make_player_data(user):
     # add base cards collection
     base_collection = await sync_to_async(CardModel.objects.filter)(
         defaultInCollection=True)
-    sync_to_async(playerdata.collection.set)(base_collection)
+    await sync_to_async(playerdata.collection.set)(base_collection)
 
     # add base cards deck
     base_deck = await sync_to_async(CardModel.objects.filter)(
         defaultInDeck=True)
-    sync_to_async(playerdata.deck.set)(base_deck)
+    await sync_to_async(playerdata.deck.set)(base_deck)

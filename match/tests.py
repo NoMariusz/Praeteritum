@@ -3,6 +3,7 @@ from asgiref.sync import sync_to_async
 from django.test import TestCase
 from django.contrib.auth.models import User
 
+from authentication.utils import create_user
 from .match.MatchFinder import MatchFinder
 from .match.MatchManager import match_manager
 from .constatnts import TURN_TIME
@@ -64,8 +65,8 @@ class CreateMatch(TestCase):
 # utils for tests
 async def make_test_users():
     """ Make two test players in base and return list of them """
-    user1 = await sync_to_async(User.objects.create_user)(
+    user1 = await create_user(
         username='test1', password='test1', email='test1@tt.com')
-    user2 = await sync_to_async(User.objects.create_user)(
+    user2 = await create_user(
         username='test2', password='test2', email='test2@tt.com')
     return [user1, user2]
