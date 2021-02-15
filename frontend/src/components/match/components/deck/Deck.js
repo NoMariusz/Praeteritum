@@ -6,8 +6,8 @@ export const Deck = ({ playerData }) => {
         <Box width={1} height={1} m={{ xs: 0, sm: 1 }}>
             <Card variant="outlined">
                 <Box
-                    bgcolor="info.main"
-                    color="info.contrastText"
+                    bgcolor="primary.main"
+                    color="primary.contrastText"
                     p={{ xs: 0, sm: 2, md: 3 }}
                 >
                     <Typography variant="h6">Cards left:</Typography>

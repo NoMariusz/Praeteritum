@@ -4,8 +4,6 @@ from channels.generic.websocket import WebsocketConsumer
 from .match.MatchManager import match_manager
 from .match.Match import Match
 
-''' place to put WebsocketConsumers code '''
-
 
 class MatchConsumer(WebsocketConsumer):
     """
@@ -98,6 +96,11 @@ class MatchConsumer(WebsocketConsumer):
         if "turn" in message_data.keys():
             player_turn_idx: int = message_data.pop("turn", None)
             message_data["has_turn"] = player_turn_idx == self.player_index
+
+        # modify to send for which player is related message
+        if "for_player_at_index" in message_data.keys():
+            player_index: int = message_data.pop("for_player_at_index", None)
+            message_data["for_player"] = player_index == self.player_index
 
         # set copied message_data dict to message dict
         message["data"] = message_data

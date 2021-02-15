@@ -86,6 +86,15 @@ export const Match = (props) => {
                 case "turn-progress-changed":
                     setTurnProgress(messageData.progress);
                     break;
+                case "deck-cards-count-changed":
+                    const setThatPlayerData = messageData.for_player ? setPlayerData : setEnemyData
+                    const newCount = messageData.new_count
+                    console.log("Deck cards changed", messageData);
+                    setThatPlayerData(prevState => ({
+                        ...prevState,
+                        deck_cards_count: newCount
+                    }))
+                    break;
             }
         };
     }

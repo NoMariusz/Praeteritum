@@ -11,8 +11,8 @@ export const DecksBlock = ({playerData, enemyData}) => {
                 flexDirection="column"
                 m={"3%"}
             >
-                <Deck playerData={playerData}/>
                 <Deck playerData={enemyData}/>
+                <Deck playerData={playerData}/>
             </Box>
     );
 };

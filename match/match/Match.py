@@ -7,7 +7,8 @@ from django.contrib.auth.models import User
 from channels_redis.core import RedisChannelLayer
 from cards.utlis import get_deck_cards_ids_for_player
 from ..constatnts import DEFAULT_BASE_POINTS, TURN_TIME, \
-    TURN_STATUS_REFRESH_TIME
+    TURN_STATUS_REFRESH_TIME, CARDS_DRAWED_AT_START_COUNT, \
+    CARDS_DRAWED_AT_TURN_COUNT
 
 
 class Match:
@@ -20,7 +21,7 @@ class Match:
 
         # list of Users in match
         self.players: list = players
-        # data relaed players
+        # data related players
         self._players_data: list = [
             {
                 "username": players[0].username,
@@ -45,6 +46,10 @@ class Match:
         self._turn_timer_thread: Thread = Thread(
             target=self._start_turn_timer_loop, daemon=True)
         self._turn_timer_thread.start()
+
+        # drawing cards
+        self._draw_cards(count=CARDS_DRAWED_AT_START_COUNT, for_player=0)
+        self._draw_cards(count=CARDS_DRAWED_AT_START_COUNT, for_player=1)
 
     def __del__(self):
         # to stop thread
@@ -106,9 +111,13 @@ class Match:
             self._send_progress_changed()
 
     def _start_next_turn(self):
+        # set next turn
         self._set_next_turn()
         self.turn_progress = 0
         self._last_turn_start_time = datetime.now()
+        # draw card for player who start his turn now
+        self._draw_cards(
+            count=CARDS_DRAWED_AT_TURN_COUNT, for_player=self.player_turn)
 
     def _set_next_turn(self):
         self.player_turn = 1 if self.player_turn == 0 else 0
@@ -136,6 +145,35 @@ class Match:
     def _get_player_cards(self, player_index: int) -> list:
         player: User = self.players[player_index]
         return get_deck_cards_ids_for_player(player)
+
+    def _draw_cards(self, count: int, for_player: int) -> bool:
+        # move cards from deck to hand cunt: int times, for specified plauer
+        player_data: dict = self._players_data[for_player]
+
+        deck: list = player_data["deck_cards_ids"]
+        hand: list = player_data["hand_cards_ids"]
+        # if deck is empty can not draw card from it
+        if len(deck) <= 0:
+            return False
+
+        for move in range(count):
+            card_id: int = deck.pop()
+            hand.append(card_id)
+
+        print(player_data)
+        self._send_to_sockets_decks_cards_count_changed(for_player)
+        return True
+
+    def _send_to_sockets_decks_cards_count_changed(self, player_index: int):
+        player_data: dict = self._players_data[player_index]
+        message = {
+            'name': 'deck-cards-count-changed',
+            'data': {
+                'for_player_at_index': player_index,
+                'new_count': len(player_data["deck_cards_ids"])
+            }
+        }
+        self._send_to_sockets(message, modify=True)
 
     # overall utils
     def _get_safe_player_data_dict(self, player_index: int) -> dict:

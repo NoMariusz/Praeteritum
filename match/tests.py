@@ -1,7 +1,5 @@
 import asyncio
-from asgiref.sync import sync_to_async
 from django.test import TestCase
-from django.contrib.auth.models import User
 
 from authentication.utils import create_user
 from .match.MatchFinder import MatchFinder
