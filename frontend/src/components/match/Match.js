@@ -3,7 +3,7 @@ import { Container, Grid, Box } from "@material-ui/core";
 
 import {
     MATCH_CONNECTION_STATUSES,
-    PLAYER_INFO_POSITIONS,
+    PLAYER_INFO_POSITIONS
 } from "../constants.js";
 import MatchLoading from "./MatchLoading.js";
 import MatchConnectError from "./MatchConnectError.js";
@@ -12,8 +12,7 @@ import PlayerInfoMatchBlock from "./components/PlayerInfoMatchBlock.js";
 import TurnsBlock from "./components/TurnsBlock.js";
 import Board from "./components/Board.js";
 import DecksBlock from "./components/deck/DecksBlock.js";
-import EnemyHand from "./components/EnemyHand.js";
-import PlayerHand from "./components/PlayerHand.js";
+import HandBlock from "./components/hands/HandBlock.js";
 import OptionsBlock from "./components/OptionsBlock.js";
 
 export const Match = (props) => {
@@ -25,8 +24,11 @@ export const Match = (props) => {
     );
 
     const playersDataTemplate = { username: "", base_points: 0, deck_cards_count: 0};
-    const [playerData, setPlayerData] = useState(playersDataTemplate);
-    const [enemyData, setEnemyData] = useState(playersDataTemplate);
+    const playerDataTemplate = {...playersDataTemplate, hand_cards: []}
+    const enemyDataTemplate = {...playersDataTemplate, hand_cards_count: 0}
+
+    const [playerData, setPlayerData] = useState(playerDataTemplate);
+    const [enemyData, setEnemyData] = useState(enemyDataTemplate);
     const [hasTurn, setHasTurn] = useState(false);
     const [turnProgress, setTurnProgress] = useState(0);
 
@@ -89,12 +91,23 @@ export const Match = (props) => {
                 case "deck-cards-count-changed":
                     const setThatPlayerData = messageData.for_player ? setPlayerData : setEnemyData
                     const newCount = messageData.new_count
-                    console.log("Deck cards changed", messageData);
                     setThatPlayerData(prevState => ({
                         ...prevState,
                         deck_cards_count: newCount
                     }))
                     break;
+                case "hand-cards-changed":
+                    if (messageData.for_player){
+                        setPlayerData( prevState => ({
+                            ...prevState,
+                            hand_cards: messageData.new_cards
+                        }))
+                    } else {
+                        setEnemyData( prevState => ({
+                            ...prevState,
+                            hand_cards_count: messageData.new_count
+                        }))
+                    }
             }
         };
     }
@@ -154,8 +167,8 @@ export const Match = (props) => {
                 </Grid>
             </Grid>
             {/* Elements with absolute positions */}
-            <EnemyHand />
-            <PlayerHand />
+            <HandBlock forMainPlayer={true} playerData={playerData}/>
+            <HandBlock forMainPlayer={false} playerData={enemyData}/>
             <OptionsBlock />
         </Box>
     );

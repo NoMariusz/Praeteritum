@@ -6,6 +6,8 @@ from asgiref.sync import async_to_sync
 from django.contrib.auth.models import User
 from channels_redis.core import RedisChannelLayer
 from cards.utlis import get_deck_cards_ids_for_player
+from cards.models import CardModel
+from cards.serializers import CardSerializer
 from ..constatnts import DEFAULT_BASE_POINTS, TURN_TIME, \
     TURN_STATUS_REFRESH_TIME, CARDS_DRAWED_AT_START_COUNT, \
     CARDS_DRAWED_AT_TURN_COUNT
@@ -160,9 +162,24 @@ class Match:
             card_id: int = deck.pop()
             hand.append(card_id)
 
-        print(player_data)
         self._send_to_sockets_decks_cards_count_changed(for_player)
+        self._send_to_sockets_hand_changed(for_player)
         return True
+
+    def _made_card_data_by_id(self, card_id: int) -> dict:
+        """ Get card object by given card_id, then made from that card data
+        dict friendly for fronend """
+        card: CardModel = CardModel.objects.get(id=card_id)
+        card_serializer: CardSerializer = CardSerializer(card)
+        return card_serializer.data
+
+    def _get_cards_data(self, player_index: int) -> list:
+        """ Get list of cards objects for specified player """
+        player_data: dict = self._players_data[player_index]
+        cards_data: list = list(map(
+            lambda id_: self. _made_card_data_by_id(id_),
+            player_data["hand_cards_ids"]))
+        return cards_data
 
     def _send_to_sockets_decks_cards_count_changed(self, player_index: int):
         player_data: dict = self._players_data[player_index]
@@ -171,6 +188,16 @@ class Match:
             'data': {
                 'for_player_at_index': player_index,
                 'new_count': len(player_data["deck_cards_ids"])
+            }
+        }
+        self._send_to_sockets(message, modify=True)
+
+    def _send_to_sockets_hand_changed(self, player_index: int):
+        message = {
+            'name': 'hand-cards-changed',
+            'data': {
+                'for_player_at_index': player_index,
+                'new_cards': self._get_cards_data(player_index)
             }
         }
         self._send_to_sockets(message, modify=True)
@@ -186,24 +213,26 @@ class Match:
                 "player": {
                     "username": player_data["username"],
                     "base_points": player_data["base_points"],
-                    "deck_cards_count": len(player_data["deck_cards_ids"])
+                    "deck_cards_count": len(player_data["deck_cards_ids"]),
+                    "hand_cards": self._get_cards_data(player_index)
                 },
                 "enemy": {
                     "username": enemy_data["username"],
                     "base_points": enemy_data["base_points"],
-                    "deck_cards_count": len(enemy_data["deck_cards_ids"])
+                    "deck_cards_count": len(enemy_data["deck_cards_ids"]),
+                    "hand_cards_count": len(enemy_data["hand_cards_ids"])
                 }
             },
             "has_turn": self.player_turn == player_index
         }
 
     """ Section with public methods returning data to sockets """
-    # return data to prepare socket client
     def give_initial_data(self, player_index: int) -> dict:
+        # return data to prepare socket client
         return self._get_safe_player_data_dict(player_index)
 
-    # end turn for specified player
     def end_turn(self, player_index: int) -> bool:
+        """ end turn for specified player by player_index """
         # if is not the player turn he can not end turn
         if self.player_turn != player_index:
             return False

@@ -102,6 +102,13 @@ class MatchConsumer(WebsocketConsumer):
             player_index: int = message_data.pop("for_player_at_index", None)
             message_data["for_player"] = player_index == self.player_index
 
+        # secure to not send info about enemy cards
+        if "new_cards" in message_data.keys():
+            # if that information isn't about player cards, but enemy cards
+            if not message_data["for_player"]:
+                cards: list = message_data.pop("new_cards",  [])
+                message_data["new_count"] = len(cards)
+
         # set copied message_data dict to message dict
         message["data"] = message_data
 

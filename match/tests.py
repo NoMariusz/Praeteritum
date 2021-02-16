@@ -1,9 +1,12 @@
 import asyncio
 from django.test import TestCase
+from asgiref.sync import async_to_sync
 
 from authentication.utils import create_user
+from .match.Match import Match
 from .match.MatchFinder import MatchFinder
 from .match.MatchManager import match_manager
+from cards.models import CardModel
 from .constatnts import TURN_TIME
 
 
@@ -31,7 +34,7 @@ class FindMatch(TestCase):
         self.assertEqual(match_ids[0], match_ids[1])
 
 
-class CreateMatch(TestCase):
+class MatchWork(TestCase):
     async def test_match_not_forgot(self):
         """check if match remember his properties so overall work properly"""
         test_players = await make_test_users()
@@ -48,7 +51,7 @@ class CreateMatch(TestCase):
         # make match
         test_players = await make_test_users()
         match_id = await match_manager.make_match(test_players)
-        match = await match_manager.get_match_by_id(match_id)
+        match: Match = await match_manager.get_match_by_id(match_id)
 
         # get start turn, wait to change it, and assert if turn change
         start_turn = match.player_turn
@@ -58,6 +61,21 @@ class CreateMatch(TestCase):
         next_turn = match.player_turn
         print("get next_turn", next_turn)
         self.assertNotEqual(start_turn, next_turn)
+
+    def test_match_good_format_cards(self):
+        """ check if function formatting data in cards model, good return data """
+        test_card_name = "test_card_123#@!"
+        # made match
+        test_players = async_to_sync(make_test_users)()
+        match: Match = Match(1, players=test_players)
+        # made card
+        card = CardModel(
+            name=test_card_name, category=CardModel.CardTypes.CAVALRYMAN,
+            rarity=CardModel.CardRarities.COMMON, attack=20, hp=60)
+        card.save()
+        # made it data
+        data = match._made_card_data_by_id(card.id)
+        self.assertEqual(test_card_name, data["name"])
 
 
 # utils for tests
