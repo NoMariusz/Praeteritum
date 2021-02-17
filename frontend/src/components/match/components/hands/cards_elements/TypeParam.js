@@ -9,7 +9,7 @@ export const TypeParam = ({ value }) => {
     return (
         <CardParam color="text.secondary">
             <Tooltip
-                title={`Card rarity - ${cardTypeList[1]}`}
+                title={`Card type - ${cardTypeList[1]}`}
                 disableFocusListener
                 enterDelay={1500}
                 leaveDelay={10}

@@ -7,7 +7,6 @@ export const CardParam = ({ color, children }) => {
             bgcolor={color}
             color="primary.contrastText"
             p={0.5}
-            border={1}
             borderRadius={8}
         >
             {children}

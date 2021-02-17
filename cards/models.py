@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from .constants import BASE_CARD_IMAGE
 
 
 class CardModel(models.Model):
@@ -26,7 +27,9 @@ class CardModel(models.Model):
     rarity = models.IntegerField(choices=CardRarities.choices, null=False)
     attack = models.PositiveIntegerField(null=False)
     hp = models.PositiveIntegerField(null=False)
-    image = models.CharField(max_length=150, null=True)
+    image = models.CharField(
+        max_length=150, null=False, default=BASE_CARD_IMAGE
+    )
     defaultInCollection = models.BooleanField(null=False, default=False)
     defaultInDeck = models.BooleanField(null=False, default=False)
     effect = models.IntegerField(
