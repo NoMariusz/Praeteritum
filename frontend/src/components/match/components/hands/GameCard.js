@@ -19,19 +19,23 @@ export const GameCard = ({ cardData, maxWidth }) => {
                     flexDirection="column"
                     justifyContent="center"
                     width="1"
+                    border={1}
+                    borderRadius={8}
+                    borderColor="primary.main"
+                    overflow="hidden"
                 >
                     {/* Displaying card name */}
-                    <Box mb={1}>
-                        <Card variatn="outlined">
-                            <Typography
-                                variant="body1"
-                                align="center"
-                                color="primary"
-                                noWrap
-                            >
-                                {cardData.name}
-                            </Typography>
-                        </Card>
+                    <Box
+                        mb={1}
+                        border={1}
+                        borderRadius={8}
+                        borderColor="primary.main"
+                        bgcolor="primary.main"
+                        color="primary.contrastText"
+                    >
+                        <Typography variant="body1" align="center" noWrap>
+                            {cardData.name}
+                        </Typography>
                     </Box>
                     {/* Block displaying statistics */}
                     <Box
@@ -42,7 +46,7 @@ export const GameCard = ({ cardData, maxWidth }) => {
                         width="1"
                     >
                         <AttackParam value={cardData.attack} />
-                        <Box>
+                        <Box width={0.5} px={1}>
                             <TypeParam value={cardData.category} />
                             {/* <RarityParam value={cardData.rarity}/> */}
                         </Box>
