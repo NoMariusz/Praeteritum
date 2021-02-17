@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Typography, Card } from "@material-ui/core";
+import { Box, Typography, Card, Collapse } from "@material-ui/core";
 import AttackParam from "./cards_elements/AttackParam.js";
 import HpParam from "./cards_elements/HpParam.js";
 import TypeParam from "./cards_elements/TypeParam.js";
@@ -7,11 +7,13 @@ import RarityParam from "./cards_elements/RarityParam.js";
 import { CARD_MARGIN_X } from "../../../constants.js";
 
 export const GameCard = ({ cardData, maxWidth }) => {
-    const [showFull, setShowFull] = useState(true);
+    const [showFull, setShowFull] = useState(false);
     return (
         <Box
-            width={maxWidth - CARD_MARGIN_X * 2}
+            width={showFull ? '1' : (maxWidth - CARD_MARGIN_X * 2)}
             mx={CARD_MARGIN_X * 100 + "%"}
+            onMouseOver={() => setShowFull(true)}
+            onMouseOut={() => setShowFull(false)}
         >
             <Card variant="outlined">
                 <Box
@@ -33,7 +35,7 @@ export const GameCard = ({ cardData, maxWidth }) => {
                         bgcolor="primary.main"
                         color="primary.contrastText"
                     >
-                        <Typography variant="body1" align="center" noWrap>
+                        <Typography variant={showFull ? "h6" : "body1"} align="center" noWrap>
                             {cardData.name}
                         </Typography>
                     </Box>
@@ -45,12 +47,14 @@ export const GameCard = ({ cardData, maxWidth }) => {
                         alignItems="flex-end"
                         width="1"
                     >
-                        <AttackParam value={cardData.attack} />
+                        <AttackParam value={cardData.attack} isFull={showFull}/>
                         <Box width={0.5} px={1}>
                             <TypeParam value={cardData.category} />
-                            {/* <RarityParam value={cardData.rarity}/> */}
+                            <Collapse in={showFull}>
+                                <RarityParam value={cardData.rarity}/>
+                            </Collapse>
                         </Box>
-                        <HpParam value={cardData.hp} />
+                        <HpParam value={cardData.hp} isFull={showFull}/>
                     </Box>
                 </Box>
             </Card>

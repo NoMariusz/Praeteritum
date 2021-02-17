@@ -8,8 +8,15 @@ export const TypeParam = ({ value }) => {
     const cardTypeList = CARD_TYPES[value];
     return (
         <CardParam color="text.secondary">
-            <Tooltip title={`Card rarity - ${cardTypeList[1]}`}>
-                <Typography variant="body1" align="center">{cardTypeList[0]}</Typography>
+            <Tooltip
+                title={`Card rarity - ${cardTypeList[1]}`}
+                disableFocusListener
+                enterDelay={1500}
+                leaveDelay={10}
+            >
+                <Typography variant="body1" align="center">
+                    {cardTypeList[0]}
+                </Typography>
             </Tooltip>
         </CardParam>
     );

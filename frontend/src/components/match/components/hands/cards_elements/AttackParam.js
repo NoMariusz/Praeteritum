@@ -1,15 +1,13 @@
 import React from "react";
-import { Typography, Tooltip } from "@material-ui/core";
+import { Typography } from "@material-ui/core";
 import CardParam from "./CardParam.js";
 
-export const AttackParam = ({ value }) => {
+export const AttackParam = ({ value, isFull }) => {
     return (
         <CardParam color="error.main">
-            <Tooltip title="Card attack">
-                <Typography variant="h5" p="1">
-                    {value}
-                </Typography>
-            </Tooltip>
+            <Typography variant={isFull ? "h4" : "h5"} p={isFull ? "2" : "1"}>
+                {value}
+            </Typography>
         </CardParam>
     );
 };
