@@ -10,3 +10,5 @@ export const PLAYER_INFO_POSITIONS = Object.freeze({
 });
 
 export const MATCH_BOARD_SIZE = "70vh";
+
+export const CARD_MARGIN_X = 0.003

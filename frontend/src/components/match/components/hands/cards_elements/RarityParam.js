@@ -4,12 +4,10 @@ import CardParam from "./CardParam.js";
 
 export const RarityParam = ({ value }) => {
     return (
-        <CardParam color="gray">
-            <Typography variant="h6">
-                {value}
-            </Typography>
-    </CardParam>
+        <CardParam color="text.secondary">
+            <Typography variant="h6">{value}</Typography>
+        </CardParam>
     );
 };
 
-export default RarityParam ;
+export default RarityParam;

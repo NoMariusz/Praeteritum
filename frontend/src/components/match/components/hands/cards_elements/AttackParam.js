@@ -4,12 +4,12 @@ import CardParam from "./CardParam.js";
 
 export const AttackParam = ({ value }) => {
     return (
-        <CardParam color="red">
+        <CardParam color="error.main">
             <Typography variant="h5" p="1">
                 {value}
             </Typography>
-    </CardParam>
+        </CardParam>
     );
 };
 
-export default AttackParam ;
+export default AttackParam;
