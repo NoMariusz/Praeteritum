@@ -1,14 +1,14 @@
 import React from "react";
-import { Typography, Tooltip } from "@material-ui/core";
-import CardParam from "./CardParam.js";
+import { Box } from "@material-ui/core";
+import StarsRoundedIcon from "@material-ui/icons/StarsRounded";
+import { CARD_RARITIES_COLORS } from "../../../../constants.js";
 
 export const RarityParam = ({ value }) => {
+    const color = CARD_RARITIES_COLORS[value];
     return (
-        <CardParam color="text.secondary">
-            <Tooltip title="Card rarity">
-                <Typography variant="h6">{value}</Typography>
-            </Tooltip>
-        </CardParam>
+        <Box display="flex" justifyContent="center">
+            <StarsRoundedIcon style={{ color: color }} />
+        </Box>
     );
 };
 

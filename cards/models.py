@@ -16,8 +16,7 @@ class CardModel(models.Model):
         UNCOMMON = 1, _('Uncommon')
         ELITE = 2, _('Elite')
         EPIC = 3, _('Epic')
-        LEGENDARY = 4, _('Legendary')
-        MYTHIC = 5, _('Mythic')
+        MYTHIC = 4, _('Mythic')
 
     class CardEffects(models.IntegerChoices):
         pass
