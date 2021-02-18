@@ -1,8 +1,8 @@
 import json
 
 from django.shortcuts import redirect
-from rest_framework.views import APIView, Response
 from rest_framework import generics, status
+from rest_framework.views import APIView, Response
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse
@@ -11,7 +11,6 @@ from .serializers import UserSerializer, CreateUserSerializer
 from .utils import create_user
 from utils.AsyncView import AsyncView
 from asgiref.sync import sync_to_async
-
 
 
 class RegisterUser(AsyncView):
