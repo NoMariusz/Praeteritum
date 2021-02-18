@@ -145,8 +145,12 @@ class Match:
 
     # cards related stuff
     def _get_player_cards(self, player_index: int) -> list:
+        # get cards for player
         player: User = self.players[player_index]
-        return get_deck_cards_ids_for_player(player)
+        player_cards_ids: list = get_deck_cards_ids_for_player(player)
+        # shuffle cards in deck
+        random.shuffle(player_cards_ids)
+        return player_cards_ids
 
     def _draw_cards(self, count: int, for_player: int) -> bool:
         # move cards from deck to hand cunt: int times, for specified plauer
