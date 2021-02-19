@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { Container, Grid, Box } from "@material-ui/core";
+import { Grid, Box } from "@material-ui/core";
 
 import {
     MATCH_CONNECTION_STATUSES,
-    PLAYER_INFO_POSITIONS
-} from "../constants.js";
+    PLAYER_INFO_POSITIONS,
+} from "./constants.js";
 import MatchLoading from "./MatchLoading.js";
 import MatchConnectError from "./MatchConnectError.js";
 import ChangeOrientationInfo from "./ChangeOrientationInfol.js";
 import PlayerInfoMatchBlock from "./components/PlayerInfoMatchBlock.js";
 import TurnsBlock from "./components/TurnsBlock.js";
-import Board from "./components/Board.js";
+import Board from "./components/board/Board.js";
 import DecksBlock from "./components/deck/DecksBlock.js";
 import HandBlock from "./components/hands/HandBlock.js";
 import OptionsBlock from "./components/OptionsBlock.js";
@@ -23,9 +23,13 @@ export const Match = (props) => {
         MATCH_CONNECTION_STATUSES.connecting
     );
 
-    const playersDataTemplate = { username: "", base_points: 0, deck_cards_count: 0};
-    const playerDataTemplate = {...playersDataTemplate, hand_cards: []}
-    const enemyDataTemplate = {...playersDataTemplate, hand_cards_count: 0}
+    const playersDataTemplate = {
+        username: "",
+        base_points: 0,
+        deck_cards_count: 0,
+    };
+    const playerDataTemplate = { ...playersDataTemplate, hand_cards: [] };
+    const enemyDataTemplate = { ...playersDataTemplate, hand_cards_count: 0 };
 
     const [playerData, setPlayerData] = useState(playerDataTemplate);
     const [enemyData, setEnemyData] = useState(enemyDataTemplate);
@@ -45,8 +49,8 @@ export const Match = (props) => {
     };
 
     const endTurnCallback = () => {
-        matchSocket.send(JSON.stringify({ message: "end-turn" }))
-    }
+        matchSocket.send(JSON.stringify({ message: "end-turn" }));
+    };
 
     // socket connection
     if (matchSocket == null) {
@@ -89,24 +93,26 @@ export const Match = (props) => {
                     setTurnProgress(messageData.progress);
                     break;
                 case "deck-cards-count-changed":
-                    const setThatPlayerData = messageData.for_player ? setPlayerData : setEnemyData
-                    const newCount = messageData.new_count
-                    setThatPlayerData(prevState => ({
+                    const setThatPlayerData = messageData.for_player
+                        ? setPlayerData
+                        : setEnemyData;
+                    const newCount = messageData.new_count;
+                    setThatPlayerData((prevState) => ({
                         ...prevState,
-                        deck_cards_count: newCount
-                    }))
+                        deck_cards_count: newCount,
+                    }));
                     break;
                 case "hand-cards-changed":
-                    if (messageData.for_player){
-                        setPlayerData( prevState => ({
+                    if (messageData.for_player) {
+                        setPlayerData((prevState) => ({
                             ...prevState,
-                            hand_cards: messageData.new_cards
-                        }))
+                            hand_cards: messageData.new_cards,
+                        }));
                     } else {
-                        setEnemyData( prevState => ({
+                        setEnemyData((prevState) => ({
                             ...prevState,
-                            hand_cards_count: messageData.new_count
-                        }))
+                            hand_cards_count: messageData.new_count,
+                        }));
                     }
             }
         };
@@ -167,8 +173,8 @@ export const Match = (props) => {
                 </Grid>
             </Grid>
             {/* Elements with absolute positions */}
-            <HandBlock forMainPlayer={true} playerData={playerData}/>
-            <HandBlock forMainPlayer={false} playerData={enemyData}/>
+            <HandBlock forMainPlayer={true} playerData={playerData} />
+            <HandBlock forMainPlayer={false} playerData={enemyData} />
             <OptionsBlock />
         </Box>
     );

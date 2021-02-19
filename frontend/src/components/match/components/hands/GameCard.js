@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import { Box, Typography, Card, Collapse } from "@material-ui/core";
+import { Box, Typography, Collapse } from "@material-ui/core";
 import AttackParam from "./cards_elements/AttackParam.js";
 import HpParam from "./cards_elements/HpParam.js";
 import TypeParam from "./cards_elements/TypeParam.js";
 import RarityParam from "./cards_elements/RarityParam.js";
-import { CARD_MARGIN_X, CARD_IMAGES_PATH } from "../../../constants.js";
+import { CARD_MARGIN_X, CARD_IMAGES_PATH } from "./constants.js";
 
 export const GameCard = ({ cardData, maxWidth }) => {
     const [showFull, setShowFull] = useState(false);

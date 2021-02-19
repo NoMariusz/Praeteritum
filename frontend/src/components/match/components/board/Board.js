@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Typography } from "@material-ui/core";
-import { MATCH_BOARD_SIZE } from "../../constants.js";
+import { MATCH_BOARD_SIZE } from "./constants.js";
 
 export const Board = () => {
     return (

@@ -67,8 +67,8 @@ class Match:
 
     def _send_to_sockets(self, message: dict, modify=False):
         """ sending given message: dict to match sockets by channel layer,
-        param :modify specify if socket should modify that message
-        param: message: dict should have keys data and name"""
+        param - modify specify if socket should modify that message
+        param - message: dict should have keys data and name"""
         # check if channel layer is set, function only can run properly if yes
         if self.channel_layer is None:
             print("\tInfo: Match: Try to send to sokets, but channel_layer" +

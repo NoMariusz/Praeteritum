@@ -1,8 +1,8 @@
 import React from "react";
-import { Container, Box, Grid, Typography } from "@material-ui/core";
+import { Box, Grid, Typography } from "@material-ui/core";
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import { createMuiTheme, responsiveFontSizes, ThemeProvider } from '@material-ui/core/styles';
-import {PLAYER_INFO_POSITIONS} from "../../constants.js";
+import {PLAYER_INFO_POSITIONS} from "../constants.js";
 import  { formatIfTooLong } from "../../../utils.js";
 
 let theme = createMuiTheme();
