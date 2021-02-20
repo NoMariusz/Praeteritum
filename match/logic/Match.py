@@ -247,7 +247,7 @@ class Match:
         return {
             **player_data,
             "has_turn": self.player_turn == player_index,
-            "fields": self._board.get_fields(player_index)
+            "fields": self._board.get_fields_dicts(player_index)
         }
 
     def end_turn(self, player_index: int) -> bool:

@@ -7,7 +7,7 @@ from .logic.Match import Match
 from .logic.MatchFinder import MatchFinder
 from .logic.MatchManager import match_manager
 from cards.models import CardModel
-from .constatnts import TURN_TIME, BOARD_COLUMNS, BOARD_ROWS
+from .constatnts import TURN_TIME, BOARD_ROWS
 
 
 class FindMatch(TestCase):
@@ -78,20 +78,21 @@ class MatchWork(TestCase):
         data = match._made_card_data_by_id(card.id)
         self.assertEqual(test_card_name, data["name"])
 
-    def test_fields_are_sorting_for_player(self):
-        """ check if board returning properly sorted fields for players """
+    def test_fields_are_put_in_order_for_player(self):
+        """ check if board returning properly ordered fields for players """
         # made match
         test_players = async_to_sync(make_test_users)()
         match: Match = Match(1, players=test_players)
         # get fields
-        fields_for_0: list = match._board.get_fields(0)
-        fields_for_1: list = match._board.get_fields(1)
-        # get fields ids for specified players
-        first_field_id_for_0: int = fields_for_0[0].id_
-        first_field_id_for_1: int = fields_for_1[0].id_
-        # check fields id are proper for players
-        id_for_0_ok = first_field_id_for_0 == 0
-        id_for_1_ok = first_field_id_for_1 == BOARD_COLUMNS * BOARD_ROWS - 1
+        fields_for_0: list = match._board.get_fields_dicts(0)
+        fields_for_1: list = match._board.get_fields_dicts(1)
+        # get fields rows for specified players
+        first_field_row_for_0: int = fields_for_0[0]["row"]
+        first_field_row_for_1: int = fields_for_1[0]["row"]
+        print(first_field_row_for_0, first_field_row_for_1)
+        # check fields rows are proper for players
+        id_for_0_ok = first_field_row_for_0 == 0
+        id_for_1_ok = first_field_row_for_1 == BOARD_ROWS - 1
 
         self.assertTrue(id_for_0_ok and id_for_1_ok)
 

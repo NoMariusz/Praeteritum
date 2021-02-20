@@ -34,6 +34,7 @@ export const Match = (props) => {
     const [playerData, setPlayerData] = useState(playerDataTemplate);
     const [enemyData, setEnemyData] = useState(enemyDataTemplate);
     const [hasTurn, setHasTurn] = useState(false);
+    const [fields, setFields] = useState([]);
     const [turnProgress, setTurnProgress] = useState(0);
 
     const [isLandscape, setIsLandscape] = useState(false);
@@ -80,6 +81,7 @@ export const Match = (props) => {
                     setPlayerData(messageData.players_data.player);
                     setEnemyData(messageData.players_data.enemy);
                     setHasTurn(messageData.has_turn);
+                    setFields(messageData.fields);
                     break;
                 case "client-connect":
                     console.log(
@@ -154,7 +156,7 @@ export const Match = (props) => {
                 </Grid>
                 {/* Middle block with board */}
                 <Grid item xs>
-                    <Board />
+                    <Board fields={fields}/>
                 </Grid>
                 {/* Right block with deck cards counter */}
                 <Grid item xs>

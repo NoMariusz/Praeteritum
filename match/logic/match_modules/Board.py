@@ -25,11 +25,13 @@ class Board():
             fields.append(field)
         return fields
 
-    def get_fields(self, for_player: int) -> list:
+    def get_fields_dicts(self, for_player: int) -> list:
         """
         :param for_player: int - index of player for which fields should be
-        sorted that lower indexes should be closer to player
-        :return: list - list of sorted fields
+        stacked to render board in frontend facing that player
+        :return: list - contain dicts for fronend with fields data
         """
-        # self.fields[::-1] - return reversed list
-        return self.fields if for_player == 0 else self.fields[::-1]
+        reverse = for_player != 0
+
+        return list(map(
+            lambda field: field.get_data_for_frontend(reverse), self.fields))
