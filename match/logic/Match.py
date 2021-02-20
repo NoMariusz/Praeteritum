@@ -8,6 +8,7 @@ from channels_redis.core import RedisChannelLayer
 from cards.utlis import get_deck_cards_ids_for_player
 from cards.models import CardModel
 from cards.serializers import CardSerializer
+from .match_modules.Board import Board
 from ..constatnts import DEFAULT_BASE_POINTS, TURN_TIME, \
     TURN_STATUS_REFRESH_TIME, CARDS_DRAWED_AT_START_COUNT, \
     CARDS_DRAWED_AT_TURN_COUNT
@@ -53,11 +54,15 @@ class Match:
         self._draw_cards(count=CARDS_DRAWED_AT_START_COUNT, for_player=0)
         self._draw_cards(count=CARDS_DRAWED_AT_START_COUNT, for_player=1)
 
+        # board
+        self._board = Board()
+
     def __del__(self):
         # to stop thread
         self.live = False
 
     # sockets stuff
+
     def connect_socket(
             self, channel_layer: RedisChannelLayer, user: User) -> bool:
         if user not in self.players:
@@ -67,8 +72,9 @@ class Match:
 
     def _send_to_sockets(self, message: dict, modify=False):
         """ sending given message: dict to match sockets by channel layer,
-        param - modify specify if socket should modify that message
-        param - message: dict should have keys data and name"""
+        :param modify: bool - specify if socket should modify that message
+        :param message: dict - should have keys data and name
+        """
         # check if channel layer is set, function only can run properly if yes
         if self.channel_layer is None:
             print("\tInfo: Match: Try to send to sokets, but channel_layer" +
@@ -86,6 +92,7 @@ class Match:
         )
 
     # player index stuff
+
     def get_player_index_by_name(self, username: str) -> int:
         for i, player in enumerate(self.players):
             if player.username == username:
@@ -96,6 +103,7 @@ class Match:
         return (player_index + 1) % 2
 
     # turns stuff
+
     def _start_turn_timer_loop(self):
         while self.live:
             # sleep task
@@ -144,6 +152,7 @@ class Match:
         self._send_to_sockets(message, modify=True)
 
     # cards related stuff
+
     def _get_player_cards(self, player_index: int) -> list:
         # get cards for player
         player: User = self.players[player_index]
@@ -207,6 +216,7 @@ class Match:
         self._send_to_sockets(message, modify=True)
 
     # overall utils
+
     def _get_safe_player_data_dict(self, player_index: int) -> dict:
         enemy_index: int = self.get_enemy_index(player_index)
 
@@ -226,14 +236,19 @@ class Match:
                     "deck_cards_count": len(enemy_data["deck_cards_ids"]),
                     "hand_cards_count": len(enemy_data["hand_cards_ids"])
                 }
-            },
-            "has_turn": self.player_turn == player_index
+            }
         }
 
-    """ Section with public methods returning data to sockets """
+    # Section with public methods returning data to sockets
+
     def give_initial_data(self, player_index: int) -> dict:
         # return data to prepare socket client
-        return self._get_safe_player_data_dict(player_index)
+        player_data: dict = self._get_safe_player_data_dict(player_index)
+        return {
+            **player_data,
+            "has_turn": self.player_turn == player_index,
+            "fields": self._board.get_fields(player_index)
+        }
 
     def end_turn(self, player_index: int) -> bool:
         """ end turn for specified player by player_index """

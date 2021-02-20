@@ -5,7 +5,7 @@ from rest_framework import status
 from django.http import HttpResponse
 from django.contrib.auth.models import User
 
-from .match.MatchFinder import MatchFinder
+from .logic.MatchFinder import MatchFinder
 from utils.AsyncView import AsyncView
 
 

@@ -3,11 +3,11 @@ from django.test import TestCase
 from asgiref.sync import async_to_sync
 
 from authentication.utils import create_user
-from .match.Match import Match
-from .match.MatchFinder import MatchFinder
-from .match.MatchManager import match_manager
+from .logic.Match import Match
+from .logic.MatchFinder import MatchFinder
+from .logic.MatchManager import match_manager
 from cards.models import CardModel
-from .constatnts import TURN_TIME
+from .constatnts import TURN_TIME, BOARD_COLUMNS, BOARD_ROWS
 
 
 class FindMatch(TestCase):
@@ -63,7 +63,8 @@ class MatchWork(TestCase):
         self.assertNotEqual(start_turn, next_turn)
 
     def test_match_good_format_cards(self):
-        """ check if function formatting data in cards model, good return data """
+        """ check if function formatting data in cards model, good return data
+        """
         test_card_name = "test_card_123#@!"
         # made match
         test_players = async_to_sync(make_test_users)()
@@ -77,8 +78,26 @@ class MatchWork(TestCase):
         data = match._made_card_data_by_id(card.id)
         self.assertEqual(test_card_name, data["name"])
 
+    def test_fields_are_sorting_for_player(self):
+        """ check if board returning properly sorted fields for players """
+        # made match
+        test_players = async_to_sync(make_test_users)()
+        match: Match = Match(1, players=test_players)
+        # get fields
+        fields_for_0: list = match._board.get_fields(0)
+        fields_for_1: list = match._board.get_fields(1)
+        # get fields ids for specified players
+        first_field_id_for_0: int = fields_for_0[0].id_
+        first_field_id_for_1: int = fields_for_1[0].id_
+        # check fields id are proper for players
+        id_for_0_ok = first_field_id_for_0 == 0
+        id_for_1_ok = first_field_id_for_1 == BOARD_COLUMNS * BOARD_ROWS - 1
+
+        self.assertTrue(id_for_0_ok and id_for_1_ok)
+
 
 # utils for tests
+
 async def make_test_users():
     """ Make two test players in base and return list of them """
     user1 = await create_user(
