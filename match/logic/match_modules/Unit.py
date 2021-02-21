@@ -21,4 +21,13 @@ class Unit:
         """ :return: dict - contain data for frontned in dict that can be
         transformed to json
         """
-        return {}
+        return {
+            "id": self.id_,
+            "owner": self.owner_index,
+            "field_id": self.field_id,
+            "name": self.name,
+            "hp": self.hp,
+            "attack": self.attack,
+            "category": self.category,
+            "image": self.image
+        }

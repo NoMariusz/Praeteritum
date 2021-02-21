@@ -38,6 +38,7 @@ export const Match = (props) => {
     const [hasTurn, setHasTurn] = useState(false);
     const [turnProgress, setTurnProgress] = useState(0);
     const [fields, setFields] = useState([]);
+    const [units, setUnits] = useState([]);
     // selectedElement can represent card or unit
     const selectedELementTemplate = { type: -1, id: -1 };
     const [selectedElement, setSelectedElement] = useState(
@@ -150,6 +151,7 @@ export const Match = (props) => {
                     setEnemyData(messageData.players_data.enemy);
                     setHasTurn(messageData.has_turn);
                     setFields(messageData.fields);
+                    setUnits(messageData.units)
                     break;
                 case "client-connect":
                     console.log(
@@ -186,11 +188,12 @@ export const Match = (props) => {
                     }
                     break;
                 case "play-a-card":
-                    console.log("res", messageData.result);
                     if (messageData.result == false) {
                         showSnackbar("A card cannot be played  !");
                     }
                     break;
+                case "units-changed":
+                    setUnits(messageData.units)
                 default:
                     break;
             }
@@ -238,6 +241,7 @@ export const Match = (props) => {
                     <Board
                         fields={fields}
                         toField={{
+                            units: units,
                             selectedElement: selectedElement,
                             handleClickOnField: handleClickOnField,
                             hasTurn: hasTurn,

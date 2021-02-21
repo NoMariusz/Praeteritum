@@ -56,7 +56,7 @@ class Match:
         self._draw_cards(count=CARDS_DRAWED_AT_START_COUNT, for_player=1)
 
         # board
-        self._board = Board()
+        self._board = Board(self._send_to_sockets)
 
     def __del__(self):
         # to stop thread
@@ -262,7 +262,8 @@ class Match:
         return {
             **player_data,
             "has_turn": self.player_turn == player_index,
-            "fields": self._board.get_fields_dicts(player_index)
+            "fields": self._board.get_fields_dicts(player_index),
+            "units": self._board.get_units_dicts(),
         }
 
     @_run_only_when_player_has_turn

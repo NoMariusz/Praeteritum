@@ -24,5 +24,5 @@ class Field:
             "row": self.row,
             "column": self.column,
             "is_base": self.is_base,
-            "in_player_half": self.player_half == for_player
+            "in_player_half": self.player_half == for_player,
         }

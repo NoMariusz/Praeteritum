@@ -1,5 +1,6 @@
 import React from "react";
 import { Box } from "@material-ui/core";
+import Unit from "./Unit.js";
 import { BOARD_COLUMNS, BOARD_ROWS } from "./constants.js";
 import { SELECTABLE_ELEMENTS } from "../../constants.js";
 
@@ -25,6 +26,10 @@ export const Field = ({ fieldData, toField }) => {
         toField.handleClickOnField(fieldData.id);
     };
 
+    const unitInField = toField.units.find(unit => unit.field_id == fieldData.id)
+
+    const unitBlock = unitInField != undefined ? <Unit unitData={unitInField}/> : null
+
     return (
         <Box
             width={1 / BOARD_COLUMNS}
@@ -34,7 +39,9 @@ export const Field = ({ fieldData, toField }) => {
             border={1}
             borderColor={isHighlighted ? "warning.main" : "text.primary"}
             onClick={fieldClick}
-        />
+        >
+            {unitBlock}
+        </Box>
     );
 };
 

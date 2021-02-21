@@ -1,14 +1,18 @@
+from typing import Callable
 from ...constatnts import BOARD_COLUMNS, BOARD_ROWS, BASE_FIELDS_IDS
 from .Field import Field
 from .Unit import Unit
 
 
 class Board():
-    def __init__(self):
+    def __init__(self, send_to_sockets: Callable):
+        """ :param sent_to_socket: Callable - function from parent who enable
+        sending messages to sockets from board """
         # fields is list of Field ordered by id
         self._fields: list = self._make_fields()
         self._units = []
         self._unit_id_counter = 0
+        self._send_to_sockets: Callable = send_to_sockets
 
     # fields
 
@@ -63,6 +67,8 @@ class Board():
         # append unit to its field
         field: Field = self._fields[field_id]
         field.unit = unit
+        # send info with new units to sockets
+        self._send_to_sockets_units_changed()
 
     def check_if_player_can_play_card(
             self, player_index: int, field_id: int) -> bool:
@@ -75,3 +81,18 @@ class Board():
         if field.unit is not None:
             return False
         return True
+
+    def get_units_dicts(self) -> list:
+        """ :return: list - contains dicts with jsonable units data """
+        return list(
+            map(lambda unit: unit.get_data_for_frontend(), self._units))
+
+    def _send_to_sockets_units_changed(self):
+        """ sending message to sockets with new units """
+        message = {
+            'name': 'units-changed',
+            'data': {
+                'units': self.get_units_dicts()
+            }
+        }
+        self._send_to_sockets(message)
