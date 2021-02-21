@@ -4,15 +4,26 @@ import { BOARD_COLUMNS, BOARD_ROWS } from "./constants.js";
 import { SELECTABLE_ELEMENTS } from "../../constants.js";
 
 export const Field = ({ fieldData, toField }) => {
-    const isActive =
+    const getIfFieldIsHighlighted  = () => {
+        // if player has no turn then can not do any actions on board
+        if (!toField.hasTurn) {
+            return false;
+        }
         // Active when player select card and field is part of player base
-        toField.selectedElement.type == SELECTABLE_ELEMENTS.card &&
-        fieldData.is_base &&
-        fieldData.in_player_half;
+        if (
+            toField.selectedElement.type == SELECTABLE_ELEMENTS.card &&
+            fieldData.is_base &&
+            fieldData.in_player_half
+        ) {
+            return true;
+        }
+    };
+
+    const isHighlighted = getIfFieldIsHighlighted();
 
     const fieldClick = () => {
-        toField.handleClickOnField(fieldData.id)
-    }
+        toField.handleClickOnField(fieldData.id);
+    };
 
     return (
         <Box
@@ -21,7 +32,7 @@ export const Field = ({ fieldData, toField }) => {
             bgcolor={fieldData.is_base ? "#CCCCCC" : ""}
             color="text.primary"
             border={1}
-            borderColor={isActive ? "warning.main" : "text.primary"}
+            borderColor={isHighlighted ? "warning.main" : "text.primary"}
             onClick={fieldClick}
         />
     );

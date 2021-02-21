@@ -240,6 +240,7 @@ export const Match = (props) => {
                         toField={{
                             selectedElement: selectedElement,
                             handleClickOnField: handleClickOnField,
+                            hasTurn: hasTurn,
                         }}
                     />
                 </Grid>
