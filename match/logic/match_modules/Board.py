@@ -28,10 +28,11 @@ class Board():
     def get_fields_dicts(self, for_player: int) -> list:
         """
         :param for_player: int - index of player for which fields should be
-        stacked to render board in frontend facing that player
+        ordered to render board in frontend facing that player
         :return: list - contain dicts for fronend with fields data
         """
         reverse = for_player != 0
 
         return list(map(
-            lambda field: field.get_data_for_frontend(reverse), self.fields))
+            lambda field: field.get_data_for_frontend(),
+            self.fields[::-1] if reverse else self.fields))
