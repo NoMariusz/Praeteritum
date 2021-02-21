@@ -15,6 +15,7 @@ import Board from "./components/board/Board.js";
 import DecksBlock from "./components/deck/DecksBlock.js";
 import HandBlock from "./components/hands/HandBlock.js";
 import OptionsBlock from "./components/OptionsBlock.js";
+import InfoSnackbar from "./components/InfoSnackbar.js";
 
 export const Match = (props) => {
     // sockets values
@@ -43,6 +44,10 @@ export const Match = (props) => {
         selectedELementTemplate
     );
 
+    // snackbar values
+    const [snackbarVisible, setSnackbarVisible] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState("Error");
+
     // rendering values
     const [isLandscape, setIsLandscape] = useState(false);
 
@@ -52,11 +57,22 @@ export const Match = (props) => {
         matchSocket.send(JSON.stringify({ message: "end-turn" }));
     };
 
+    // snackbar
+
+    const showSnackbar = (msg) => {
+        setSnackbarMessage(msg);
+        setSnackbarVisible(true);
+    };
+
+    const closeSnackbar = () => {
+        setSnackbarVisible(false);
+    };
+
     // playing a cards, selecting elements
 
     const clearSelection = () => {
         setSelectedElement(selectedELementTemplate);
-    }
+    };
 
     const selectCard = (cardId) => {
         // select card if none or other is selected, unselect when try select
@@ -168,6 +184,15 @@ export const Match = (props) => {
                             hand_cards_count: messageData.new_count,
                         }));
                     }
+                    break;
+                case "play-a-card":
+                    console.log("res", messageData.result);
+                    if (messageData.result == false) {
+                        showSnackbar("A card cannot be played  !");
+                    }
+                    break;
+                default:
+                    break;
             }
         };
     }
@@ -181,7 +206,7 @@ export const Match = (props) => {
 
     // rendering
 
-    let mainMatchComponent = (
+    const mainMatchComponent = (
         <Box height="100vh" width="100vw">
             <Grid container>
                 {/* Block at left frem board with player info, and round
@@ -246,6 +271,11 @@ export const Match = (props) => {
             />
             <HandBlock forMainPlayer={false} playerData={enemyData} />
             <OptionsBlock />
+            <InfoSnackbar
+                snackbarVisible={snackbarVisible}
+                snackbarMessage={snackbarMessage}
+                closeSnackbar={closeSnackbar}
+            />
         </Box>
     );
 
