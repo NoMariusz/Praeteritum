@@ -25,7 +25,8 @@ class MatchConsumer(WebsocketConsumer):
         self.recieve_commands = {
             "get-initial-data": self.get_initial_match_data,
             "client-connect": self.on_client_connect,
-            "end-turn": self.end_turn
+            "end-turn": self.end_turn,
+            "play-a-card": self.play_a_card,
         }
 
         self.match_id = None
@@ -73,8 +74,10 @@ class MatchConsumer(WebsocketConsumer):
     def receive(self, text_data):
         text_data_json = json.loads(text_data)
         message = text_data_json['message']
+        data = text_data_json['data'] \
+            if 'data' in text_data_json.keys() else None
         if message in self.recieve_commands.keys():
-            self.recieve_commands[message]()
+            self.recieve_commands[message](data)
 
     # Receive message from room group
     def send_to_socket(self, event):
@@ -128,7 +131,7 @@ class MatchConsumer(WebsocketConsumer):
         return async_to_sync(match_manager.get_match_by_id)(self.match_id)
 
     # utils related to recieve/send
-    def get_initial_match_data(self):
+    def get_initial_match_data(self, *args, **kwargs):
         match = self._get_match()
         data = match.give_initial_data(self.player_index)
         self.send(text_data=json.dumps({
@@ -138,7 +141,7 @@ class MatchConsumer(WebsocketConsumer):
             }
         }))
 
-    def on_client_connect(self):
+    def on_client_connect(self, *args, **kwargs):
         async_to_sync(self.channel_layer.group_send)(
             self.match_name,
             {
@@ -150,7 +153,7 @@ class MatchConsumer(WebsocketConsumer):
             }
         )
 
-    def end_turn(self):
+    def end_turn(self, *args, **kwargs):
         match = self._get_match()
         if_ended_turn = match.end_turn(player_index=self.player_index)
         self.send(text_data=json.dumps({
@@ -158,6 +161,24 @@ class MatchConsumer(WebsocketConsumer):
                 'name': 'end-turn',
                 'data': {
                     'result': if_ended_turn
+                }
+            }
+        }))
+
+    def play_a_card(self, data, *args, **kwargs):
+        match: Match = self._get_match()
+        card_id: int = data["card_id"]
+        field_id: int = data["field_id"]
+
+        if_played: bool = match.play_a_card(
+            player_index=self.player_index, card_id=card_id,
+            field_id=field_id)
+
+        self.send(text_data=json.dumps({
+            'message': {
+                'name': 'play-a-card',
+                'data': {
+                    'result': if_played
                 }
             }
         }))

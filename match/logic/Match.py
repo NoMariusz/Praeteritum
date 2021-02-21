@@ -191,7 +191,7 @@ class Match:
         """ Get list of cards objects for specified player """
         player_data: dict = self._players_data[player_index]
         cards_data: list = list(map(
-            lambda id_: self. _made_card_data_by_id(id_),
+            lambda id_: self._made_card_data_by_id(id_),
             player_data["hand_cards_ids"]))
         return cards_data
 
@@ -272,7 +272,23 @@ class Match:
         return True
 
     @_run_only_when_player_has_turn
-    def play_a_card(self, player_index: int, card_id: int) -> bool:
+    def play_a_card(
+            self, player_index: int, card_id: int, field_id: int) -> bool:
         """ try to play a card from hand to board
+        :param card_id: int - card id to play
+        :param field_id: int - field id to play there card
         :return: bool - whether it worked """
+        # get list with cards ids in hand, and check if card in hand
+        player_hand: list = self._players_data[player_index]["hand_cards_ids"]
+        if card_id not in player_hand:
+            return False
+        # check if player can play card at that field
+        if not self._board.check_if_player_can_play_card(
+                player_index, field_id):
+            return False
+
+        player_hand.remove(card_id)
+        # create and add unit to board
+        card_data: dict = self._made_card_data_by_id(card_id)
+        self._board.add_unit_by_card_data(card_data, player_index, field_id)
         return True

@@ -13,6 +13,7 @@ class Field:
         self.column = column
         self.is_base = is_base
         self.player_half = player_half
+        self.unit = None
 
     def get_data_for_frontend(self) -> dict:
         """ :return: dict - contain data for frontned in dict that can be

@@ -96,20 +96,36 @@ class MatchWork(TestCase):
 
         self.assertTrue(id_for_0_ok and id_for_1_ok)
 
-    def test_if_moves_are_proper_restricted_by_turn(self):
+    def test_if_players_moves_are_restricted(self):
+        """ check if player can make move if has turn and if cannot make move
+        when has no turn """
         # prepare match
         test_players = async_to_sync(make_test_users)()
         match: Match = Match(1, players=test_players)
         # make move with turn
         player_idx_with_turn: int = match.player_turn
-        played = match.play_a_card(
-            player_index=player_idx_with_turn, card_id=1)
+        played = match.end_turn(player_index=player_idx_with_turn)
         # make move without turn
         player_idx_without_turn: int = match.get_enemy_index(match.player_turn)
-        played_bard_move = match.play_a_card(
-            player_index=player_idx_without_turn, card_id=2)
+        played_bard_move = match.end_turn(player_index=player_idx_without_turn)
         # check if can move and cannot move
         self.assertTrue(played and not played_bard_move)
+
+    def test_are_units_made_proper(self):
+        """ check if board made proper units by given card data """
+        # prepare match
+        test_players = async_to_sync(make_test_users)()
+        match: Match = Match(1, players=test_players)
+        # made card
+        card = CardModel(
+            name="testCarddd", category=CardModel.CardTypes.CAVALRYMAN,
+            rarity=CardModel.CardRarities.COMMON, attack=20, hp=60)
+        card.save()
+        # made unit by card
+        card_data: dict = match._made_card_data_by_id(card.id)
+        unit = match._board._create_new_unit(card_data, 1, -1)
+
+        self.assertTrue(unit.name == card.name and unit.image == card.image)
 
 
 # utils for tests
