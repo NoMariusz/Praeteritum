@@ -39,7 +39,7 @@ class Board():
         reverse = for_player != 0
 
         return list(map(
-            lambda field: field.get_data_for_frontend(),
+            lambda field: field.get_data_for_frontend(for_player),
             self._fields[::-1] if reverse else self._fields))
 
     # units
@@ -61,7 +61,7 @@ class Board():
         self._units.append(unit)
         self._unit_id_counter += 1
         # append unit to its field
-        field: Field = self.fields[field_id]
+        field: Field = self._fields[field_id]
         field.unit = unit
 
     def check_if_player_can_play_card(

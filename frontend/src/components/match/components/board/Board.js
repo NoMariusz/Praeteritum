@@ -3,7 +3,7 @@ import { Box } from "@material-ui/core";
 import Field from "./Field.js";
 import { MATCH_BOARD_SIZE } from "./constants.js";
 
-export const Board = ({ fields }) => {
+export const Board = ({ fields, toField }) => {
     return (
         <Box
             width={MATCH_BOARD_SIZE}
@@ -14,7 +14,7 @@ export const Board = ({ fields }) => {
             flexWrap="wrap-reverse"
         >
             {fields.map((field) => (
-                <Field fieldData={field} />
+                <Field fieldData={field} toField={toField} />
             ))}
         </Box>
     );

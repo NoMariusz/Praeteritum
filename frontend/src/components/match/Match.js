@@ -4,6 +4,7 @@ import { Grid, Box } from "@material-ui/core";
 import {
     MATCH_CONNECTION_STATUSES,
     PLAYER_INFO_POSITIONS,
+    SELECTABLE_ELEMENTS,
 } from "./constants.js";
 import MatchLoading from "./MatchLoading.js";
 import MatchConnectError from "./MatchConnectError.js";
@@ -16,13 +17,14 @@ import HandBlock from "./components/hands/HandBlock.js";
 import OptionsBlock from "./components/OptionsBlock.js";
 
 export const Match = (props) => {
+    // sockets values
     let matchId = props.match.params.matchId;
-
     const [matchSocket, setMatchSocket] = useState(null);
     const [connectStatus, setConnectStatus] = useState(
         MATCH_CONNECTION_STATUSES.connecting
     );
 
+    // game related values
     const playersDataTemplate = {
         username: "",
         base_points: 0,
@@ -30,14 +32,67 @@ export const Match = (props) => {
     };
     const playerDataTemplate = { ...playersDataTemplate, hand_cards: [] };
     const enemyDataTemplate = { ...playersDataTemplate, hand_cards_count: 0 };
-
     const [playerData, setPlayerData] = useState(playerDataTemplate);
     const [enemyData, setEnemyData] = useState(enemyDataTemplate);
     const [hasTurn, setHasTurn] = useState(false);
-    const [fields, setFields] = useState([]);
     const [turnProgress, setTurnProgress] = useState(0);
+    const [fields, setFields] = useState([]);
+    // selectedElement can represent card or unit
+    const selectedELementTemplate = { type: -1, id: -1 };
+    const [selectedElement, setSelectedElement] = useState(
+        selectedELementTemplate
+    );
 
+    // rendering values
     const [isLandscape, setIsLandscape] = useState(false);
+
+    // turns
+
+    const endTurnCallback = () => {
+        matchSocket.send(JSON.stringify({ message: "end-turn" }));
+    };
+
+    // playing a cards, selecting elements
+
+    const clearSelection = () => {
+        setSelectedElement(selectedELementTemplate);
+    }
+
+    const selectCard = (cardId) => {
+        // select card if none or other is selected, unselect when try select
+        // that seame card once again
+        if (
+            selectedElement.type != SELECTABLE_ELEMENTS.card ||
+            selectedElement.id != cardId
+        ) {
+            setSelectedElement({
+                type: SELECTABLE_ELEMENTS.card,
+                id: cardId,
+            });
+        } else {
+            clearSelection();
+        }
+    };
+
+    const handleClickOnField = (fieldId) => {
+        // play card if can
+        if (selectedElement.type == SELECTABLE_ELEMENTS.card) {
+            playCard(selectedElement.id, fieldId);
+        }
+    };
+
+    const playCard = (cardId, fieldId) => {
+        // send message to socket to play a card
+        matchSocket.send(
+            JSON.stringify({
+                message: "play-a-card",
+                data: { card_id: cardId, field_id: fieldId },
+            })
+        );
+        clearSelection();
+    };
+
+    // rendering helpers
 
     const checkScreenOrientation = () => {
         let isLanscapeMediaMatch = window.matchMedia("(orientation: landscape)")
@@ -49,11 +104,8 @@ export const Match = (props) => {
         return isLandscape ? mainMatchComponent : <ChangeOrientationInfo />;
     };
 
-    const endTurnCallback = () => {
-        matchSocket.send(JSON.stringify({ message: "end-turn" }));
-    };
-
     // socket connection
+
     if (matchSocket == null) {
         setMatchSocket(
             new WebSocket(`ws://${window.location.host}/match-api/${matchId}/`)
@@ -121,12 +173,14 @@ export const Match = (props) => {
     }
 
     // page orientation
+
     window.addEventListener("resize", checkScreenOrientation);
     useEffect(() => {
         checkScreenOrientation();
     });
 
     // rendering
+
     let mainMatchComponent = (
         <Box height="100vh" width="100vw">
             <Grid container>
@@ -156,7 +210,13 @@ export const Match = (props) => {
                 </Grid>
                 {/* Middle block with board */}
                 <Grid item xs>
-                    <Board fields={fields}/>
+                    <Board
+                        fields={fields}
+                        toField={{
+                            selectedElement: selectedElement,
+                            handleClickOnField: handleClickOnField,
+                        }}
+                    />
                 </Grid>
                 {/* Right block with deck cards counter */}
                 <Grid item xs>
@@ -175,7 +235,15 @@ export const Match = (props) => {
                 </Grid>
             </Grid>
             {/* Elements with absolute positions */}
-            <HandBlock forMainPlayer={true} playerData={playerData} />
+            <HandBlock
+                forMainPlayer={true}
+                playerData={playerData}
+                // data passed straight to card
+                toCard={{
+                    selectedElement: selectedElement,
+                    selectCard: selectCard,
+                }}
+            />
             <HandBlock forMainPlayer={false} playerData={enemyData} />
             <OptionsBlock />
         </Box>

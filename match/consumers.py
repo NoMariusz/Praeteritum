@@ -166,6 +166,18 @@ class MatchConsumer(WebsocketConsumer):
         }))
 
     def play_a_card(self, data, *args, **kwargs):
+        # validate socket message data
+        if "card_id" not in data.keys() or "field_id" not in data.keys():
+            self.send(text_data=json.dumps({
+                'message': {
+                    'name': 'play-a-card',
+                    'data': {
+                        'result': False
+                    }
+                }
+            }))
+            return False
+
         match: Match = self._get_match()
         card_id: int = data["card_id"]
         field_id: int = data["field_id"]

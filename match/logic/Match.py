@@ -288,6 +288,7 @@ class Match:
             return False
 
         player_hand.remove(card_id)
+        self._send_to_sockets_hand_changed(player_index)
         # create and add unit to board
         card_data: dict = self._made_card_data_by_id(card_id)
         self._board.add_unit_by_card_data(card_data, player_index, field_id)

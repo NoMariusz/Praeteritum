@@ -3,7 +3,7 @@ import { Box } from "@material-ui/core";
 import GameCard from "./GameCard.js";
 import CoveredCard from "./CoveredCard.js";
 
-export const HandBlock = ({ forMainPlayer, playerData }) => {
+export const HandBlock = ({ forMainPlayer, playerData, toCard }) => {
     const cards = forMainPlayer
         ? playerData.hand_cards
         : Array(playerData.hand_cards_count).fill(undefined);
@@ -24,7 +24,7 @@ export const HandBlock = ({ forMainPlayer, playerData }) => {
             >
                 {cards.map((card) => (
                     forMainPlayer ? (
-                        <GameCard cardData={card} maxWidth={1/cards.length} />
+                        <GameCard cardData={card} maxWidth={1/cards.length} toCard={toCard} />
                     ) : (
                         <CoveredCard />
                     )

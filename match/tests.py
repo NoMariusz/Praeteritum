@@ -87,8 +87,8 @@ class MatchWork(TestCase):
         fields_for_0: list = match._board.get_fields_dicts(0)
         fields_for_1: list = match._board.get_fields_dicts(1)
         # get fields ids for specified players
-        first_field_id_for_0: int = fields_for_0[0]["id_"]
-        first_field_id_for_1: int = fields_for_1[0]["id_"]
+        first_field_id_for_0: int = fields_for_0[0]["id"]
+        first_field_id_for_1: int = fields_for_1[0]["id"]
         # check fields ids_ are proper for players, that id 0 is first for
         # player 0
         id_for_0_ok = first_field_id_for_0 == 0

@@ -5,9 +5,18 @@ import HpParam from "./cards_elements/HpParam.js";
 import TypeParam from "./cards_elements/TypeParam.js";
 import RarityParam from "./cards_elements/RarityParam.js";
 import { CARD_MARGIN_X, CARD_IMAGES_PATH } from "./constants.js";
+import { SELECTABLE_ELEMENTS } from "../../constants.js";
 
-export const GameCard = ({ cardData, maxWidth }) => {
+export const GameCard = ({ cardData, maxWidth, toCard }) => {
     const [showFull, setShowFull] = useState(false);
+    const isSelected =
+        toCard.selectedElement.id == cardData.id &&
+        toCard.selectedElement.type == SELECTABLE_ELEMENTS.card;
+
+    const onCardClick = () => {
+        toCard.selectCard(cardData.id);
+    };
+
     return (
         <Box
             maxWidth={showFull ? "1" : maxWidth - CARD_MARGIN_X * 2}
@@ -20,11 +29,12 @@ export const GameCard = ({ cardData, maxWidth }) => {
                 flexDirection="column"
                 justifyContent="center"
                 width="1"
-                border={1}
+                border={2}
                 borderRadius={8}
-                borderColor="primary.main"
+                borderColor={isSelected ? "warning.main" : "primary.main"}
                 overflow="hidden"
                 bgcolor="white"
+                onClick={onCardClick}
             >
                 {/* Displaying card name */}
                 <Box

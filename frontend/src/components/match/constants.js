@@ -8,3 +8,7 @@ export const PLAYER_INFO_POSITIONS = Object.freeze({
     top: 0,
     bottom: 1,
 });
+export const SELECTABLE_ELEMENTS = Object.freeze({
+    card: 0,
+    unit: 1,
+});

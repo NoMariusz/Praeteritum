@@ -15,13 +15,14 @@ class Field:
         self.player_half = player_half
         self.unit = None
 
-    def get_data_for_frontend(self) -> dict:
+    def get_data_for_frontend(self, for_player: int) -> dict:
         """ :return: dict - contain data for frontned in dict that can be
         transformed to json
         """
         return {
-            "id_": self.id_,
+            "id": self.id_,
             "row": self.row,
             "column": self.column,
             "is_base": self.is_base,
+            "in_player_half": self.player_half == for_player
         }

@@ -3,6 +3,7 @@ from .models import CardModel
 
 
 class CardSerializer(serializers.Serializer):
+    id = serializers.IntegerField(read_only=True)
     name = serializers.CharField(max_length=50)
     category = serializers.ChoiceField(choices=CardModel.CardTypes.choices)
     rarity = serializers.ChoiceField(choices=CardModel.CardRarities.choices)
