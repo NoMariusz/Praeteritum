@@ -7,9 +7,12 @@ export const Field = ({fieldData}) => {
         <Box
             width={1/BOARD_COLUMNS}
             height={1/BOARD_ROWS}
-            bgcolor="priamry.main"
+            bgcolor={fieldData.is_base ? "#CCCCCC" : ""}
+            color="text.primary"
+            border={1}
+            borderColor="text.primary"
         >
-            <Typography variant="body1" align="center">Field {fieldData.id_}</Typography>
+            {/* <Typography variant="body1" align="center">{fieldData.id_}</Typography> */}
         </Box>
     );
 };

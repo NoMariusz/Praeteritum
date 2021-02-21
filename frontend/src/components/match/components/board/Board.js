@@ -9,7 +9,6 @@ export const Board = ({ fields }) => {
             width={MATCH_BOARD_SIZE}
             my={`calc((100vh - ${MATCH_BOARD_SIZE}) / 2)`}
             height={MATCH_BOARD_SIZE}
-            bgcolor="lightgray"
             display="flex"
             // to turn the board towards the player 
             flexWrap="wrap-reverse"
