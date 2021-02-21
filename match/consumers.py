@@ -152,7 +152,7 @@ class MatchConsumer(WebsocketConsumer):
 
     def end_turn(self):
         match = self._get_match()
-        if_ended_turn = match.end_turn(self.player_index)
+        if_ended_turn = match.end_turn(player_index=self.player_index)
         self.send(text_data=json.dumps({
             'message': {
                 'name': 'end-turn',

@@ -2,6 +2,7 @@ import random
 import time
 from threading import Thread
 from datetime import datetime
+from typing import Callable
 from asgiref.sync import async_to_sync
 from django.contrib.auth.models import User
 from channels_redis.core import RedisChannelLayer
@@ -239,6 +240,20 @@ class Match:
             }
         }
 
+    def _run_only_when_player_has_turn(func) -> Callable:
+        """ decorator allowing run only when player has turn """
+        def wrapper(*args, **kwargs):
+            # get self as first arg for func
+            self = args[0]
+            # get player_index requesting for action
+            player_index = kwargs["player_index"]
+            # if is not the player turn he can not run func
+            if self.player_turn != player_index:
+                return False
+
+            return func(*args, **kwargs)
+        return wrapper
+
     # Section with public methods returning data to sockets
 
     def give_initial_data(self, player_index: int) -> dict:
@@ -250,11 +265,14 @@ class Match:
             "fields": self._board.get_fields_dicts(player_index)
         }
 
+    @_run_only_when_player_has_turn
     def end_turn(self, player_index: int) -> bool:
         """ end turn for specified player by player_index """
-        # if is not the player turn he can not end turn
-        if self.player_turn != player_index:
-            return False
-
         self._start_next_turn()
+        return True
+
+    @_run_only_when_player_has_turn
+    def play_a_card(self, player_index: int, card_id: int) -> bool:
+        """ try to play a card from hand to board
+        :return: bool - whether it worked """
         return True

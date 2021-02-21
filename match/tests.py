@@ -96,6 +96,21 @@ class MatchWork(TestCase):
 
         self.assertTrue(id_for_0_ok and id_for_1_ok)
 
+    def test_if_moves_are_proper_restricted_by_turn(self):
+        # prepare match
+        test_players = async_to_sync(make_test_users)()
+        match: Match = Match(1, players=test_players)
+        # make move with turn
+        player_idx_with_turn: int = match.player_turn
+        played = match.play_a_card(
+            player_index=player_idx_with_turn, card_id=1)
+        # make move without turn
+        player_idx_without_turn: int = match.get_enemy_index(match.player_turn)
+        played_bard_move = match.play_a_card(
+            player_index=player_idx_without_turn, card_id=2)
+        # check if can move and cannot move
+        self.assertTrue(played and not played_bard_move)
+
 
 # utils for tests
 

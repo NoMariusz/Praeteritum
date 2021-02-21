@@ -6,11 +6,12 @@ class Board():
     def __init__(self):
         # fields is list of Field ordered by id
         self.fields: list = self._make_fields()
+        self.units = []
 
     def _make_fields(self) -> list:
         """ function making suitable fields objects for board and returning
         list of that fields sorted in id order """
-        fields: list = []
+        fields = []
         fields_count: int = BOARD_ROWS * BOARD_COLUMNS
         for field_id in range(fields_count):
             row: int = field_id // BOARD_ROWS
