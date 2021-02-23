@@ -4,8 +4,8 @@ import AttackParam from "./cards_elements/AttackParam.js";
 import HpParam from "./cards_elements/HpParam.js";
 import TypeParam from "./cards_elements/TypeParam.js";
 import RarityParam from "./cards_elements/RarityParam.js";
-import { CARD_MARGIN_X, CARD_IMAGES_PATH } from "./constants.js";
-import { SELECTABLE_ELEMENTS } from "../../constants.js";
+import { CARD_MARGIN_X } from "./constants.js";
+import { SELECTABLE_ELEMENTS, CARD_IMAGES_PATH } from "../../constants.js";
 
 export const GameCard = ({ cardData, maxWidth, toCard }) => {
     const [showFull, setShowFull] = useState(false);

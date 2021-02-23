@@ -12,3 +12,14 @@ export const SELECTABLE_ELEMENTS = Object.freeze({
     card: 0,
     unit: 1,
 });
+
+// unit and cards related
+
+export const CARD_IMAGES_PATH = "/static/images/cards_images/";
+// list storing lists with cards types name and fullname
+export const CARD_TYPES = [
+    ["S", "Spearman"],
+    ["I", "Infantryman"],
+    ["C", "Cavalryman"],
+    ["M", "Missleman"],
+];
