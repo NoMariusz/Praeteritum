@@ -14,7 +14,7 @@ const useStyles = makeStyles({
 });
 
 
-export const Unit = ({ unitData }) => {
+export const Unit = ({ unitData, playerIndex }) => {
     const imgPath = `url("${CARD_IMAGES_PATH + unitData.image}")`;
     // styles to set css
     const classes = useStyles({path: imgPath})
@@ -29,10 +29,8 @@ export const Unit = ({ unitData }) => {
             justify="space-between"
             alignItems="stretch"
             borderRadius={8}
-            border={1}
-            borderColor="primary.main"
             overflow="hidden"
-            bgcolor="primary.main"
+            bgcolor={unitData.owner == playerIndex ? "primary.main" : "secondary.main"}
         >
             <Tooltip
                 title={unitData.name}

@@ -35,6 +35,7 @@ export const Match = (props) => {
     const enemyDataTemplate = { ...playersDataTemplate, hand_cards_count: 0 };
     const [playerData, setPlayerData] = useState(playerDataTemplate);
     const [enemyData, setEnemyData] = useState(enemyDataTemplate);
+    const [playerIndex, setPlayerIndex] = useState(-1);
     const [hasTurn, setHasTurn] = useState(false);
     const [turnProgress, setTurnProgress] = useState(0);
     const [fields, setFields] = useState([]);
@@ -129,8 +130,10 @@ export const Match = (props) => {
         );
     } else {
         matchSocket.onopen = (e) => {
+            // to know which player is client
+            matchSocket.send(JSON.stringify({ message: "get-player-index" }));
+            // to get start data about match
             matchSocket.send(JSON.stringify({ message: "get-initial-data" }));
-            matchSocket.send(JSON.stringify({ message: "client-connect" }));
             setConnectStatus(MATCH_CONNECTION_STATUSES.connected);
         };
 
@@ -149,25 +152,24 @@ export const Match = (props) => {
                 case "get-initial-data":
                     setPlayerData(messageData.players_data.player);
                     setEnemyData(messageData.players_data.enemy);
-                    setHasTurn(messageData.has_turn);
+                    setHasTurn(messageData.turn == playerIndex);
                     setFields(messageData.fields);
-                    setUnits(messageData.units)
+                    setUnits(messageData.units);
                     break;
-                case "client-connect":
-                    console.log(
-                        `Client connect to socket: ${data.message.player}`
-                    );
+                case "get-player-index":
+                    setPlayerIndex(messageData.player_index);
                     break;
                 case "turn-changed":
-                    setHasTurn(messageData.has_turn);
+                    setHasTurn(messageData.turn == playerIndex);
                     break;
                 case "turn-progress-changed":
                     setTurnProgress(messageData.progress);
                     break;
                 case "deck-cards-count-changed":
-                    const setThatPlayerData = messageData.for_player
-                        ? setPlayerData
-                        : setEnemyData;
+                    const setThatPlayerData =
+                        messageData.for_player_at_index == playerIndex
+                            ? setPlayerData
+                            : setEnemyData;
                     const newCount = messageData.new_count;
                     setThatPlayerData((prevState) => ({
                         ...prevState,
@@ -175,7 +177,7 @@ export const Match = (props) => {
                     }));
                     break;
                 case "hand-cards-changed":
-                    if (messageData.for_player) {
+                    if (messageData.for_player_at_index == playerIndex) {
                         setPlayerData((prevState) => ({
                             ...prevState,
                             hand_cards: messageData.new_cards,
@@ -193,7 +195,7 @@ export const Match = (props) => {
                     }
                     break;
                 case "units-changed":
-                    setUnits(messageData.units)
+                    setUnits(messageData.units);
                 default:
                     break;
             }
@@ -245,6 +247,7 @@ export const Match = (props) => {
                             selectedElement: selectedElement,
                             handleClickOnField: handleClickOnField,
                             hasTurn: hasTurn,
+                            playerIndex: playerIndex,
                         }}
                     />
                 </Grid>

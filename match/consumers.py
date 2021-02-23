@@ -24,7 +24,7 @@ class MatchConsumer(WebsocketConsumer):
 
         self.recieve_commands = {
             "get-initial-data": self.get_initial_match_data,
-            "client-connect": self.on_client_connect,
+            "get-player-index": self.get_player_index,
             "end-turn": self.end_turn,
             "play-a-card": self.play_a_card,
         }
@@ -95,20 +95,10 @@ class MatchConsumer(WebsocketConsumer):
         message: dict = event['message'].copy()
         message_data: dict = message["data"].copy()
 
-        # modify to send turn info customized for player
-        if "turn" in message_data.keys():
-            player_turn_idx: int = message_data.pop("turn", None)
-            message_data["has_turn"] = player_turn_idx == self.player_index
-
-        # modify to send for which player is related message
-        if "for_player_at_index" in message_data.keys():
-            player_index: int = message_data.pop("for_player_at_index", None)
-            message_data["for_player"] = player_index == self.player_index
-
         # secure to not send info about enemy cards
         if "new_cards" in message_data.keys():
             # if that information isn't about player cards, but enemy cards
-            if not message_data["for_player"]:
+            if not message_data["for_player_at_index"] == self.player_index:
                 cards: list = message_data.pop("new_cards",  [])
                 message_data["new_count"] = len(cards)
 
@@ -141,17 +131,15 @@ class MatchConsumer(WebsocketConsumer):
             }
         }))
 
-    def on_client_connect(self, *args, **kwargs):
-        async_to_sync(self.channel_layer.group_send)(
-            self.match_name,
-            {
-                'type': 'send_to_socket',
-                'message': {
-                    'name': 'client-connect',
-                    'player': self.scope["user"].username
+    def get_player_index(self, *args, **kwargs):
+        self.send(text_data=json.dumps({
+            'message': {
+                'name': 'get-player-index',
+                'data': {
+                    'player_index': self.player_index
                 }
             }
-        )
+        }))
 
     def end_turn(self, *args, **kwargs):
         match = self._get_match()

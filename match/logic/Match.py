@@ -150,7 +150,7 @@ class Match:
                 'turn': self.player_turn
             }
         }
-        self._send_to_sockets(message, modify=True)
+        self._send_to_sockets(message, modify=False)
 
     # cards related stuff
 
@@ -204,7 +204,7 @@ class Match:
                 'new_count': len(player_data["deck_cards_ids"])
             }
         }
-        self._send_to_sockets(message, modify=True)
+        self._send_to_sockets(message, modify=False)
 
     def _send_to_sockets_hand_changed(self, player_index: int):
         message = {
@@ -261,7 +261,7 @@ class Match:
         player_data: dict = self._get_safe_player_data_dict(player_index)
         return {
             **player_data,
-            "has_turn": self.player_turn == player_index,
+            "turn": self.player_turn,
             "fields": self._board.get_fields_dicts(player_index),
             "units": self._board.get_units_dicts(),
         }

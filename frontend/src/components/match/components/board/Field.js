@@ -5,7 +5,7 @@ import { BOARD_COLUMNS, BOARD_ROWS } from "./constants.js";
 import { SELECTABLE_ELEMENTS } from "../../constants.js";
 
 export const Field = ({ fieldData, toField }) => {
-    const getIfFieldIsHighlighted  = () => {
+    const getIfFieldIsHighlighted = () => {
         // if player has no turn then can not do any actions on board
         if (!toField.hasTurn) {
             return false;
@@ -26,9 +26,14 @@ export const Field = ({ fieldData, toField }) => {
         toField.handleClickOnField(fieldData.id);
     };
 
-    const unitInField = toField.units.find(unit => unit.field_id == fieldData.id)
+    const unitInField = toField.units.find(
+        (unit) => unit.field_id == fieldData.id
+    );
 
-    const unitBlock = unitInField != undefined ? <Unit unitData={unitInField}/> : null
+    const unitBlock =
+        unitInField != undefined ? (
+            <Unit unitData={unitInField} playerIndex={toField.playerIndex} />
+        ) : null;
 
     return (
         <Box
