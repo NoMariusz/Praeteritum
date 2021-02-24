@@ -1,7 +1,8 @@
 import React from "react";
 import { Box, Grid, Button, Radio, CircularProgress } from "@material-ui/core";
 
-export const TurnsBlock = ({ hasTurn, turnProgress, endTurnCallback }) => {
+export const TurnsBlock = ({ turn, playerIndex, turnProgress, endTurnCallback }) => {
+    const hasTurn = turn == playerIndex;
     return (
         <Box
             display="flex"

@@ -33,7 +33,7 @@ export const Field = ({
 
     const getIfFieldIsHighlighted = () => {
         // if player has no turn then can not do any actions on board
-        if (!fieldProps.hasTurn) {
+        if (fieldProps.turn != fieldProps.unitProps.playerIndex) {
             return false;
         }
         const selectedElementType = fieldProps.selectedElement.type;
