@@ -55,10 +55,11 @@ class Board():
         return unit
 
     def add_unit_by_card_data(
-            self, card_data: dict, for_player: int, field_id: int):
+            self, card_data: dict, for_player: int, field_id: int) -> int:
         """ create unit by card_data and add them to self._units
         :param card_data: dict - data to create unit by them
         :param for_player: int - which player play a card
+        :return: int - id of new created unit
         """
         # made unit
         unit: Unit = self._create_new_unit(card_data, for_player, field_id)
@@ -69,6 +70,8 @@ class Board():
         field.unit = unit
         # send info with new units to sockets
         self._send_to_sockets_units_changed()
+
+        return unit.id_
 
     def check_if_player_can_play_card(
             self, player_index: int, field_id: int) -> bool:
@@ -96,3 +99,47 @@ class Board():
             }
         }
         self._send_to_sockets(message)
+
+    def _send_to_sockets_unit_changed(self, unit: Unit):
+        """ sending message to sockets with changed unit """
+        message = {
+            'name': 'unit-changed',
+            'data': {
+                'unit': unit.get_data_for_frontend()
+            }
+        }
+        self._send_to_sockets(message)
+
+    # units move
+
+    def move_unit(self, unit_id: int, new_field_id: int) -> bool:
+        """ try to move unit to field
+        :return: bool - if the move is successful """
+        # get field and unit
+        unit: Unit = self._units[unit_id]
+        new_field: Field = self._fields[new_field_id]
+
+        # check if can move unit
+        if not self._check_if_can_move_unit(unit, new_field):
+            return False
+
+        # delete unit from old field
+        old_field: Field = self._fields[unit.field_id]
+        old_field.unit = None
+        # add unit to new field
+        new_field.unit = unit
+        unit.field_id = new_field.id_
+
+        # send info to socket that data (field_id) changed in unit
+        self._send_to_sockets_unit_changed(unit)
+
+        return True
+
+    def _check_if_can_move_unit(self, unit: Unit, new_field: Field) -> bool:
+        """ checking if unit can be moved at that field
+        :return: bool - if can move """
+        # check if field is occupied by other unit
+        if new_field.unit is not None:
+            return False
+
+        return True

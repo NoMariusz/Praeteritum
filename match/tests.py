@@ -117,23 +117,49 @@ class MatchWork(TestCase):
         test_players = async_to_sync(make_test_users)()
         match: Match = Match(1, players=test_players)
         # made card
-        card = CardModel(
-            name="testCarddd", category=CardModel.CardTypes.CAVALRYMAN,
-            rarity=CardModel.CardRarities.COMMON, attack=20, hp=60)
-        card.save()
+        card = get_test_card()
         # made unit by card
         card_data: dict = match._made_card_data_by_id(card.id)
         unit = match._board._create_new_unit(card_data, 1, -1)
 
         self.assertTrue(unit.name == card.name and unit.image == card.image)
 
+    def test_units_move(self):
+        """ check if units in board can be moved, and if moves are proper
+        restricted """
+        # prepare match
+        test_players = async_to_sync(make_test_users)()
+        match: Match = Match(1, players=test_players)
+        # made card for unit
+        card = get_test_card()
+        # made unit by card and add to board
+        card_data: dict = match._made_card_data_by_id(card.id)
+        unit1_id = match._board.add_unit_by_card_data(card_data, 1, 4)
+        match._board.add_unit_by_card_data(card_data, 1, 2)
+        # make good move
+        move_1_succes = match._board.move_unit(unit1_id, 3)
+        # make bad move because in field 2 is other unit
+        move_2_succes = match._board.move_unit(unit1_id, 2)
+
+        self.assertTrue(move_1_succes)
+        self.assertFalse(move_2_succes)
+
 
 # utils for tests
 
-async def make_test_users():
+async def make_test_users() -> list:
     """ Make two test players in base and return list of them """
     user1 = await create_user(
         username='test1', password='test1', email='test1@tt.com')
     user2 = await create_user(
         username='test2', password='test2', email='test2@tt.com')
     return [user1, user2]
+
+
+def get_test_card() -> CardModel:
+    """ make card, save it and return it"""
+    card = CardModel(
+        name="testCarddd", category=CardModel.CardTypes.CAVALRYMAN,
+        rarity=CardModel.CardRarities.COMMON, attack=20, hp=60)
+    card.save()
+    return card
