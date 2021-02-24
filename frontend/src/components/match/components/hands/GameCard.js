@@ -7,14 +7,14 @@ import RarityParam from "./cards_elements/RarityParam.js";
 import { CARD_MARGIN_X } from "./constants.js";
 import { SELECTABLE_ELEMENTS, CARD_IMAGES_PATH } from "../../constants.js";
 
-export const GameCard = ({ cardData, maxWidth, toCard }) => {
+export const GameCard = ({ cardData, maxWidth, cardProps }) => {
     const [showFull, setShowFull] = useState(false);
     const isSelected =
-        toCard.selectedElement.id == cardData.id &&
-        toCard.selectedElement.type == SELECTABLE_ELEMENTS.card;
+        cardProps.selectedElement.id == cardData.id &&
+        cardProps.selectedElement.type == SELECTABLE_ELEMENTS.card;
 
     const onCardClick = () => {
-        toCard.selectCard(cardData.id);
+        cardProps.selectCard(cardData.id);
     };
 
     return (

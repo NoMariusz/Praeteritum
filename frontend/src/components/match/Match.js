@@ -70,7 +70,7 @@ export const Match = (props) => {
         setSnackbarVisible(false);
     };
 
-    // playing a cards, selecting elements
+    // selecting elements
 
     const clearSelection = () => {
         setSelectedElement(selectedELementTemplate);
@@ -92,12 +92,34 @@ export const Match = (props) => {
         }
     };
 
+    const selectUnit = (unitId) => {
+        // select unit if none or other is selected, unselect when try select
+        // that seame unit once again
+        if (
+            selectedElement.type != SELECTABLE_ELEMENTS.unit ||
+            selectedElement.id != unitId
+        ) {
+            setSelectedElement({
+                type: SELECTABLE_ELEMENTS.unit,
+                id: unitId,
+            });
+        } else {
+            clearSelection();
+        }
+    };
+
     const handleClickOnField = (fieldId) => {
-        // play card if can
+        // try play card at field
         if (selectedElement.type == SELECTABLE_ELEMENTS.card) {
             playCard(selectedElement.id, fieldId);
         }
+        // try move unit to field
+        if (selectedElement.type == SELECTABLE_ELEMENTS.unit) {
+            moveUnit(selectedElement.id, fieldId);
+        }
     };
+
+    // playing a cards
 
     const playCard = (cardId, fieldId) => {
         // send message to socket to play a card
@@ -105,6 +127,19 @@ export const Match = (props) => {
             JSON.stringify({
                 message: "play-a-card",
                 data: { card_id: cardId, field_id: fieldId },
+            })
+        );
+        clearSelection();
+    };
+
+    // operating on units
+
+    const moveUnit = (unitId, fieldId) => {
+        // send message to socket to move unit
+        matchSocket.send(
+            JSON.stringify({
+                message: "move-unit",
+                data: { unit_id: unitId, field_id: fieldId },
             })
         );
         clearSelection();
@@ -191,11 +226,26 @@ export const Match = (props) => {
                     break;
                 case "play-a-card":
                     if (messageData.result == false) {
-                        showSnackbar("A card cannot be played  !");
+                        showSnackbar("A card cannot be played !");
                     }
                     break;
                 case "units-changed":
                     setUnits(messageData.units);
+                    break;
+                case "move-unit":
+                    if (messageData.result == false) {
+                        showSnackbar("Cannot move unit !");
+                    }
+                    break;
+                case "unit-changed":
+                    const changedUnit = messageData.unit;
+                    // set new list of units with changed unit
+                    setUnits((oldUnits) =>
+                        oldUnits.map((unit) =>
+                            unit.id == changedUnit.id ? changedUnit : unit
+                        )
+                    );
+                    break;
                 default:
                     break;
             }
@@ -242,12 +292,16 @@ export const Match = (props) => {
                 <Grid item xs>
                     <Board
                         fields={fields}
-                        toField={{
+                        fieldProps={{
                             units: units,
                             selectedElement: selectedElement,
                             handleClickOnField: handleClickOnField,
                             hasTurn: hasTurn,
-                            playerIndex: playerIndex,
+                            unitProps: {
+                                playerIndex: playerIndex,
+                                selectUnit: selectUnit,
+                                selectedElement: selectedElement,
+                            },
                         }}
                     />
                 </Grid>
@@ -272,7 +326,7 @@ export const Match = (props) => {
                 forMainPlayer={true}
                 playerData={playerData}
                 // data passed straight to card
-                toCard={{
+                cardProps={{
                     selectedElement: selectedElement,
                     selectCard: selectCard,
                 }}

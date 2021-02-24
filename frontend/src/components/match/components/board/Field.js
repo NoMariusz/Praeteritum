@@ -4,15 +4,15 @@ import Unit from "./Unit.js";
 import { BOARD_COLUMNS, BOARD_ROWS } from "./constants.js";
 import { SELECTABLE_ELEMENTS } from "../../constants.js";
 
-export const Field = ({ fieldData, toField }) => {
+export const Field = ({ fieldData, fieldProps }) => {
     const getIfFieldIsHighlighted = () => {
         // if player has no turn then can not do any actions on board
-        if (!toField.hasTurn) {
+        if (!fieldProps.hasTurn) {
             return false;
         }
         // Active when player select card and field is part of player base
         if (
-            toField.selectedElement.type == SELECTABLE_ELEMENTS.card &&
+            fieldProps.selectedElement.type == SELECTABLE_ELEMENTS.card &&
             fieldData.is_base &&
             fieldData.in_player_half
         ) {
@@ -22,17 +22,22 @@ export const Field = ({ fieldData, toField }) => {
 
     const isHighlighted = getIfFieldIsHighlighted();
 
-    const fieldClick = () => {
-        toField.handleClickOnField(fieldData.id);
-    };
-
-    const unitInField = toField.units.find(
+    const unitInField = fieldProps.units.find(
         (unit) => unit.field_id == fieldData.id
     );
 
+    const fieldClick = () => {
+        // disable clicks on field if is unit on it
+        if (unitInField != undefined){
+            return false
+        }
+
+        fieldProps.handleClickOnField(fieldData.id);
+    };
+
     const unitBlock =
         unitInField != undefined ? (
-            <Unit unitData={unitInField} playerIndex={toField.playerIndex} />
+            <Unit unitData={unitInField} unitProps={fieldProps.unitProps} />
         ) : null;
 
     return (

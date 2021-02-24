@@ -241,7 +241,8 @@ class Match:
         }
 
     def _run_only_when_player_has_turn(func) -> Callable:
-        """ decorator allowing run only when player has turn """
+        """ decorator allowing run only when player has turn
+        function decorates should have 'player_index' kwarg """
         def wrapper(*args, **kwargs):
             # get self as first arg for func
             self = args[0]
@@ -294,3 +295,10 @@ class Match:
         card_data: dict = self._made_card_data_by_id(card_id)
         self._board.add_unit_by_card_data(card_data, player_index, field_id)
         return True
+
+    @_run_only_when_player_has_turn
+    def move_unit(
+            self, player_index: int, unit_id: int, field_id: int) -> bool:
+        """ delegate board to move unit
+        :return: bool - if board move_unit """
+        return self._board.move_unit(player_index, unit_id, field_id)

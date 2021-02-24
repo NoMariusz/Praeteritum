@@ -112,7 +112,8 @@ class Board():
 
     # units move
 
-    def move_unit(self, unit_id: int, new_field_id: int) -> bool:
+    def move_unit(
+            self, player_index: int, unit_id: int, new_field_id: int) -> bool:
         """ try to move unit to field
         :return: bool - if the move is successful """
         # get field and unit
@@ -120,7 +121,7 @@ class Board():
         new_field: Field = self._fields[new_field_id]
 
         # check if can move unit
-        if not self._check_if_can_move_unit(unit, new_field):
+        if not self._check_if_can_move_unit(player_index, unit, new_field):
             return False
 
         # delete unit from old field
@@ -135,11 +136,16 @@ class Board():
 
         return True
 
-    def _check_if_can_move_unit(self, unit: Unit, new_field: Field) -> bool:
+    def _check_if_can_move_unit(
+            self, player_index: int, unit: Unit, new_field: Field) -> bool:
         """ checking if unit can be moved at that field
         :return: bool - if can move """
         # check if field is occupied by other unit
         if new_field.unit is not None:
+            return False
+
+        # if player try to move not his unit
+        if unit.owner_index != player_index:
             return False
 
         return True

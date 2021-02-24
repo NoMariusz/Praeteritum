@@ -1,23 +1,39 @@
 import React from "react";
 import { Box, Typography, Tooltip } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { CARD_IMAGES_PATH, CARD_TYPES } from "../../constants.js";
-
+import {
+    CARD_IMAGES_PATH,
+    CARD_TYPES,
+    SELECTABLE_ELEMENTS,
+} from "../../constants.js";
 
 const useStyles = makeStyles({
     backgroundUnitImage: {
-        backgroundImage: props => props.path,
-        backgroundPosition: 'center',
-        backgroundSize: 'cover',
+        backgroundImage: (props) => props.path,
+        backgroundPosition: "center",
+        backgroundSize: "cover",
         backgroundRepeat: "no-repeat",
     },
 });
 
-
-export const Unit = ({ unitData, playerIndex }) => {
+export const Unit = ({ unitData, unitProps }) => {
     const imgPath = `url("${CARD_IMAGES_PATH + unitData.image}")`;
     // styles to set css
-    const classes = useStyles({path: imgPath})
+    const classes = useStyles({ path: imgPath });
+
+    const belongsToPlayer = unitData.owner == unitProps.playerIndex;
+    const cardColor = belongsToPlayer ? "primary.main" : "secondary.main";
+
+    const isSelected =
+        unitProps.selectedElement.id == unitData.id &&
+        unitProps.selectedElement.type == SELECTABLE_ELEMENTS.unit;
+
+    const handleClick = () => {
+        // select unit when belongs to player 
+        if (belongsToPlayer){
+            unitProps.selectUnit(unitData.id);
+        }
+    };
 
     return (
         <Box
@@ -29,8 +45,11 @@ export const Unit = ({ unitData, playerIndex }) => {
             justify="space-between"
             alignItems="stretch"
             borderRadius={8}
+            border={2}
+            borderColor={isSelected ? "warning.main" : cardColor}
             overflow="hidden"
-            bgcolor={unitData.owner == playerIndex ? "primary.main" : "secondary.main"}
+            bgcolor={cardColor}
+            onClick={handleClick}
         >
             <Tooltip
                 title={unitData.name}
@@ -43,7 +62,7 @@ export const Unit = ({ unitData, playerIndex }) => {
                     height={0.68}
                     borderRadius={8}
                     m="1%"
-                    classes={{root: classes.backgroundUnitImage}}
+                    classes={{ root: classes.backgroundUnitImage }}
                 />
             </Tooltip>
             <Box

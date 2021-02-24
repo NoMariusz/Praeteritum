@@ -10,13 +10,13 @@ class MatchConsumer(WebsocketConsumer):
     Connection system for this consumer:
     - client start connection, connect fun handle authorization, join match
      group
-    - at disconnect, leave match group, when all users disconnect get info to
-     match about it
+    - at disconnect, leave match group, when all users disconnect should send
+     info to match about it
     - after connect, client can send messages, receive function handle it ask
      match for data, and send back to client
     - when some event occur on match, then match send message to his
-     channelGroup, that message should be handled by custom functions in
-     Consumer, and then data should be send to clients
+     channelGroup, that message should be handled by Consumer, and then data
+     should be send to clients
     """
 
     def __init__(self, *args, **kwargs):
@@ -27,6 +27,7 @@ class MatchConsumer(WebsocketConsumer):
             "get-player-index": self.get_player_index,
             "end-turn": self.end_turn,
             "play-a-card": self.play_a_card,
+            "move-unit": self.move_unit,
         }
 
         self.match_id = None
@@ -70,26 +71,28 @@ class MatchConsumer(WebsocketConsumer):
             self.channel_name
         )
 
-    # Receive message from WebSocket
     def receive(self, text_data):
+        """ recieve message from client WebSocket """
+        # get data from text_data
         text_data_json = json.loads(text_data)
         message = text_data_json['message']
         data = text_data_json['data'] \
             if 'data' in text_data_json.keys() else None
+        # delegate work to proper function specified in self.recieve_commands
         if message in self.recieve_commands.keys():
-            self.recieve_commands[message](data)
+            self.recieve_commands[message](data, message)
 
-    # Receive message from room group
     def send_to_socket(self, event):
+        """ receive message from room group and send to client """
         message = event['message']
         # Send message to WebSocket
         self.send(text_data=json.dumps({
             'message': message
         }))
 
-    # receive message from group and customize properties to be more
-    # customized for this socket client
     def send_to_socket_and_modify_message(self, event):
+        """ receive message from group, modify message to be more customized
+        for this socket client and then send """
         # copy message and message['data'] dict to not affect in event dict to
         # other sockets
         message: dict = event['message'].copy()
@@ -121,44 +124,45 @@ class MatchConsumer(WebsocketConsumer):
         return async_to_sync(match_manager.get_match_by_id)(self.match_id)
 
     # utils related to recieve/send
-    def get_initial_match_data(self, *args, **kwargs):
+
+    def get_initial_match_data(self, data, message, *args, **kwargs):
         match = self._get_match()
         data = match.give_initial_data(self.player_index)
         self.send(text_data=json.dumps({
             'message': {
-                'name': 'get-initial-data',
+                'name': message,
                 'data': data
             }
         }))
 
-    def get_player_index(self, *args, **kwargs):
+    def get_player_index(self, data, message, *args, **kwargs):
         self.send(text_data=json.dumps({
             'message': {
-                'name': 'get-player-index',
+                'name': message,
                 'data': {
                     'player_index': self.player_index
                 }
             }
         }))
 
-    def end_turn(self, *args, **kwargs):
+    def end_turn(self, data, message, *args, **kwargs):
         match = self._get_match()
         if_ended_turn = match.end_turn(player_index=self.player_index)
         self.send(text_data=json.dumps({
             'message': {
-                'name': 'end-turn',
+                'name': message,
                 'data': {
                     'result': if_ended_turn
                 }
             }
         }))
 
-    def play_a_card(self, data, *args, **kwargs):
+    def play_a_card(self, data, message, *args, **kwargs):
         # validate socket message data
         if "card_id" not in data.keys() or "field_id" not in data.keys():
             self.send(text_data=json.dumps({
                 'message': {
-                    'name': 'play-a-card',
+                    'name': message,
                     'data': {
                         'result': False
                     }
@@ -170,15 +174,45 @@ class MatchConsumer(WebsocketConsumer):
         card_id: int = data["card_id"]
         field_id: int = data["field_id"]
 
-        if_played: bool = match.play_a_card(
+        result: bool = match.play_a_card(
             player_index=self.player_index, card_id=card_id,
             field_id=field_id)
 
         self.send(text_data=json.dumps({
             'message': {
-                'name': 'play-a-card',
+                'name': message,
                 'data': {
-                    'result': if_played
+                    'result': result
+                }
+            }
+        }))
+
+    def move_unit(self, data, message, *args, **kwargs):
+        # validate socket message data
+        if "unit_id" not in data.keys() or "field_id" not in data.keys():
+            self.send(text_data=json.dumps({
+                'message': {
+                    'name': message,
+                    'data': {
+                        'result': False
+                    }
+                }
+            }))
+            return False
+
+        match: Match = self._get_match()
+        unit_id: int = data["unit_id"]
+        field_id: int = data["field_id"]
+
+        result: bool = match.move_unit(
+            player_index=self.player_index, unit_id=unit_id,
+            field_id=field_id)
+
+        self.send(text_data=json.dumps({
+            'message': {
+                'name': message,
+                'data': {
+                    'result': result
                 }
             }
         }))
