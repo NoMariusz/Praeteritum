@@ -15,3 +15,6 @@ BOARD_COLUMNS = 8
 BASE_FIELDS_IDS = [
     1, 2, 3, 4, 5, 6, 9, 10, 11, 12, 13, 14, 49, 50, 51, 52, 53, 54, 57, 58,
     59, 60, 61, 62]
+
+# units stuff
+DEFAULT_MOVE_POINTS = 2

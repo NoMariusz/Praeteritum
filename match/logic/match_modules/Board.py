@@ -1,5 +1,6 @@
 from typing import Callable
-from ...constatnts import BOARD_COLUMNS, BOARD_ROWS, BASE_FIELDS_IDS
+from ...constatnts import BOARD_COLUMNS, BOARD_ROWS, BASE_FIELDS_IDS, \
+    DEFAULT_MOVE_POINTS
 from .Field import Field
 from .Unit import Unit
 
@@ -8,11 +9,18 @@ class Board():
     def __init__(self, send_to_sockets: Callable):
         """ :param sent_to_socket: Callable - function from parent who enable
         sending messages to sockets from board """
-        # fields is list of Field ordered by id
+        # _fields is list of Field ordered by id
         self._fields: list = self._make_fields()
+        # _units is list of Unit ordered by id
         self._units = []
         self._unit_id_counter = 0
         self._send_to_sockets: Callable = send_to_sockets
+
+    def on_turn_change(self):
+        """ make all actions necessary for board when turn change """
+        # restore units move points
+        for unit in self._units:
+            unit.move_points = DEFAULT_MOVE_POINTS
 
     # fields
 
@@ -114,12 +122,17 @@ class Board():
         if not self._check_if_can_move_unit(player_index, unit, new_field):
             return False
 
+        # calculate distance before move
+        distance: int = self._calculate_distance_to_new_unit_field(
+            unit, new_field)
         # delete unit from old field
         old_field: Field = self._fields[unit.field_id]
         old_field.unit = None
         # add unit to new field
         new_field.unit = unit
         unit.field_id = new_field.id_
+        # change unit move_points after move
+        unit.move_points -= distance
 
         # send info to socket that unit data changed
         self._send_to_sockets_units_changed()
@@ -138,4 +151,18 @@ class Board():
         if unit.owner_index != player_index:
             return False
 
+        # if unit have enough move_points
+        distance: int = self._calculate_distance_to_new_unit_field(
+            unit, new_field)
+        if(distance > unit.move_points):
+            return False
+
         return True
+
+    def _calculate_distance_to_new_unit_field(
+            self, unit: Unit, new_field: Field) -> int:
+        """ calculate how far is unit from field """
+        old_field: Field = self._fields[unit.field_id]
+        distance: int = (abs(old_field.column - new_field.column)
+                         + abs(old_field.row - new_field.row))
+        return distance

@@ -137,18 +137,23 @@ class MatchWork(TestCase):
         p2_index = 1
         # made unit by card and add to board
         card_data: dict = match._made_card_data_by_id(card.id)
-        unit1_id = match._board.add_unit_by_card_data(card_data, p1_index, 1)
-        unit2_id = match._board.add_unit_by_card_data(card_data, p2_index, 2)
+        unit1_id = match._board.add_unit_by_card_data(card_data, p1_index, 0)
+        unit2_id = match._board.add_unit_by_card_data(card_data, p2_index, 1)
         # make good move
-        move_1_succes = match._board.move_unit(p1_index, unit1_id, 3)
+        move_1_succes = match._board.move_unit(p1_index, unit1_id, 2)
         # make bad move because in field 2 is other unit
-        move_2_succes = match._board.move_unit(p1_index, unit1_id, 2)
+        move_2_succes = match._board.move_unit(p1_index, unit1_id, 1)
         # make bad move because player1 can not move player2 unit
-        move_3_succes = match._board.move_unit(p1_index, unit2_id, 4)
+        move_3_succes = match._board.move_unit(p1_index, unit2_id, 3)
+        # make bad move because field is too far
+        match._board.move_unit(p1_index, unit1_id, 0)
+        move_4_succes = match._board.move_unit(
+            p1_index, unit1_id, BOARD_COLUMNS-1)
 
         self.assertTrue(move_1_succes)
         self.assertFalse(move_2_succes)
         self.assertFalse(move_3_succes)
+        self.assertFalse(move_4_succes)
 
 
 # utils for tests

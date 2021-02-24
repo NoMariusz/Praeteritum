@@ -129,6 +129,8 @@ class Match:
         # draw card for player who start his turn now
         self._draw_cards(
             count=CARDS_DRAWED_AT_TURN_COUNT, for_player=self.player_turn)
+        # send info to board that turn change
+        self._board.on_turn_change()
 
     def _set_next_turn(self):
         self.player_turn = 1 if self.player_turn == 0 else 0

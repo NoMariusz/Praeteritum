@@ -1,3 +1,6 @@
+from ...constatnts import DEFAULT_MOVE_POINTS
+
+
 class Unit:
     def __init__(
             self, id_: int, owner_index: int, field_id: int, name: str,
@@ -16,6 +19,8 @@ class Unit:
         self.attack = attack
         self.category = category
         self.image = image
+        # points determinig how far unit can move
+        self.move_points = DEFAULT_MOVE_POINTS
 
     def get_data_for_frontend(self) -> dict:
         """ :return: dict - contain data for frontned in dict that can be
@@ -29,5 +34,6 @@ class Unit:
             "hp": self.hp,
             "attack": self.attack,
             "category": self.category,
-            "image": self.image
+            "image": self.image,
+            "move_points": self.move_points
         }
