@@ -100,16 +100,6 @@ class Board():
         }
         self._send_to_sockets(message)
 
-    def _send_to_sockets_unit_changed(self, unit: Unit):
-        """ sending message to sockets with changed unit """
-        message = {
-            'name': 'unit-changed',
-            'data': {
-                'unit': unit.get_data_for_frontend()
-            }
-        }
-        self._send_to_sockets(message)
-
     # units move
 
     def move_unit(
@@ -131,8 +121,8 @@ class Board():
         new_field.unit = unit
         unit.field_id = new_field.id_
 
-        # send info to socket that data (field_id) changed in unit
-        self._send_to_sockets_unit_changed(unit)
+        # send info to socket that unit data changed
+        self._send_to_sockets_units_changed()
 
         return True
 

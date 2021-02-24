@@ -237,15 +237,6 @@ export const Match = (props) => {
                         showSnackbar("Cannot move unit !");
                     }
                     break;
-                case "unit-changed":
-                    const changedUnit = messageData.unit;
-                    // set new list of units with changed unit
-                    setUnits((oldUnits) =>
-                        oldUnits.map((unit) =>
-                            unit.id == changedUnit.id ? changedUnit : unit
-                        )
-                    );
-                    break;
                 default:
                     break;
             }
