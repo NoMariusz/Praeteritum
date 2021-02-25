@@ -1,8 +1,17 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Box, Grid, Button, Radio, CircularProgress } from "@material-ui/core";
+import { PlayerIndexContext } from "../matchContexts.js";
 
-export const TurnsBlock = ({ turn, playerIndex, turnProgress, endTurnCallback }) => {
+export const TurnsBlock = ({ matchSocket, turn, turnProgress }) => {
+    // context values
+    const playerIndex = useContext(PlayerIndexContext);
+
     const hasTurn = turn == playerIndex;
+
+    const endTurn = () => {
+        matchSocket.send(JSON.stringify({ message: "end-turn" }));
+    }
+
     return (
         <Box
             display="flex"
@@ -30,7 +39,7 @@ export const TurnsBlock = ({ turn, playerIndex, turnProgress, endTurnCallback })
                             value={turnProgress}
                         />
                         <Button
-                            onClick={endTurnCallback}
+                            onClick={endTurn}
                             disabled={!hasTurn}
                             variant="outlined"
                             color="primary"

@@ -1,20 +1,47 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Box, Typography, Collapse } from "@material-ui/core";
+
+import { CARD_MARGIN_X } from "./constants.js";
+import {
+    SELECTABLE_ELEMENTS,
+    CARD_IMAGES_PATH,
+    SELECTED_ELEMENT_TEMPLATE,
+} from "../../constants.js";
+import { SelectedElementContext } from "../../matchContexts.js";
 import AttackParam from "./cards_elements/AttackParam.js";
 import HpParam from "./cards_elements/HpParam.js";
 import TypeParam from "./cards_elements/TypeParam.js";
 import RarityParam from "./cards_elements/RarityParam.js";
-import { CARD_MARGIN_X } from "./constants.js";
-import { SELECTABLE_ELEMENTS, CARD_IMAGES_PATH } from "../../constants.js";
 
-export const GameCard = ({ cardData, maxWidth, cardProps }) => {
+export const GameCard = ({ cardData, maxWidth }) => {
+    const { selectedElement, setSelectedElement } = useContext(
+        SelectedElementContext
+    );
     const [showFull, setShowFull] = useState(false);
+
     const isSelected =
-        cardProps.selectedElement.id == cardData.id &&
-        cardProps.selectedElement.type == SELECTABLE_ELEMENTS.card;
+        selectedElement.id == cardData.id &&
+        selectedElement.type == SELECTABLE_ELEMENTS.card;
 
     const onCardClick = () => {
-        cardProps.selectCard(cardData.id);
+        selectCard(cardData.id);
+    };
+
+    const selectCard = (cardId) => {
+        /* select card if none or other is selected, unselect when try select
+        that same card once again */
+        if (
+            selectedElement.type != SELECTABLE_ELEMENTS.card ||
+            selectedElement.id != cardId
+        ) {
+            setSelectedElement({
+                type: SELECTABLE_ELEMENTS.card,
+                id: cardId,
+            });
+        } else {
+            // clear selection
+            setSelectedElement(SELECTED_ELEMENT_TEMPLATE);
+        }
     };
 
     return (

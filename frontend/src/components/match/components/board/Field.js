@@ -1,18 +1,25 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Box } from "@material-ui/core";
 import Unit from "./Unit.js";
 import { BOARD_COLUMNS, BOARD_ROWS } from "./constants.js";
 import { SELECTABLE_ELEMENTS } from "../../constants.js";
+import {
+    PlayerIndexContext,
+    SelectedElementContext,
+} from "../../matchContexts.js";
 
 export const Field = ({
     fieldData,
     selectedUnitField,
     selectedUnit,
-    fieldProps,
+    handleClickOnField,
+    units,
+    turn,
 }) => {
-    const unitInField = fieldProps.units.find(
-        (unit) => unit.field_id == fieldData.id
-    );
+    const playerIndex = useContext(PlayerIndexContext);
+    const { selectedElement, _ } = useContext(SelectedElementContext);
+
+    const unitInField = units.find((unit) => unit.field_id == fieldData.id);
 
     const fieldClick = () => {
         // disable clicks on field if is unit on it
@@ -20,7 +27,7 @@ export const Field = ({
             return false;
         }
 
-        fieldProps.handleClickOnField(fieldData.id);
+        handleClickOnField(fieldData.id);
     };
 
     const calculateDistance = (otherField) => {
@@ -33,10 +40,10 @@ export const Field = ({
 
     const getIfFieldIsHighlighted = () => {
         // if player has no turn then can not do any actions on board
-        if (fieldProps.turn != fieldProps.unitProps.playerIndex) {
+        if (turn != playerIndex) {
             return false;
         }
-        const selectedElementType = fieldProps.selectedElement.type;
+        const selectedElementType = selectedElement.type;
         // Active when player select card and field is part of player base
         if (
             selectedElementType == SELECTABLE_ELEMENTS.card &&
@@ -58,9 +65,7 @@ export const Field = ({
     const isHighlighted = getIfFieldIsHighlighted();
 
     const unitBlock =
-        unitInField != undefined ? (
-            <Unit unitData={unitInField} unitProps={fieldProps.unitProps} />
-        ) : null;
+        unitInField != undefined ? <Unit unitData={unitInField} /> : null;
 
     return (
         <Box

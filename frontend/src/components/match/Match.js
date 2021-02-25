@@ -55,7 +55,7 @@ export const Match = (props) => {
     const renderMatch = () => {
         return isLandscape ? (
             <MatchGame matchSocket={matchSocket} />
-            ) : (
+        ) : (
             <ChangeOrientationInfo />
         );
     };

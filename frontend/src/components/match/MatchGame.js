@@ -2,7 +2,11 @@ import React, { useState, useEffect } from "react";
 import { Grid, Box } from "@material-ui/core";
 
 import MatchLoading from "./MatchLoading.js";
-import { PLAYER_INFO_POSITIONS, SELECTABLE_ELEMENTS } from "./constants.js";
+import {
+    PLAYER_INFO_POSITIONS,
+    SELECTED_ELEMENT_TEMPLATE,
+} from "./constants.js";
+import { PlayerIndexContext, SelectedElementContext } from "./matchContexts.js";
 import PlayerInfoMatchBlock from "./components/PlayerInfoMatchBlock.js";
 import TurnsBlock from "./components/TurnsBlock.js";
 import Board from "./components/board/Board.js";
@@ -30,20 +34,13 @@ export const MatchGame = ({ matchSocket }) => {
     const [units, setUnits] = useState([]);
 
     // selectedElement can represent card or unit
-    const selectedELementTemplate = { type: -1, id: -1 };
     const [selectedElement, setSelectedElement] = useState(
-        selectedELementTemplate
+        SELECTED_ELEMENT_TEMPLATE
     );
 
     // snackbar values
     const [snackbarVisible, setSnackbarVisible] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState("Error");
-
-    // turns
-
-    const endTurnCallback = () => {
-        matchSocket.send(JSON.stringify({ message: "end-turn" }));
-    };
 
     // snackbar
 
@@ -55,83 +52,6 @@ export const MatchGame = ({ matchSocket }) => {
     const closeSnackbar = () => {
         setSnackbarVisible(false);
     };
-
-    // selecting elements
-
-    const clearSelection = () => {
-        setSelectedElement(selectedELementTemplate);
-    };
-
-    const selectCard = (cardId) => {
-        // select card if none or other is selected, unselect when try select
-        // that seame card once again
-        if (
-            selectedElement.type != SELECTABLE_ELEMENTS.card ||
-            selectedElement.id != cardId
-        ) {
-            setSelectedElement({
-                type: SELECTABLE_ELEMENTS.card,
-                id: cardId,
-            });
-        } else {
-            clearSelection();
-        }
-    };
-
-    const selectUnit = (unitId) => {
-        // select unit if none or other is selected, unselect when try select
-        // that seame unit once again
-        if (
-            selectedElement.type != SELECTABLE_ELEMENTS.unit ||
-            selectedElement.id != unitId
-        ) {
-            setSelectedElement({
-                type: SELECTABLE_ELEMENTS.unit,
-                id: unitId,
-            });
-        } else {
-            clearSelection();
-        }
-    };
-
-    const handleClickOnField = (fieldId) => {
-        // try play card at field
-        if (selectedElement.type == SELECTABLE_ELEMENTS.card) {
-            playCard(selectedElement.id, fieldId);
-        }
-        // try move unit to field
-        if (selectedElement.type == SELECTABLE_ELEMENTS.unit) {
-            moveUnit(selectedElement.id, fieldId);
-        }
-    };
-
-    // playing a cards
-
-    const playCard = (cardId, fieldId) => {
-        // send message to socket to play a card
-        matchSocket.send(
-            JSON.stringify({
-                message: "play-a-card",
-                data: { card_id: cardId, field_id: fieldId },
-            })
-        );
-        clearSelection();
-    };
-
-    // operating on units
-
-    const moveUnit = (unitId, fieldId) => {
-        // send message to socket to move unit
-        matchSocket.send(
-            JSON.stringify({
-                message: "move-unit",
-                data: { unit_id: unitId, field_id: fieldId },
-            })
-        );
-        clearSelection();
-    };
-
-    // socket connection
 
     // set onmessage
     matchSocket.onmessage = (e) => {
@@ -170,7 +90,6 @@ export const MatchGame = ({ matchSocket }) => {
                 }));
                 break;
             case "hand-cards-changed":
-                console.log('pl', playerIndex);
                 if (messageData.for_player_at_index == playerIndex) {
                     setPlayerData((prevState) => ({
                         ...prevState,
@@ -229,10 +148,9 @@ export const MatchGame = ({ matchSocket }) => {
                             positionInBox={PLAYER_INFO_POSITIONS.top}
                         />
                         <TurnsBlock
+                            matchSocket={matchSocket}
                             turn={turn}
-                            playerIndex={playerIndex}
                             turnProgress={turnProgress}
-                            endTurnCallback={endTurnCallback}
                         />
                         <PlayerInfoMatchBlock
                             playerData={playerData}
@@ -243,18 +161,10 @@ export const MatchGame = ({ matchSocket }) => {
                 {/* Middle block with board */}
                 <Grid item xs>
                     <Board
+                        matchSocket={matchSocket}
                         fields={fields}
-                        fieldProps={{
-                            units: units,
-                            selectedElement: selectedElement,
-                            handleClickOnField: handleClickOnField,
-                            turn: turn,
-                            unitProps: {
-                                playerIndex: playerIndex,
-                                selectUnit: selectUnit,
-                                selectedElement: selectedElement,
-                            },
-                        }}
+                        units={units}
+                        turn={turn}
                     />
                 </Grid>
                 {/* Right block with deck cards counter */}
@@ -274,15 +184,7 @@ export const MatchGame = ({ matchSocket }) => {
                 </Grid>
             </Grid>
             {/* Elements with absolute positions */}
-            <HandBlock
-                forMainPlayer={true}
-                playerData={playerData}
-                // data passed straight to card
-                cardProps={{
-                    selectedElement: selectedElement,
-                    selectCard: selectCard,
-                }}
-            />
+            <HandBlock forMainPlayer={true} playerData={playerData} />
             <HandBlock forMainPlayer={false} playerData={enemyData} />
             <OptionsBlock />
             <InfoSnackbar
@@ -294,7 +196,20 @@ export const MatchGame = ({ matchSocket }) => {
     );
 
     // render match if fully loads
-    return matchLoaded ? mainComponent() : <MatchLoading />;
+    return matchLoaded ? (
+        <PlayerIndexContext.Provider value={playerIndex}>
+            <SelectedElementContext.Provider
+                value={{
+                    selectedElement: selectedElement,
+                    setSelectedElement: setSelectedElement,
+                }}
+            >
+                {mainComponent()}
+            </SelectedElementContext.Provider>
+        </PlayerIndexContext.Provider>
+    ) : (
+        <MatchLoading />
+    );
 };
 
 export default MatchGame;

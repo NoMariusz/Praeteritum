@@ -8,10 +8,6 @@ export const PLAYER_INFO_POSITIONS = Object.freeze({
     top: 0,
     bottom: 1,
 });
-export const SELECTABLE_ELEMENTS = Object.freeze({
-    card: 0,
-    unit: 1,
-});
 
 // unit and cards related
 
@@ -23,3 +19,11 @@ export const CARD_TYPES = [
     ["C", "Cavalryman"],
     ["M", "Missleman"],
 ];
+
+// selecting elements in game
+
+export const SELECTED_ELEMENT_TEMPLATE = { type: -1, id: -1 };
+export const SELECTABLE_ELEMENTS = Object.freeze({
+    card: 0,
+    unit: 1,
+});
