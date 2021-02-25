@@ -28,6 +28,7 @@ class MatchConsumer(WebsocketConsumer):
             "end-turn": self.end_turn,
             "play-a-card": self.play_a_card,
             "move-unit": self.move_unit,
+            "attack_unit": self.attack_unit,
         }
 
         self.match_id = None
@@ -207,6 +208,37 @@ class MatchConsumer(WebsocketConsumer):
         result: bool = match.move_unit(
             player_index=self.player_index, unit_id=unit_id,
             field_id=field_id)
+
+        self.send(text_data=json.dumps({
+            'message': {
+                'name': message,
+                'data': {
+                    'result': result
+                }
+            }
+        }))
+
+    def attack_unit(self, data, message, *args, **kwargs):
+        # validate socket message data
+        if "attacker_id" not in data.keys() \
+                or "defender_id" not in data.keys():
+            self.send(text_data=json.dumps({
+                'message': {
+                    'name': message,
+                    'data': {
+                        'result': False
+                    }
+                }
+            }))
+            return False
+
+        match: Match = self._get_match()
+        attacker_id: int = data["attacker_id"]
+        defender_id: int = data["defender_id"]
+
+        result: bool = match.attack_unit(
+            player_index=self.player_index, attacker_id=attacker_id,
+            defender_id=defender_id)
 
         self.send(text_data=json.dumps({
             'message': {

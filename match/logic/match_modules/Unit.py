@@ -1,4 +1,5 @@
-from ...constatnts import DEFAULT_MOVE_POINTS
+from ...constatnts import DEFAULT_MOVE_POINTS, DEFAULT_ATTACK_POINTS, \
+    ATACK_RANGE_FOR_TYPES
 
 
 class Unit:
@@ -21,6 +22,8 @@ class Unit:
         self.image = image
         # points determinig how far unit can move
         self.move_points = DEFAULT_MOVE_POINTS
+        self.attack_points = DEFAULT_ATTACK_POINTS
+        self.attack_range = ATACK_RANGE_FOR_TYPES[self.category]
 
     def get_data_for_frontend(self) -> dict:
         """ :return: dict - contain data for frontned in dict that can be
@@ -35,5 +38,7 @@ class Unit:
             "attack": self.attack,
             "category": self.category,
             "image": self.image,
-            "move_points": self.move_points
+            "move_points": self.move_points,
+            "attack_points": self.attack_points,
+            "attack_range": self.attack_range,
         }

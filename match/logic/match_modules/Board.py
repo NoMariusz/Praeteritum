@@ -1,6 +1,8 @@
+from math import floor
 from typing import Callable
 from ...constatnts import BOARD_COLUMNS, BOARD_ROWS, BASE_FIELDS_IDS, \
-    DEFAULT_MOVE_POINTS
+    DEFAULT_MOVE_POINTS, DEFAULT_ATTACK_POINTS, STRONG_AGAINST_CAT_TO_CAT, \
+    WEAK_AGAINST_CAT_TO_CAT, ONLY_ATTACKER_CAT
 from .Field import Field
 from .Unit import Unit
 
@@ -21,6 +23,7 @@ class Board():
         # restore units move points
         for unit in self._units:
             unit.move_points = DEFAULT_MOVE_POINTS
+            unit.attack_points = DEFAULT_ATTACK_POINTS
 
     # fields
 
@@ -122,11 +125,11 @@ class Board():
         if not self._check_if_can_move_unit(player_index, unit, new_field):
             return False
 
-        # calculate distance before move
-        distance: int = self._calculate_distance_to_new_unit_field(
-            unit, new_field)
-        # delete unit from old field
         old_field: Field = self._fields[unit.field_id]
+        # calculate distance before move
+        distance: int = self._calc_distance_from_fields(
+            old_field, new_field)
+        # delete unit from old field
         old_field.unit = None
         # add unit to new field
         new_field.unit = unit
@@ -152,17 +155,129 @@ class Board():
             return False
 
         # if unit have enough move_points
-        distance: int = self._calculate_distance_to_new_unit_field(
-            unit, new_field)
+        old_field: Field = self._fields[unit.field_id]
+        distance: int = self._calc_distance_from_fields(
+            old_field, new_field)
         if(distance > unit.move_points):
             return False
 
         return True
 
-    def _calculate_distance_to_new_unit_field(
-            self, unit: Unit, new_field: Field) -> int:
-        """ calculate how far is unit from field """
-        old_field: Field = self._fields[unit.field_id]
+    # units attack
+
+    def attack_unit(
+            self, player_index: int, attacker_id: int, defender_id: int
+            ) -> bool:
+        """ attack other unit and simulate battle by attacking one another
+        :param attacker_id: int - id of unit that attack
+        :param defender_id: int - id of unit which are attacked
+        :return: bool - if attacking succes (if unit attack other) """
+        attacker: Unit = self._units[attacker_id]
+        defender: Unit = self._units[defender_id]
+
+        # check if unit can attack other
+        if not self._check_if_unit_can_attack(
+                player_index, attacker, defender):
+            return False
+
+        # make attacks between units
+        self._made_attack(attacker, defender, True)
+        self._made_attack(defender, attacker, False)
+
+        # change attacker statistics
+        attacker.attack_points -= 1
+
+        # delete died units
+        self._clear_died_units()
+
+        # send info to socket that unit data changed
+        self._send_to_sockets_units_changed()
+
+        return True
+
+    def _check_if_unit_can_attack(
+            self, player_index: int, attacker: Unit, defender: Unit
+            ) -> bool:
+        """ check if attacker Unit can attack defender Unit
+        :return: bool - if can attack """
+        # if player try to attack by not his unit
+        if attacker.owner_index != player_index:
+            return False
+
+        # if player try attack his unit
+        if attacker.owner_index == defender.owner_index:
+            return False
+
+        # if attacker not have range
+        attacker_field: Field = self._fields[attacker.field_id]
+        defender_field: Field = self._fields[defender.field_id]
+        distance: int = self._calc_distance_from_fields(
+            attacker_field, defender_field)
+        if distance > attacker.attack_range:
+            return False
+
+        # if attacker not have attack points
+        if attacker.attack_points <= 0:
+            return False
+
+        return True
+
+    def _made_attack(
+            self, damage_dealer: Unit, damage_taken: Unit, as_attacker: bool
+            ) -> bool:
+        """ made single attack where only defneder get damage if attacker can
+        attack him
+        :return: bool - if attack success """
+        # check if attacker have range
+        dealer_field: Field = self._fields[damage_dealer.field_id]
+        taken_field: Field = self._fields[damage_taken.field_id]
+        distance: int = self._calc_distance_from_fields(
+            dealer_field, taken_field)
+        if distance > damage_dealer.attack_range:
+            return False
+
+        # check if type can attack not as attacker
+        if not as_attacker and damage_dealer.category == ONLY_ATTACKER_CAT:
+            return False
+
+        # made attack
+        multiplier: float = self._calc_attack_multiplier(
+            damage_dealer, damage_taken)
+        attack_power: int = floor(damage_dealer.attack * multiplier)
+        damage_taken.hp -= attack_power
+
+        return True
+
+    def _clear_died_units(self):
+        """ safely deletes all died units (such that with health <= 0) """
+        # delete units from fields
+        died_units: list = [u for u in self._units if u.hp <= 0]
+        for unit in died_units:
+            field = self._fields[unit.field_id]
+            field.unit = None
+
+        # not remove from list, but change to null, so indexes in list not
+        # change and unit with id 12 will be at 12 index
+        self._units = list(map(
+            lambda unit: unit if unit is not None and unit.hp > 0 else None,
+            self._units))
+
+    # utils
+
+    @staticmethod
+    def _calc_distance_from_fields(old_field: Field, new_field: Field) -> int:
+        """ calculate how far is field from field """
         distance: int = (abs(old_field.column - new_field.column)
                          + abs(old_field.row - new_field.row))
         return distance
+
+    @staticmethod
+    def _calc_attack_multiplier(attacker: Unit, defender: Unit) -> float:
+        """ calculate bonus multiplayier for given units """
+        # if attacker is strong against defender
+        if STRONG_AGAINST_CAT_TO_CAT[attacker.category] == defender.category:
+            return 2
+        # if attacker is weak against defender
+        if WEAK_AGAINST_CAT_TO_CAT[attacker.category] == defender.category:
+            return 0.5
+        return 1

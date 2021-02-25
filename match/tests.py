@@ -1,4 +1,5 @@
 import asyncio
+import random
 from django.test import TestCase
 from asgiref.sync import async_to_sync
 
@@ -7,7 +8,8 @@ from .logic.Match import Match
 from .logic.MatchFinder import MatchFinder
 from .logic.MatchManager import match_manager
 from cards.models import CardModel
-from .constatnts import TURN_TIME, BOARD_ROWS, BOARD_COLUMNS
+from .constatnts import TURN_TIME, BOARD_ROWS, BOARD_COLUMNS, \
+    DEFAULT_ATTACK_POINTS
 
 
 class FindMatch(TestCase):
@@ -139,12 +141,16 @@ class MatchWork(TestCase):
         card_data: dict = match._made_card_data_by_id(card.id)
         unit1_id = match._board.add_unit_by_card_data(card_data, p1_index, 0)
         unit2_id = match._board.add_unit_by_card_data(card_data, p2_index, 1)
+
         # make good move
         move_1_succes = match._board.move_unit(p1_index, unit1_id, 2)
+
         # make bad move because in field 2 is other unit
         move_2_succes = match._board.move_unit(p1_index, unit1_id, 1)
+
         # make bad move because player1 can not move player2 unit
         move_3_succes = match._board.move_unit(p1_index, unit2_id, 3)
+
         # make bad move because field is too far
         match._board.move_unit(p1_index, unit1_id, 0)
         move_4_succes = match._board.move_unit(
@@ -154,6 +160,82 @@ class MatchWork(TestCase):
         self.assertFalse(move_2_succes)
         self.assertFalse(move_3_succes)
         self.assertFalse(move_4_succes)
+
+    def test_units_attack(self):
+        """ check if units in board can attack each other and if his attacks
+        are proper restricted"""
+        # prepare match
+        test_players = async_to_sync(make_test_users)()
+        match: Match = Match(1, players=test_players)
+        # made card for unit
+        card = get_test_card()
+        # prepare player indexes
+        p1_index = 0
+        p2_index = 1
+        # made unit by card and add to board
+        card_data: dict = match._made_card_data_by_id(card.id)
+        unit1_id = match._board.add_unit_by_card_data(card_data, p1_index, 0)
+        unit2_id = match._board.add_unit_by_card_data(card_data, p2_index, 1)
+
+        # make good attack
+        action_1_succes = match._board.attack_unit(
+            p1_index, unit1_id, unit2_id)
+
+        # make bad attack because unit1 has not attack points
+        for i in range(DEFAULT_ATTACK_POINTS - 1):   # to drain attack points
+            match._board.attack_unit(p1_index, unit1_id, unit2_id)
+        action_2_succes = match._board.attack_unit(
+            p1_index, unit1_id, unit2_id)
+        match._board.on_turn_change()   # to restore attack points
+
+        # make bad attack because player1 can not attack by player2 unit
+        action_3_succes = match._board.attack_unit(
+            p1_index, unit2_id, unit1_id)
+
+        # make bad attack because unit is too far
+        unit2 = match._board._units[unit2_id]   # get unit2
+        unit2.move_points += 999    # modify move_points to move them far
+        # move unit2 far from unit1
+        match._board.move_unit(p2_index, unit2_id, BOARD_COLUMNS-1)
+        action_4_succes = match._board.attack_unit(
+            p1_index, unit1_id, unit2_id)
+
+        # make bad attack because can not attack himself
+        action_5_succes = match._board.attack_unit(
+            p1_index, unit1_id, unit1_id)
+
+        self.assertTrue(action_1_succes)
+        self.assertFalse(action_2_succes)
+        self.assertFalse(action_3_succes)
+        self.assertFalse(action_4_succes)
+        self.assertFalse(action_5_succes)
+
+    def test_missleman_not_attack_as_defender(self):
+        """ check if units of type MISSLEMAN only deal damage when they attack
+        """
+        # prepare match
+        test_players = async_to_sync(make_test_users)()
+        match: Match = Match(1, players=test_players)
+        # made cards for unit
+        card = get_test_card()
+        card2 = get_test_card(CardModel.CardTypes.MISSLEMAN)
+        # prepare player indexes
+        p1_index = 0
+        p2_index = 1
+        # made units by card and add to board
+        card_data: dict = match._made_card_data_by_id(card.id)
+        card_data2: dict = match._made_card_data_by_id(card2.id)
+        unit1_id = match._board.add_unit_by_card_data(card_data, p1_index, 0)
+        unit2_id = match._board.add_unit_by_card_data(card_data2, p2_index, 1)
+        # get start hp of normal INFANTRYMAN Unit
+        start_hp: int = match._board._units[unit1_id].hp
+        # attack as INFANTRYMAN MISSLEMAN Unit
+        match._board.attack_unit(p1_index, unit1_id, unit2_id)
+        # get hp of INFANTRYMAN Unit after attack
+        end_hp: int = match._board._units[unit1_id].hp
+
+        # check if hp not changed
+        self.assertEqual(start_hp, end_hp)
 
 
 # utils for tests
@@ -167,10 +249,10 @@ async def make_test_users() -> list:
     return [user1, user2]
 
 
-def get_test_card() -> CardModel:
+def get_test_card(card_type=CardModel.CardTypes.INFANTRYMAN) -> CardModel:
     """ make card, save it and return it"""
     card = CardModel(
-        name="testCarddd", category=CardModel.CardTypes.CAVALRYMAN,
-        rarity=CardModel.CardRarities.COMMON, attack=20, hp=60)
+        name="testCard%s" % random.random(), category=card_type,
+        rarity=CardModel.CardRarities.COMMON, attack=1, hp=99)
     card.save()
     return card

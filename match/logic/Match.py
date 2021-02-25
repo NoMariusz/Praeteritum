@@ -304,3 +304,11 @@ class Match:
         """ delegate board to move unit
         :return: bool - if board move_unit """
         return self._board.move_unit(player_index, unit_id, field_id)
+
+    @_run_only_when_player_has_turn
+    def attack_unit(
+            self, player_index: int, attacker_id: int, defender_id: int
+            ) -> bool:
+        """ delegate board to attack unit
+        :return: bool - if board attack_unit """
+        return self._board.attack_unit(player_index, attacker_id, defender_id)
