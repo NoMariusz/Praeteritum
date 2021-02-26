@@ -115,6 +115,11 @@ export const MatchGame = ({ matchSocket }) => {
                     showSnackbar("Cannot move unit !");
                 }
                 break;
+            case "attack-unit":
+                if (messageData.result == false) {
+                    showSnackbar("Cannot attack unit !");
+                }
+                break;
             default:
                 break;
         }

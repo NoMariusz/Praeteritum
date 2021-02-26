@@ -22,6 +22,8 @@ class Board():
         """ make all actions necessary for board when turn change """
         # restore units move points
         for unit in self._units:
+            if unit is None:
+                continue
             unit.move_points = DEFAULT_MOVE_POINTS
             unit.attack_points = DEFAULT_ATTACK_POINTS
 
@@ -98,8 +100,10 @@ class Board():
 
     def get_units_dicts(self) -> list:
         """ :return: list - contains dicts with jsonable units data """
-        return list(
-            map(lambda unit: unit.get_data_for_frontend(), self._units))
+        return list(map(
+            lambda unit:
+            unit.get_data_for_frontend() if unit is not None else None,
+            self._units))
 
     def _send_to_sockets_units_changed(self):
         """ sending message to sockets with new units """
@@ -167,7 +171,7 @@ class Board():
 
     def attack_unit(
             self, player_index: int, attacker_id: int, defender_id: int
-            ) -> bool:
+    ) -> bool:
         """ attack other unit and simulate battle by attacking one another
         :param attacker_id: int - id of unit that attack
         :param defender_id: int - id of unit which are attacked
@@ -197,7 +201,7 @@ class Board():
 
     def _check_if_unit_can_attack(
             self, player_index: int, attacker: Unit, defender: Unit
-            ) -> bool:
+    ) -> bool:
         """ check if attacker Unit can attack defender Unit
         :return: bool - if can attack """
         # if player try to attack by not his unit
@@ -224,7 +228,7 @@ class Board():
 
     def _made_attack(
             self, damage_dealer: Unit, damage_taken: Unit, as_attacker: bool
-            ) -> bool:
+    ) -> bool:
         """ made single attack where only defneder get damage if attacker can
         attack him
         :return: bool - if attack success """
@@ -251,7 +255,8 @@ class Board():
     def _clear_died_units(self):
         """ safely deletes all died units (such that with health <= 0) """
         # delete units from fields
-        died_units: list = [u for u in self._units if u.hp <= 0]
+        died_units: list = [u for u in self._units
+                            if u is not None and u.hp <= 0]
         for unit in died_units:
             field = self._fields[unit.field_id]
             field.unit = None

@@ -52,6 +52,26 @@ export const Board = ({ matchSocket, fields, units, turn }) => {
         setSelectedElement(SELECTED_ELEMENT_TEMPLATE);
     };
 
+    // operating on units
+
+    const handleClickOnEnemyUnit = (unitId) => {
+        // try attack enemy unit
+        if (selectedElement.type == SELECTABLE_ELEMENTS.unit) {
+            attackUnit(selectedElement.id, unitId);
+        }
+    };
+
+    const attackUnit = (attacker_id, defender_id) => {
+        // send message to socket to attack unit
+        matchSocket.send(
+            JSON.stringify({
+                message: "attack-unit",
+                data: { attacker_id: attacker_id, defender_id: defender_id },
+            })
+        );
+        clearSelection();
+    };
+
     // rendering field helpers
 
     const getSelectedUnit = () => {
@@ -89,6 +109,7 @@ export const Board = ({ matchSocket, fields, units, turn }) => {
                     selectedUnitField={getSelectedUnitField()}
                     selectedUnit={getSelectedUnit()}
                     handleClickOnField={handleClickOnField}
+                    handleClickOnEnemyUnit={handleClickOnEnemyUnit}
                     units={units}
                     turn={turn}
                 />

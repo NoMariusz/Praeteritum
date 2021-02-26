@@ -21,7 +21,7 @@ const useStyles = makeStyles({
     },
 });
 
-export const Unit = ({ unitData }) => {
+export const Unit = ({ unitData, handleClickOnEnemyUnit }) => {
     // styles to set css
     const imgPath = `url("${CARD_IMAGES_PATH + unitData.image}")`;
     const classes = useStyles({ path: imgPath });
@@ -40,9 +40,12 @@ export const Unit = ({ unitData }) => {
         selectedElement.type == SELECTABLE_ELEMENTS.unit;
 
     const handleClick = () => {
-        // select unit when belongs to player
         if (belongsToPlayer) {
+            // select unit when belongs to player
             selectUnit(unitData.id);
+        } else {
+            // delegete parrent to handle click on emeny unit
+            handleClickOnEnemyUnit(unitData.id);
         }
     };
 

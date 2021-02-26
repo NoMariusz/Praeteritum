@@ -13,13 +13,14 @@ export const Field = ({
     selectedUnitField,
     selectedUnit,
     handleClickOnField,
+    handleClickOnEnemyUnit,
     units,
     turn,
 }) => {
     const playerIndex = useContext(PlayerIndexContext);
     const { selectedElement, _ } = useContext(SelectedElementContext);
 
-    const unitInField = units.find((unit) => unit.field_id == fieldData.id);
+    const unitInField = units.find((unit) => unit?.field_id == fieldData.id);
 
     const fieldClick = () => {
         // disable clicks on field if is unit on it
@@ -65,7 +66,12 @@ export const Field = ({
     const isHighlighted = getIfFieldIsHighlighted();
 
     const unitBlock =
-        unitInField != undefined ? <Unit unitData={unitInField} /> : null;
+        unitInField != undefined ? (
+            <Unit
+                unitData={unitInField}
+                handleClickOnEnemyUnit={handleClickOnEnemyUnit}
+            />
+        ) : null;
 
     return (
         <Box

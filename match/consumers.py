@@ -28,7 +28,7 @@ class MatchConsumer(WebsocketConsumer):
             "end-turn": self.end_turn,
             "play-a-card": self.play_a_card,
             "move-unit": self.move_unit,
-            "attack_unit": self.attack_unit,
+            "attack-unit": self.attack_unit,
         }
 
         self.match_id = None
