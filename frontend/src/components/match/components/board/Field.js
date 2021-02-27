@@ -52,8 +52,12 @@ export const Field = ({
         if (turn != playerIndex) {
             return false;
         }
+        // not active when field is occupied by other unit
+        if (unitInField != undefined) {
+            return false;
+        }
         const selectedElementType = selectedElement.type;
-        // Active when player select card and field is part of player base
+        // active when player select card and field is part of player base
         if (
             selectedElementType == SELECTABLE_ELEMENTS.card &&
             fieldData.is_base &&
@@ -61,7 +65,7 @@ export const Field = ({
         ) {
             return true;
         }
-        // Active when player select unit that can move there
+        // active when player select unit that can move there
         if (selectedUnitField != null) {
             const unitDistanceToField = calculateDistance(selectedUnitField);
             if (unitDistanceToField <= selectedUnit.move_points) {
