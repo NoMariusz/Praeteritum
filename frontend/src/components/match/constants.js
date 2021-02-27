@@ -27,3 +27,4 @@ export const SELECTABLE_ELEMENTS = Object.freeze({
     card: 0,
     unit: 1,
 });
+export const HIGHLIGHT_COLOR = "warning.main"

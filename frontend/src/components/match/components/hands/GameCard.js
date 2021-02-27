@@ -6,6 +6,7 @@ import {
     SELECTABLE_ELEMENTS,
     CARD_IMAGES_PATH,
     SELECTED_ELEMENT_TEMPLATE,
+    HIGHLIGHT_COLOR,
 } from "../../constants.js";
 import { SelectedElementContext } from "../../matchContexts.js";
 import AttackParam from "./cards_elements/AttackParam.js";
@@ -58,7 +59,7 @@ export const GameCard = ({ cardData, maxWidth }) => {
                 width="1"
                 border={2}
                 borderRadius={8}
-                borderColor={isSelected ? "warning.main" : "primary.main"}
+                borderColor={isSelected ? HIGHLIGHT_COLOR : "primary.main"}
                 overflow="hidden"
                 bgcolor="white"
                 onClick={onCardClick}

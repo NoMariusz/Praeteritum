@@ -1,8 +1,12 @@
 import React, { useContext } from "react";
 import { Box } from "@material-ui/core";
 import Unit from "./Unit.js";
-import { BOARD_COLUMNS, BOARD_ROWS } from "./constants.js";
-import { SELECTABLE_ELEMENTS } from "../../constants.js";
+import {
+    BOARD_COLUMNS,
+    BOARD_ROWS,
+    HIGHLIGHT_UNIT_ATTACK_COLOR,
+} from "./constants.js";
+import { SELECTABLE_ELEMENTS, HIGHLIGHT_COLOR } from "../../constants.js";
 import {
     PlayerIndexContext,
     SelectedElementContext,
@@ -31,6 +35,8 @@ export const Field = ({
         handleClickOnField(fieldData.id);
     };
 
+    // utlis
+
     const calculateDistance = (otherField) => {
         // calculate distance between actual field and otherField
         const distance =
@@ -38,6 +44,8 @@ export const Field = ({
             Math.abs(otherField.row - fieldData.row);
         return distance;
     };
+
+    // rendering helpers
 
     const getIfFieldIsHighlighted = () => {
         // if player has no turn then can not do any actions on board
@@ -63,13 +71,35 @@ export const Field = ({
         return false;
     };
 
-    const isHighlighted = getIfFieldIsHighlighted();
+    const getUnitHighlight = () => {
+        // if unit is selected
+        if (selectedUnit != null && selectedUnit == unitInField) {
+            return HIGHLIGHT_COLOR;
+        }
+        // if is not player turn then other highlight not work
+        if (turn != playerIndex) {
+            return null;
+        }
+        // if selected unit can attack enemy unit at field
+        if (
+            selectedUnit != null &&
+            unitInField.owner != playerIndex &&
+            selectedUnit.attack_points > 0
+        ) {
+            const unitDistanceToField = calculateDistance(selectedUnitField);
+            if (unitDistanceToField <= selectedUnit.attack_range) {
+                return HIGHLIGHT_UNIT_ATTACK_COLOR;
+            }
+        }
+        return null;
+    };
 
     const unitBlock =
         unitInField != undefined ? (
             <Unit
                 unitData={unitInField}
                 handleClickOnEnemyUnit={handleClickOnEnemyUnit}
+                highlight={getUnitHighlight()}
             />
         ) : null;
 
@@ -80,7 +110,9 @@ export const Field = ({
             bgcolor={fieldData.is_base ? "#CCCCCC" : ""}
             color="text.primary"
             border={1}
-            borderColor={isHighlighted ? "warning.main" : "text.primary"}
+            borderColor={
+                getIfFieldIsHighlighted() ? HIGHLIGHT_COLOR : "text.primary"
+            }
             onClick={fieldClick}
         >
             {unitBlock}

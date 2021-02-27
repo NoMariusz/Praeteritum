@@ -21,7 +21,7 @@ const useStyles = makeStyles({
     },
 });
 
-export const Unit = ({ unitData, handleClickOnEnemyUnit }) => {
+export const Unit = ({ unitData, handleClickOnEnemyUnit, highlight }) => {
     // styles to set css
     const imgPath = `url("${CARD_IMAGES_PATH + unitData.image}")`;
     const classes = useStyles({ path: imgPath });
@@ -34,10 +34,6 @@ export const Unit = ({ unitData, handleClickOnEnemyUnit }) => {
 
     const belongsToPlayer = unitData.owner == playerIndex;
     const cardColor = belongsToPlayer ? "primary.main" : "secondary.main";
-
-    const isSelected =
-        selectedElement.id == unitData.id &&
-        selectedElement.type == SELECTABLE_ELEMENTS.unit;
 
     const handleClick = () => {
         if (belongsToPlayer) {
@@ -77,7 +73,7 @@ export const Unit = ({ unitData, handleClickOnEnemyUnit }) => {
             alignItems="stretch"
             borderRadius={8}
             border={2}
-            borderColor={isSelected ? "warning.main" : cardColor}
+            borderColor={highlight != null ? highlight : cardColor}
             overflow="hidden"
             bgcolor={cardColor}
             onClick={handleClick}
