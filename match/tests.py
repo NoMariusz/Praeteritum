@@ -1,11 +1,13 @@
 import asyncio
 import random
+from typing import Optional
 from django.test import TestCase
 from asgiref.sync import async_to_sync
 
 from authentication.utils import create_user
 from .logic.Match import Match
 from .logic.match_modules.Unit import Unit
+from .logic.match_modules.Field import Field
 from .logic.MatchFinder import MatchFinder
 from .logic.MatchManager import match_manager
 from cards.models import CardModel
@@ -238,6 +240,43 @@ class MatchWork(TestCase):
 
         # check if hp not changed
         self.assertEqual(start_hp, end_hp)
+
+    def test_base_points_changing(self):
+        """ check if base_points change when enemy unit is occupying your
+        base """
+        # prepare match
+        test_players = async_to_sync(make_test_users)()
+        match: Match = Match(1, players=test_players)
+        # made card for unit
+        card = get_test_card()
+        # prepare player indexes
+        p1_index = 0
+        p2_index = 1
+        # made unit by card and add to board
+        card_data: dict = match._made_card_data_by_id(card.id)
+        unit1_id = match._board.add_unit_by_card_data(card_data, p1_index, 0)
+        # find player 2 base field
+        player2_field: Optional[Field] = None
+        for field in match._board._fields:
+            if field.is_base and field.player_half == p2_index:
+                player2_field = field
+                break
+        if player2_field is None:
+            raise(ValueError(
+                "Can not find any base field for player at index %s"
+                % p2_index))
+        # make move to player2 base field
+        unit1: Unit = match._board._get_unit_by_id(unit1_id)   # get unit1
+        unit1.move_points += 999    # modify move_points to move them far
+        match._board.move_unit(p1_index, unit1_id, player2_field.id_)
+        # get start base points of player2
+        start_points: int = match._players_data[p2_index]["base_points"]
+        # modify base points
+        match._modify_base_points()
+        # get points after check
+        end_points: int = match._players_data[p2_index]["base_points"]
+
+        self.assertNotEqual(start_points, end_points)
 
 
 # utils for tests

@@ -2,7 +2,7 @@ import random
 import time
 from threading import Thread
 from datetime import datetime
-from typing import Callable
+from typing import Callable, Optional
 from asgiref.sync import async_to_sync
 from django.contrib.auth.models import User
 from channels_redis.core import RedisChannelLayer
@@ -20,7 +20,7 @@ class Match:
         self.live: bool = True
         self.id_: int = id_
 
-        self.channel_layer: RedisChannelLayer = None
+        self.channel_layer: Optional[RedisChannelLayer] = None
         self.match_name: str = "match%s" % self.id_
 
         # list of Users in match
@@ -129,6 +129,8 @@ class Match:
         # draw card for player who start his turn now
         self._draw_cards(
             count=CARDS_DRAWED_AT_TURN_COUNT, for_player=self.player_turn)
+        # modify players basepoints
+        self._modify_base_points()
         # send info to board that turn change
         self._board.on_turn_change()
 
@@ -217,6 +219,30 @@ class Match:
             }
         }
         self._send_to_sockets(message, modify=True)
+
+    # base points stuff
+
+    def _modify_base_points(self):
+        """ modify players base points depending on enemies occuping base
+        count and send info when points change to sockets """
+        for playerIdx in range(2):
+            # get how much points player lost
+            lost_points: int = self._board.get_player_lost_base_points(
+                playerIdx)
+            if lost_points > 0:
+                self._players_data[playerIdx]['base_points'] -= lost_points
+                # send info to sockets
+                self._send_to_socket_base_points_changed(playerIdx)
+
+    def _send_to_socket_base_points_changed(self, player_index: int):
+        message = {
+            'name': 'base-points-changed',
+            'data': {
+                'for_player_at_index': player_index,
+                'new_points': self._players_data[player_index]["base_points"]
+            }
+        }
+        self._send_to_sockets(message, modify=False)
 
     # overall utils
 

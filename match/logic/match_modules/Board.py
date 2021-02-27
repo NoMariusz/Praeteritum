@@ -258,6 +258,22 @@ class Board():
             # remove from units
             self._units.remove(unit)
 
+    # base points
+
+    def get_player_lost_base_points(self, player_index: int) -> int:
+        """ calculate how many enemy units are on player base now
+        :return: int - how many base points player lost """
+        lost_base_points = 0
+        for field in self._fields:
+            # if Field is part of player base
+            if (field.is_base and field.player_half == player_index):
+                unit_in_field: Unit = field.unit
+                # if is Unit on Field and is enemy
+                if (unit_in_field is not None
+                   and unit_in_field.owner_index != player_index):
+                    lost_base_points += 1
+        return lost_base_points
+
     # utils
 
     def _get_unit_by_id(self, unit_id: int) -> Optional[Unit]:
