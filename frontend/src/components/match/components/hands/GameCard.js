@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { Box, Typography, Collapse } from "@material-ui/core";
+import { Box, Typography, Collapse, Slide } from "@material-ui/core";
 
 import { CARD_MARGIN_X } from "./constants.js";
 import {
@@ -46,76 +46,81 @@ export const GameCard = ({ cardData, maxWidth }) => {
     };
 
     return (
-        <Box
-            maxWidth={showFull ? "1" : maxWidth - CARD_MARGIN_X * 2}
-            mx={CARD_MARGIN_X * 100 + "%"}
-            onMouseOver={() => setShowFull(true)}
-            onMouseOut={() => setShowFull(false)}
-        >
+        <Slide direction="up" in>
             <Box
-                display="flex"
-                flexDirection="column"
-                justifyContent="center"
-                width="1"
-                border={2}
-                borderRadius={8}
-                borderColor={isSelected ? HIGHLIGHT_COLOR : "primary.main"}
-                overflow="hidden"
-                bgcolor="white"
-                onClick={onCardClick}
+                maxWidth={showFull ? "1" : maxWidth - CARD_MARGIN_X * 2}
+                mx={CARD_MARGIN_X * 100 + "%"}
+                onMouseOver={() => setShowFull(true)}
+                onMouseOut={() => setShowFull(false)}
             >
-                {/* Displaying card name */}
                 <Box
+                    display="flex"
+                    flexDirection="column"
+                    justifyContent="center"
+                    width="1"
+                    border={2}
                     borderRadius={8}
-                    p={showFull ? 0.5 : 0}
-                    color="primary.main"
+                    borderColor={isSelected ? HIGHLIGHT_COLOR : "primary.main"}
+                    overflow="hidden"
+                    bgcolor="white"
+                    onClick={onCardClick}
                 >
-                    <Typography
-                        variant={showFull ? "h6" : "body1"}
-                        align="center"
-                        noWrap
-                    >
-                        {cardData.name}
-                    </Typography>
-                </Box>
-                {/* Block with card image */}
-                <Collapse in={showFull}>
+                    {/* Displaying card name */}
                     <Box
-                        width={1}
+                        borderRadius={8}
+                        p={showFull ? 0.5 : 0}
+                        color="primary.main"
+                    >
+                        <Typography
+                            variant={showFull ? "h6" : "body1"}
+                            align="center"
+                            noWrap
+                        >
+                            {cardData.name}
+                        </Typography>
+                    </Box>
+                    {/* Block with card image */}
+                    <Collapse in={showFull}>
+                        <Box
+                            width={1}
+                            mt={0.5}
+                            display="flex"
+                            justifyContent="center"
+                        >
+                            <Box width={0.8} borderRadius={8} overflow="hidden">
+                                <img
+                                    src={CARD_IMAGES_PATH + cardData.image}
+                                    title="Card image"
+                                    width="100%"
+                                    height="100%"
+                                />
+                            </Box>
+                        </Box>
+                    </Collapse>
+                    {/* Block displaying statistics */}
+                    <Box
                         mt={0.5}
                         display="flex"
-                        justifyContent="center"
+                        flexDirection="row"
+                        justifyContent="space-between"
+                        alignItems="flex-end"
+                        width="1"
                     >
-                        <Box width={0.8} borderRadius={8} overflow="hidden">
-                            <img
-                                src={CARD_IMAGES_PATH + cardData.image}
-                                title="Card image"
-                                width="100%"
-                                height="100%"
-                            />
+                        <AttackParam
+                            value={cardData.attack}
+                            isFull={showFull}
+                        />
+                        <Box width={0.5} px={1}>
+                            <TypeParam value={cardData.category} />
+                            <Collapse in={showFull}>
+                                <RarityParam value={cardData.rarity} />
+                            </Collapse>
                         </Box>
+                        <HpParam value={cardData.hp} isFull={showFull} />
                     </Box>
-                </Collapse>
-                {/* Block displaying statistics */}
-                <Box
-                    mt={0.5}
-                    display="flex"
-                    flexDirection="row"
-                    justifyContent="space-between"
-                    alignItems="flex-end"
-                    width="1"
-                >
-                    <AttackParam value={cardData.attack} isFull={showFull} />
-                    <Box width={0.5} px={1}>
-                        <TypeParam value={cardData.category} />
-                        <Collapse in={showFull}>
-                            <RarityParam value={cardData.rarity} />
-                        </Collapse>
-                    </Box>
-                    <HpParam value={cardData.hp} isFull={showFull} />
                 </Box>
             </Box>
-        </Box>
+        </Slide>
     );
 };
 

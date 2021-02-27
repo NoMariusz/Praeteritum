@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { Box, Typography, Tooltip } from "@material-ui/core";
+import { Box, Typography, Tooltip, Zoom } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import {
     CARD_IMAGES_PATH,
@@ -63,75 +63,77 @@ export const Unit = ({ unitData, handleClickOnEnemyUnit, highlight }) => {
     };
 
     return (
-        <Box
-            width={1}
-            height={1}
-            display="flex"
-            direction="column"
-            flexWrap="wrap"
-            justify="space-between"
-            alignItems="stretch"
-            borderRadius={8}
-            border={2}
-            borderColor={highlight != null ? highlight : cardColor}
-            overflow="hidden"
-            bgcolor={cardColor}
-            onClick={handleClick}
-        >
-            <Tooltip
-                title={unitData.name}
-                disableFocusListener
-                enterDelay={1500}
-                leaveDelay={10}
+        <Zoom in>
+            <Box
+                width={1}
+                height={1}
+                display="flex"
+                direction="column"
+                flexWrap="wrap"
+                justify="space-between"
+                alignItems="stretch"
+                borderRadius={8}
+                border={2}
+                borderColor={highlight != null ? highlight : cardColor}
+                overflow="hidden"
+                bgcolor={cardColor}
+                onClick={handleClick}
             >
+                <Tooltip
+                    title={unitData.name}
+                    disableFocusListener
+                    enterDelay={1500}
+                    leaveDelay={10}
+                >
+                    <Box
+                        width={0.98}
+                        height={0.68}
+                        borderRadius={8}
+                        m="1%"
+                        classes={{ root: classes.backgroundUnitImage }}
+                    />
+                </Tooltip>
                 <Box
                     width={0.98}
-                    height={0.68}
-                    borderRadius={8}
+                    height={0.28}
                     m="1%"
-                    classes={{ root: classes.backgroundUnitImage }}
-                />
-            </Tooltip>
-            <Box
-                width={0.98}
-                height={0.28}
-                m="1%"
-                display="flex"
-                justifyContent="space-between"
-                alignItems="center"
-            >
-                <Box
-                    width={0.3}
-                    bgcolor="error.main"
-                    color="error.contrastText"
-                    borderRadius={8}
+                    display="flex"
+                    justifyContent="space-between"
+                    alignItems="center"
                 >
-                    <Typography variant="subtitle2" align="center">
-                        {unitData.attack}
-                    </Typography>
-                </Box>
-                <Box
-                    width={0.3}
-                    bgcolor="text.secondary"
-                    color="background.paper"
-                    borderRadius={8}
-                >
-                    <Typography variant="subtitle2" align="center">
-                        {CARD_TYPES[unitData.category][0]}
-                    </Typography>
-                </Box>
-                <Box
-                    width={0.3}
-                    bgcolor="success.main"
-                    color="primary.contrastText"
-                    borderRadius={8}
-                >
-                    <Typography variant="subtitle2" align="center">
-                        {unitData.hp}
-                    </Typography>
+                    <Box
+                        width={0.3}
+                        bgcolor="error.main"
+                        color="error.contrastText"
+                        borderRadius={8}
+                    >
+                        <Typography variant="subtitle2" align="center">
+                            {unitData.attack}
+                        </Typography>
+                    </Box>
+                    <Box
+                        width={0.3}
+                        bgcolor="text.secondary"
+                        color="background.paper"
+                        borderRadius={8}
+                    >
+                        <Typography variant="subtitle2" align="center">
+                            {CARD_TYPES[unitData.category][0]}
+                        </Typography>
+                    </Box>
+                    <Box
+                        width={0.3}
+                        bgcolor="success.main"
+                        color="primary.contrastText"
+                        borderRadius={8}
+                    >
+                        <Typography variant="subtitle2" align="center">
+                            {unitData.hp}
+                        </Typography>
+                    </Box>
                 </Box>
             </Box>
-        </Box>
+        </Zoom>
     );
 };
 
