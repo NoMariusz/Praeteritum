@@ -4,8 +4,8 @@ CARDS_DRAWED_AT_TURN_COUNT = 1
 
 # turns stuff
 
-TURN_TIME = 1  # time in seconds
-TURN_STATUS_REFRESH_TIME = 1
+TURN_TIME = 180  # time in seconds
+TURN_STATUS_REFRESH_TIME = 18
 
 # board stuff
 

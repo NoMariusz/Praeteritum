@@ -120,6 +120,16 @@ export const MatchGame = ({ matchSocket }) => {
                     showSnackbar("Cannot attack unit !");
                 }
                 break;
+            case "base-points-changed":
+                const modifyThatPlayerData =
+                    messageData.for_player_at_index == playerIndex
+                        ? setPlayerData
+                        : setEnemyData;
+                modifyThatPlayerData((prevState) => ({
+                    ...prevState,
+                    base_points: messageData.new_points,
+                }));
+                break;
             default:
                 break;
         }
