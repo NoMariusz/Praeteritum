@@ -111,7 +111,8 @@ class MatchWork(TestCase):
         player_idx_with_turn: int = match.player_turn
         played = match.end_turn(player_index=player_idx_with_turn)
         # make move without turn
-        player_idx_without_turn: int = match.get_enemy_index(match.player_turn)
+        player_idx_without_turn: int = match._get_opposed_index(
+            match.player_turn)
         played_bard_move = match.end_turn(player_index=player_idx_without_turn)
         # check if can move and cannot move
         self.assertTrue(played and not played_bard_move)
@@ -122,7 +123,7 @@ class MatchWork(TestCase):
         test_players = async_to_sync(make_test_users)()
         match: Match = Match(1, players=test_players)
         # made card
-        card = get_test_card()
+        card = make_test_card()
         # made unit by card
         card_data: dict = match._made_card_data_by_id(card.id)
         unit = match._board._create_new_unit(card_data, 1, -1)
@@ -136,7 +137,7 @@ class MatchWork(TestCase):
         test_players = async_to_sync(make_test_users)()
         match: Match = Match(1, players=test_players)
         # made card for unit
-        card = get_test_card()
+        card = make_test_card()
         # prepare player indexes
         p1_index = 0
         p2_index = 1
@@ -171,7 +172,7 @@ class MatchWork(TestCase):
         test_players = async_to_sync(make_test_users)()
         match: Match = Match(1, players=test_players)
         # made card for unit
-        card = get_test_card()
+        card = make_test_card()
         # prepare player indexes
         p1_index = 0
         p2_index = 1
@@ -220,8 +221,8 @@ class MatchWork(TestCase):
         test_players = async_to_sync(make_test_users)()
         match: Match = Match(1, players=test_players)
         # made cards for unit
-        card = get_test_card()
-        card2 = get_test_card(CardModel.CardTypes.MISSLEMAN)
+        card = make_test_card()
+        card2 = make_test_card(CardModel.CardTypes.MISSLEMAN)
         # prepare player indexes
         p1_index = 0
         p2_index = 1
@@ -248,7 +249,7 @@ class MatchWork(TestCase):
         test_players = async_to_sync(make_test_users)()
         match: Match = Match(1, players=test_players)
         # made card for unit
-        card = get_test_card()
+        card = make_test_card()
         # prepare player indexes
         p1_index = 0
         p2_index = 1
@@ -279,6 +280,55 @@ class MatchWork(TestCase):
         self.assertNotEqual(start_points, end_points)
 
 
+class MatchWinDetection(TestCase):
+    """ check if Match proper check if some player win """
+    def setUp(self):
+        # make card to players have card at start
+        make_test_card(default_in_deck=True)
+        # prepare match
+        test_players = async_to_sync(make_test_users)()
+        self.match: Match = Match(1, players=test_players)
+
+        # prepare player indexes
+        self.p1_index = 0
+        self.p2_index = 1
+
+    def test_base_points(self):
+        """ test if match check win at base points changes """
+        # default check
+        check0_result: int = self.match._check_if_someone_win()
+        # default player have points and cards so should return -1, nobody win
+        self.assertEqual(-1, check0_result)
+
+        # check by base points
+        self.match._players_data[self.p1_index]["base_points"] = -4
+        check1_result: int = self.match._check_if_someone_win()
+        # if player1 lost all point then wind player2
+        self.assertEqual(self.p2_index, check1_result)
+
+        # check draw base points
+        self.match._players_data[self.p2_index]["base_points"] = -4
+        check2_result: int = self.match._check_if_someone_win()
+        # if both players lost points with the same count should be -2, draw
+        self.assertEqual(-2, check2_result)
+
+    def test_cards(self):
+        """ test if match check win at cards count changes """
+        # when player lost all cards
+        self.match._players_data[self.p1_index]["hand_cards_ids"] = []
+        self.match._players_data[self.p1_index]["deck_cards_ids"] = []
+        check_result: int = self.match._check_if_someone_win()
+        # when player1 have not any card, player2 win
+        self.assertEqual(self.p2_index, check_result)
+
+        # when both player lost all cards
+        self.match._players_data[self.p2_index]["hand_cards_ids"] = []
+        self.match._players_data[self.p2_index]["deck_cards_ids"] = []
+        check2_result: int = self.match._check_if_someone_win()
+        # when player1 and player2 have not any card should be -2, draw
+        self.assertEqual(-2, check2_result)
+
+
 # utils for tests
 
 async def make_test_users() -> list:
@@ -290,10 +340,13 @@ async def make_test_users() -> list:
     return [user1, user2]
 
 
-def get_test_card(card_type=CardModel.CardTypes.INFANTRYMAN) -> CardModel:
+def make_test_card(
+        card_type=CardModel.CardTypes.INFANTRYMAN, default_in_deck=False
+        ) -> CardModel:
     """ make card, save it and return it"""
     card = CardModel(
         name="testCard%s" % random.random(), category=card_type,
-        rarity=CardModel.CardRarities.COMMON, attack=1, hp=99)
+        rarity=CardModel.CardRarities.COMMON, attack=1, hp=99,
+        defaultInDeck=default_in_deck)
     card.save()
     return card

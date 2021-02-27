@@ -25,7 +25,7 @@ class Match:
 
         # list of Users in match
         self.players: list = players
-        # data related players
+        # data related to players
         self._players_data: list = [
             {
                 "username": players[0].username,
@@ -100,7 +100,7 @@ class Match:
                 return i
         return -1
 
-    def get_enemy_index(self, player_index: int) -> int:
+    def _get_opposed_index(self, player_index: int) -> int:
         return (player_index + 1) % 2
 
     # turns stuff
@@ -133,6 +133,8 @@ class Match:
         self._modify_base_points()
         # send info to board that turn change
         self._board.on_turn_change()
+        # check is someone win
+        self._check_someone_win()
 
     def _set_next_turn(self):
         self.player_turn = 1 if self.player_turn == 0 else 0
@@ -172,11 +174,11 @@ class Match:
 
         deck: list = player_data["deck_cards_ids"]
         hand: list = player_data["hand_cards_ids"]
-        # if deck is empty can not draw card from it
-        if len(deck) <= 0:
-            return False
 
         for move in range(count):
+            # if deck is empty can not draw card from it
+            if len(deck) <= 0:
+                return False
             card_id: int = deck.pop()
             hand.append(card_id)
 
@@ -244,10 +246,67 @@ class Match:
         }
         self._send_to_sockets(message, modify=False)
 
+    # win/lost stuff
+
+    def _check_someone_win(self):
+        """ check if some player win and end game """
+        winner_index: int = self._check_if_someone_win()
+        # checking if someone win
+        if winner_index != -1:
+            self._send_to_socket_player_win(winner_index)
+
+    def _check_if_someone_win(self) -> int:
+        """ checking if one of player meet conditions to win
+        :return: int - index of player who win or -1 when nobody win or -2
+        when is draw """
+
+        # check base_points
+
+        player0_points: int = self._players_data[0]["base_points"]
+        player1_points: int = self._players_data[1]["base_points"]
+        if (player0_points <= 0 or player1_points <= 0):
+            if player0_points == player1_points:
+                return -2   # when both players lost all points
+            return 0 if player0_points > player1_points else 1
+
+        # check if someone lost all units and cards (actions)
+
+        players_actions = [0, 0]
+        for player_index in range(2):
+            player_data: dict = self._players_data[player_index]
+            cards_count: int = len(player_data["hand_cards_ids"]) + \
+                len(player_data["deck_cards_ids"])
+            units_count: int = self._board.get_units_count_for_player(
+                player_index)
+            players_actions[player_index] = cards_count + units_count
+
+        # if draw, both players have no actions left
+        if players_actions == [0, 0]:
+            return -2
+
+        # return -1 when nobody lost all units
+        if 0 not in players_actions:
+            return -1
+        # when somebody lost return index of his enemy because he win
+        lost_player_index: int = players_actions.index(0)
+        return -1 if lost_player_index == -1 else self._get_opposed_index(
+            lost_player_index)
+
+    def _send_to_socket_player_win(self, winner_index: int):
+        """ :param winner_index: int - index of player who win, can be -2 then
+        it is draw """
+        message = {
+            'name': 'player-win',
+            'data': {
+                'winner_index': winner_index,
+            }
+        }
+        self._send_to_sockets(message, modify=False)
+
     # overall utils
 
     def _get_safe_player_data_dict(self, player_index: int) -> dict:
-        enemy_index: int = self.get_enemy_index(player_index)
+        enemy_index: int = self._get_opposed_index(player_index)
 
         player_data: dict = self._players_data[player_index]
         enemy_data: dict = self._players_data[enemy_index]
@@ -334,7 +393,7 @@ class Match:
     @_run_only_when_player_has_turn
     def attack_unit(
             self, player_index: int, attacker_id: int, defender_id: int
-            ) -> bool:
+    ) -> bool:
         """ delegate board to attack unit
         :return: bool - if board attack_unit """
         return self._board.attack_unit(player_index, attacker_id, defender_id)

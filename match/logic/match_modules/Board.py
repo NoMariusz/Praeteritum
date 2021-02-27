@@ -101,6 +101,13 @@ class Board():
         return list(map(
             lambda unit: unit.get_data_for_frontend(), self._units))
 
+    def get_units_count_for_player(self, player_index: int) -> int:
+        """ calculate how many is units that belong to player with given index
+        """
+        player_units = list(filter(
+            lambda unit: unit.owner_index == player_index, self._units))
+        return len(player_units)
+
     def _send_to_sockets_units_changed(self):
         """ sending message to sockets with new units """
         message = {
@@ -270,7 +277,7 @@ class Board():
                 unit_in_field: Unit = field.unit
                 # if is Unit on Field and is enemy
                 if (unit_in_field is not None
-                   and unit_in_field.owner_index != player_index):
+                        and unit_in_field.owner_index != player_index):
                     lost_base_points += 1
         return lost_base_points
 
