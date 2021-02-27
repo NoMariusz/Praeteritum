@@ -79,8 +79,8 @@ export const Board = ({ matchSocket, fields, units, turn }) => {
         if (selectedElement.type != SELECTABLE_ELEMENTS.unit) {
             return null;
         }
-        // units are always sorted by id
-        const unit = units[selectedElement.id];
+        // find unit
+        const unit = units.find((e) => e.id == selectedElement.id);
         return unit;
     };
 

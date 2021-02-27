@@ -5,6 +5,7 @@ from asgiref.sync import async_to_sync
 
 from authentication.utils import create_user
 from .logic.Match import Match
+from .logic.match_modules.Unit import Unit
 from .logic.MatchFinder import MatchFinder
 from .logic.MatchManager import match_manager
 from cards.models import CardModel
@@ -193,7 +194,7 @@ class MatchWork(TestCase):
             p1_index, unit2_id, unit1_id)
 
         # make bad attack because unit is too far
-        unit2 = match._board._units[unit2_id]   # get unit2
+        unit2 = match._board._get_unit_by_id(unit2_id)   # get unit2
         unit2.move_points += 999    # modify move_points to move them far
         # move unit2 far from unit1
         match._board.move_unit(p2_index, unit2_id, BOARD_COLUMNS-1)
@@ -228,11 +229,12 @@ class MatchWork(TestCase):
         unit1_id = match._board.add_unit_by_card_data(card_data, p1_index, 0)
         unit2_id = match._board.add_unit_by_card_data(card_data2, p2_index, 1)
         # get start hp of normal INFANTRYMAN Unit
-        start_hp: int = match._board._units[unit1_id].hp
+        unit1: Unit = match._board._get_unit_by_id(unit1_id)
+        start_hp: int = unit1.hp
         # attack as INFANTRYMAN MISSLEMAN Unit
         match._board.attack_unit(p1_index, unit1_id, unit2_id)
         # get hp of INFANTRYMAN Unit after attack
-        end_hp: int = match._board._units[unit1_id].hp
+        end_hp: int = unit1.hp
 
         # check if hp not changed
         self.assertEqual(start_hp, end_hp)

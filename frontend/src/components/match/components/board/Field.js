@@ -20,7 +20,7 @@ export const Field = ({
     const playerIndex = useContext(PlayerIndexContext);
     const { selectedElement, _ } = useContext(SelectedElementContext);
 
-    const unitInField = units.find((unit) => unit?.field_id == fieldData.id);
+    const unitInField = units.find((unit) => unit.field_id == fieldData.id);
 
     const fieldClick = () => {
         // disable clicks on field if is unit on it

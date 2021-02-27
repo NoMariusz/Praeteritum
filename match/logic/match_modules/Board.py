@@ -1,5 +1,5 @@
 from math import floor
-from typing import Callable
+from typing import Callable, Optional
 from ...constatnts import BOARD_COLUMNS, BOARD_ROWS, BASE_FIELDS_IDS, \
     DEFAULT_MOVE_POINTS, DEFAULT_ATTACK_POINTS, STRONG_AGAINST_CAT_TO_CAT, \
     WEAK_AGAINST_CAT_TO_CAT, ONLY_ATTACKER_CAT
@@ -22,8 +22,6 @@ class Board():
         """ make all actions necessary for board when turn change """
         # restore units move points
         for unit in self._units:
-            if unit is None:
-                continue
             unit.move_points = DEFAULT_MOVE_POINTS
             unit.attack_points = DEFAULT_ATTACK_POINTS
 
@@ -101,9 +99,7 @@ class Board():
     def get_units_dicts(self) -> list:
         """ :return: list - contains dicts with jsonable units data """
         return list(map(
-            lambda unit:
-            unit.get_data_for_frontend() if unit is not None else None,
-            self._units))
+            lambda unit: unit.get_data_for_frontend(), self._units))
 
     def _send_to_sockets_units_changed(self):
         """ sending message to sockets with new units """
@@ -122,7 +118,7 @@ class Board():
         """ try to move unit to field
         :return: bool - if the move is successful """
         # get field and unit
-        unit: Unit = self._units[unit_id]
+        unit: Unit = self._get_unit_by_id(unit_id)
         new_field: Field = self._fields[new_field_id]
 
         # check if can move unit
@@ -176,8 +172,8 @@ class Board():
         :param attacker_id: int - id of unit that attack
         :param defender_id: int - id of unit which are attacked
         :return: bool - if attacking succes (if unit attack other) """
-        attacker: Unit = self._units[attacker_id]
-        defender: Unit = self._units[defender_id]
+        attacker: Unit = self._get_unit_by_id(attacker_id)
+        defender: Unit = self._get_unit_by_id(defender_id)
 
         # check if unit can attack other
         if not self._check_if_unit_can_attack(
@@ -254,20 +250,23 @@ class Board():
 
     def _clear_died_units(self):
         """ safely deletes all died units (such that with health <= 0) """
-        # delete units from fields
-        died_units: list = [u for u in self._units
-                            if u is not None and u.hp <= 0]
+        died_units: list = [u for u in self._units if u.hp <= 0]
         for unit in died_units:
+            # delete units from fields
             field = self._fields[unit.field_id]
             field.unit = None
-
-        # not remove from list, but change to null, so indexes in list not
-        # change and unit with id 12 will be at 12 index
-        self._units = list(map(
-            lambda unit: unit if unit is not None and unit.hp > 0 else None,
-            self._units))
+            # remove from units
+            self._units.remove(unit)
 
     # utils
+
+    def _get_unit_by_id(self, unit_id: int) -> Optional[Unit]:
+        """ try to find unit with given id
+        :return: Unit or None - found or not unit """
+        matches = [u for u in self._units if u.id_ == unit_id]
+        if len(matches) <= 0:
+            return None
+        return matches[0]
 
     @staticmethod
     def _calc_distance_from_fields(old_field: Field, new_field: Field) -> int:
