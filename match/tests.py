@@ -146,21 +146,20 @@ class MatchWork(TestCase):
 
         # make good move
         move_1_succes = match._board.move_unit(p1_index, unit1_id, 2)
+        self.assertTrue(move_1_succes)
 
         # make bad move because in field 2 is other unit
         move_2_succes = match._board.move_unit(p1_index, unit1_id, 1)
+        self.assertFalse(move_2_succes)
 
         # make bad move because player1 can not move player2 unit
         move_3_succes = match._board.move_unit(p1_index, unit2_id, 3)
+        self.assertFalse(move_3_succes)
 
         # make bad move because field is too far
         match._board.move_unit(p1_index, unit1_id, 0)
         move_4_succes = match._board.move_unit(
             p1_index, unit1_id, BOARD_COLUMNS-1)
-
-        self.assertTrue(move_1_succes)
-        self.assertFalse(move_2_succes)
-        self.assertFalse(move_3_succes)
         self.assertFalse(move_4_succes)
 
     def test_units_attack(self):
@@ -182,6 +181,7 @@ class MatchWork(TestCase):
         # make good attack
         action_1_succes = match._board.attack_unit(
             p1_index, unit1_id, unit2_id)
+        self.assertTrue(action_1_succes)
 
         # make bad attack because unit1 has not attack points
         for i in range(DEFAULT_ATTACK_POINTS - 1):   # to drain attack points
@@ -189,10 +189,12 @@ class MatchWork(TestCase):
         action_2_succes = match._board.attack_unit(
             p1_index, unit1_id, unit2_id)
         match._board.on_turn_change()   # to restore attack points
+        self.assertFalse(action_2_succes)
 
         # make bad attack because player1 can not attack by player2 unit
         action_3_succes = match._board.attack_unit(
             p1_index, unit2_id, unit1_id)
+        self.assertFalse(action_3_succes)
 
         # make bad attack because unit is too far
         unit2 = match._board._get_unit_by_id(unit2_id)   # get unit2
@@ -201,15 +203,11 @@ class MatchWork(TestCase):
         match._board.move_unit(p2_index, unit2_id, BOARD_COLUMNS-1)
         action_4_succes = match._board.attack_unit(
             p1_index, unit1_id, unit2_id)
+        self.assertFalse(action_4_succes)
 
         # make bad attack because can not attack himself
         action_5_succes = match._board.attack_unit(
             p1_index, unit1_id, unit1_id)
-
-        self.assertTrue(action_1_succes)
-        self.assertFalse(action_2_succes)
-        self.assertFalse(action_3_succes)
-        self.assertFalse(action_4_succes)
         self.assertFalse(action_5_succes)
 
     def test_missleman_not_attack_as_defender(self):
@@ -326,41 +324,42 @@ class MatchWinDetection(TestCase):
         # when player1 and player2 have not any card should be -2, draw
         self.assertEqual(-2, check2_result)
 
-    class MatchAutoDeleting(TestCase):
-        """ check if Match delete self proper """
-        def setUp(self):
-            # creating own match_manager to not influence to global
-            # match_manager singleton
-            self.match_manager = MatchManager()
 
-        async def test_when_nobody_connect(self):
-            """ test if deleting when nobody is in Match """
-            # make match by self.match_manager
-            test_players = await make_test_users()
-            await self.match_manager.make_match(test_players)
-            # check if make match and add to list
-            matches_len = len(self.match_manager.matches)
-            self.assertEqual(matches_len, 1)
-            # wait to match should delete self
-            await asyncio.sleep(MATCH_DELETE_TIMEOUT * 1.1)
-            # check if match is deleted from match_manager list
-            matches_len = len(self.match_manager.matches)
-            self.assertEqual(matches_len, 0)
+class MatchAutoDeleting(TestCase):
+    """ check if Match delete self proper """
+    def setUp(self):
+        # creating own match_manager to not influence to global
+        # match_manager singleton
+        self.match_manager = MatchManager()
 
-        async def test_when_match_end(self):
-            """ test if deleting Match after game end """
-            # make match by self.match_manager
-            test_players = await make_test_users()
-            match_id = await self.match_manager.make_match(test_players)
-            match: Match = self.match_manager.get_match_by_id(match_id)
-            # change base points to somebody lose
-            match._players_data[self.p1_index]["base_points"] = -4
-            match._check_someone_win()
-            # wait to match should delete self
-            await asyncio.sleep(MATCH_DELETE_TIMEOUT * 1.1)
-            # check if match is deleted from match_manager list
-            matches_len = len(self.match_manager.matches)
-            self.assertEqual(matches_len, 0)
+    async def test_when_nobody_connect(self):
+        """ test if deleting when nobody is in Match """
+        # make match by self.match_manager
+        test_players = await make_test_users()
+        await self.match_manager.make_match(test_players)
+        # check if make match and add to list
+        matches_len = len(self.match_manager.matches)
+        self.assertEqual(matches_len, 1)
+        # wait to match should delete self
+        await asyncio.sleep(MATCH_DELETE_TIMEOUT * 1.1)
+        # check if match is deleted from match_manager list
+        matches_len = len(self.match_manager.matches)
+        self.assertEqual(matches_len, 0)
+
+    async def test_when_match_end(self):
+        """ test if deleting Match after game end """
+        # make match by self.match_manager
+        test_players = await make_test_users()
+        match_id = await self.match_manager.make_match(test_players)
+        match: Match = await self.match_manager.get_match_by_id(match_id)
+        # change base points to somebody lose
+        match._players_data[0]["base_points"] = -4
+        match._check_someone_win()
+        # wait to match should delete self
+        await asyncio.sleep(MATCH_DELETE_TIMEOUT * 1.1)
+        # check if match is deleted from match_manager list
+        matches_len = len(self.match_manager.matches)
+        self.assertEqual(matches_len, 0)
 
 
 # utils for tests
