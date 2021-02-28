@@ -12,6 +12,7 @@ import TurnsBlock from "./components/TurnsBlock.js";
 import Board from "./components/board/Board.js";
 import DecksBlock from "./components/deck/DecksBlock.js";
 import HandBlock from "./components/hands/HandBlock.js";
+import EndGameBlock from "./components/end_game_info/EndGameBlock.js";
 import OptionsBlock from "./components/OptionsBlock.js";
 import InfoSnackbar from "./components/InfoSnackbar.js";
 
@@ -32,6 +33,7 @@ export const MatchGame = ({ matchSocket }) => {
     const [turnProgress, setTurnProgress] = useState(0);
     const [fields, setFields] = useState([]);
     const [units, setUnits] = useState([]);
+    const [winnerIndex, setWinnerIndex] = useState(-1);
 
     // selectedElement can represent card or unit
     const [selectedElement, setSelectedElement] = useState(
@@ -68,6 +70,7 @@ export const MatchGame = ({ matchSocket }) => {
                 setFields(messageData.fields);
                 setUnits(messageData.units);
                 setMatchLoaded(true);
+                setWinnerIndex(messageData.winner_index)
                 break;
             case "get-player-index":
                 setPlayerIndex(messageData.player_index);
@@ -129,6 +132,9 @@ export const MatchGame = ({ matchSocket }) => {
                     ...prevState,
                     base_points: messageData.new_points,
                 }));
+                break;
+            case "player-win":
+                setWinnerIndex(messageData.winner_index);
                 break;
             default:
                 break;
@@ -206,6 +212,10 @@ export const MatchGame = ({ matchSocket }) => {
                 snackbarVisible={snackbarVisible}
                 snackbarMessage={snackbarMessage}
                 closeSnackbar={closeSnackbar}
+            />
+            <EndGameBlock
+                winnerIndex={winnerIndex}
+                playerName={playerData.username}
             />
         </Box>
     );

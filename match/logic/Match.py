@@ -55,6 +55,10 @@ class Match:
         self._draw_cards(count=CARDS_DRAWED_AT_START_COUNT, for_player=0)
         self._draw_cards(count=CARDS_DRAWED_AT_START_COUNT, for_player=1)
 
+        # store index of winner globally to have access when sending initial
+        # data
+        self.winner_index = -1
+
         # board
         self._board = Board(self._send_to_sockets)
 
@@ -250,10 +254,10 @@ class Match:
 
     def _check_someone_win(self):
         """ check if some player win and end game """
-        winner_index: int = self._check_if_someone_win()
+        self.winner_index: int = self._check_if_someone_win()
         # checking if someone win
-        if winner_index != -1:
-            self._send_to_socket_player_win(winner_index)
+        if self.winner_index != -1:
+            self._send_to_socket_player_win()
 
     def _check_if_someone_win(self) -> int:
         """ checking if one of player meet conditions to win
@@ -292,13 +296,13 @@ class Match:
         return -1 if lost_player_index == -1 else self._get_opposed_index(
             lost_player_index)
 
-    def _send_to_socket_player_win(self, winner_index: int):
+    def _send_to_socket_player_win(self):
         """ :param winner_index: int - index of player who win, can be -2 then
         it is draw """
         message = {
             'name': 'player-win',
             'data': {
-                'winner_index': winner_index,
+                'winner_index': self.winner_index,
             }
         }
         self._send_to_sockets(message, modify=False)
@@ -352,6 +356,7 @@ class Match:
             "turn": self.player_turn,
             "fields": self._board.get_fields_dicts(player_index),
             "units": self._board.get_units_dicts(),
+            'winner_index': self.winner_index,
         }
 
     @_run_only_when_player_has_turn
