@@ -19,15 +19,17 @@ class FindMatch(AsyncView):
             return HttpResponse(
                 json.dumps({"match_id": match_id}), status=status.HTTP_200_OK)
         return HttpResponse(
-            json.dumps({"error": "MatchFinder not find any match"}),
-            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            json.dumps({
+                "status": "MatchFinder can not find any match, probably"
+                + " cancelled finding"
+            }),
+            status=status.HTTP_404_NOT_FOUND
         )
 
 
 class CancelFindMatch(APIView):
     def post(self, request, format=None):
         user: User = request.user
-        print('math.views CancelFindMatch')
         MatchFinder.cancel(for_player=user)
         return Response(
             {'message': 'cancel finding match'}, status=status.HTTP_200_OK)

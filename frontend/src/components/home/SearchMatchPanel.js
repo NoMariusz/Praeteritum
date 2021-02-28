@@ -22,7 +22,7 @@ export const SearchMatchPanel = ({goToMatchCallback}) => {
                     })
                 } else {
                     setIsSearching(false);
-                    console.log('search error')
+                    console.info('match not found')
                 }
             })
     };
