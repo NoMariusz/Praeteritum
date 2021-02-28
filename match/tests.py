@@ -9,10 +9,10 @@ from .logic.Match import Match
 from .logic.match_modules.Unit import Unit
 from .logic.match_modules.Field import Field
 from .logic.MatchFinder import MatchFinder
-from .logic.MatchManager import match_manager
+from .logic.MatchManager import match_manager, MatchManager
 from cards.models import CardModel
 from .constatnts import TURN_TIME, BOARD_ROWS, BOARD_COLUMNS, \
-    DEFAULT_ATTACK_POINTS
+    DEFAULT_ATTACK_POINTS, MATCH_DELETE_TIMEOUT
 
 
 class FindMatch(TestCase):
@@ -60,11 +60,9 @@ class MatchWork(TestCase):
 
         # get start turn, wait to change it, and assert if turn change
         start_turn = match.player_turn
-        print("get start turn", start_turn)
         # wait a little bit longer to turn have time to change
         await asyncio.sleep(TURN_TIME*1.1)
         next_turn = match.player_turn
-        print("get next_turn", next_turn)
         self.assertNotEqual(start_turn, next_turn)
 
     def test_match_good_format_cards(self):
@@ -73,7 +71,7 @@ class MatchWork(TestCase):
         test_card_name = "test_card_123#@!"
         # made match
         test_players = async_to_sync(make_test_users)()
-        match: Match = Match(1, players=test_players)
+        match: Match = make_match(test_players)
         # made card
         card = CardModel(
             name=test_card_name, category=CardModel.CardTypes.CAVALRYMAN,
@@ -87,7 +85,7 @@ class MatchWork(TestCase):
         """ check if board returning fields in proper order for players"""
         # made match
         test_players = async_to_sync(make_test_users)()
-        match: Match = Match(1, players=test_players)
+        match: Match = make_match(test_players)
         # get fields
         fields_for_0: list = match._board.get_fields_dicts(0)
         fields_for_1: list = match._board.get_fields_dicts(1)
@@ -106,7 +104,7 @@ class MatchWork(TestCase):
         when has no turn """
         # prepare match
         test_players = async_to_sync(make_test_users)()
-        match: Match = Match(1, players=test_players)
+        match: Match = make_match(test_players)
         # make move with turn
         player_idx_with_turn: int = match.player_turn
         played = match.end_turn(player_index=player_idx_with_turn)
@@ -121,7 +119,7 @@ class MatchWork(TestCase):
         """ check if board made proper units by given card data """
         # prepare match
         test_players = async_to_sync(make_test_users)()
-        match: Match = Match(1, players=test_players)
+        match: Match = make_match(test_players)
         # made card
         card = make_test_card()
         # made unit by card
@@ -135,7 +133,7 @@ class MatchWork(TestCase):
         restricted """
         # prepare match
         test_players = async_to_sync(make_test_users)()
-        match: Match = Match(1, players=test_players)
+        match: Match = make_match(test_players)
         # made card for unit
         card = make_test_card()
         # prepare player indexes
@@ -170,7 +168,7 @@ class MatchWork(TestCase):
         are proper restricted"""
         # prepare match
         test_players = async_to_sync(make_test_users)()
-        match: Match = Match(1, players=test_players)
+        match: Match = make_match(test_players)
         # made card for unit
         card = make_test_card()
         # prepare player indexes
@@ -219,7 +217,7 @@ class MatchWork(TestCase):
         """
         # prepare match
         test_players = async_to_sync(make_test_users)()
-        match: Match = Match(1, players=test_players)
+        match: Match = make_match(test_players)
         # made cards for unit
         card = make_test_card()
         card2 = make_test_card(CardModel.CardTypes.MISSLEMAN)
@@ -247,7 +245,7 @@ class MatchWork(TestCase):
         base """
         # prepare match
         test_players = async_to_sync(make_test_users)()
-        match: Match = Match(1, players=test_players)
+        match: Match = make_match(test_players)
         # made card for unit
         card = make_test_card()
         # prepare player indexes
@@ -287,7 +285,7 @@ class MatchWinDetection(TestCase):
         make_test_card(default_in_deck=True)
         # prepare match
         test_players = async_to_sync(make_test_users)()
-        self.match: Match = Match(1, players=test_players)
+        self.match: Match = make_match(test_players)
 
         # prepare player indexes
         self.p1_index = 0
@@ -328,8 +326,51 @@ class MatchWinDetection(TestCase):
         # when player1 and player2 have not any card should be -2, draw
         self.assertEqual(-2, check2_result)
 
+    class MatchAutoDeleting(TestCase):
+        """ check if Match delete self proper """
+        def setUp(self):
+            # creating own match_manager to not influence to global
+            # match_manager singleton
+            self.match_manager = MatchManager()
+
+        async def test_when_nobody_connect(self):
+            """ test if deleting when nobody is in Match """
+            # make match by self.match_manager
+            test_players = await make_test_users()
+            await self.match_manager.make_match(test_players)
+            # check if make match and add to list
+            matches_len = len(self.match_manager.matches)
+            self.assertEqual(matches_len, 1)
+            # wait to match should delete self
+            await asyncio.sleep(MATCH_DELETE_TIMEOUT * 1.1)
+            # check if match is deleted from match_manager list
+            matches_len = len(self.match_manager.matches)
+            self.assertEqual(matches_len, 0)
+
+        async def test_when_match_end(self):
+            """ test if deleting Match after game end """
+            # make match by self.match_manager
+            test_players = await make_test_users()
+            match_id = await self.match_manager.make_match(test_players)
+            match: Match = self.match_manager.get_match_by_id(match_id)
+            # change base points to somebody lose
+            match._players_data[self.p1_index]["base_points"] = -4
+            match._check_someone_win()
+            # wait to match should delete self
+            await asyncio.sleep(MATCH_DELETE_TIMEOUT * 1.1)
+            # check if match is deleted from match_manager list
+            matches_len = len(self.match_manager.matches)
+            self.assertEqual(matches_len, 0)
+
 
 # utils for tests
+
+def make_match(players: list) -> Match:
+    """ making match direcly by Class constructor and return it """
+    return Match(
+        1, players=players,
+        delete_callback=lambda _: _)
+
 
 async def make_test_users() -> list:
     """ Make two test players in base and return list of them """

@@ -1,6 +1,6 @@
 import random
 import time
-from threading import Thread
+from threading import Thread, Timer
 from datetime import datetime
 from typing import Callable, Optional
 from asgiref.sync import async_to_sync
@@ -12,11 +12,13 @@ from cards.serializers import CardSerializer
 from .match_modules.Board import Board
 from ..constatnts import DEFAULT_BASE_POINTS, TURN_TIME, \
     TURN_STATUS_REFRESH_TIME, CARDS_DRAWED_AT_START_COUNT, \
-    CARDS_DRAWED_AT_TURN_COUNT
+    CARDS_DRAWED_AT_TURN_COUNT, MATCH_DELETE_TIMEOUT
 
 
 class Match:
-    def __init__(self, id_: int, players: list):
+    def __init__(self, id_: int, players: list, delete_callback: Callable):
+        """ :param delete_callback: Callable - function from parrent deleting
+        Match """
         self.live: bool = True
         self.id_: int = id_
 
@@ -48,7 +50,7 @@ class Match:
 
         # start thread with timer to change turn
         self._turn_timer_thread: Thread = Thread(
-            target=self._start_turn_timer_loop, daemon=True)
+            target=self._turn_timer, daemon=True)
         self._turn_timer_thread.start()
 
         # drawing cards
@@ -59,21 +61,63 @@ class Match:
         # data
         self.winner_index = -1
 
+        # lifecycle / deleting match
+        self._delete_callback = delete_callback
+        self._auto_delete_timer: Optional[Timer] = None
+        self._connected_consumers_count = 0
+        # start auto deleting timer, he will be cancelled when somebody
+        # connect
+        self._start_auto_delete_timer()
+
         # board
         self._board = Board(self._send_to_sockets)
 
+    # lifecycle / selfdeleting stuff
+
     def __del__(self):
-        # to stop thread
+        # to defifnietly stop turn change thread
         self.live = False
 
-    # sockets stuff
+    def _auto_delete(self):
+        print("\tInfo: Match: Automatic deleting %s" % self)
+        # to delete references in match_manager
+        self._delete_callback(self)
+
+    def _start_auto_delete_timer(self):
+        """ start Timer deleting self after some time """
+        self._auto_delete_timer = Timer(
+            MATCH_DELETE_TIMEOUT, self._auto_delete)
+        self._auto_delete_timer.daemon = True
+        self._auto_delete_timer.start()
+
+    def _cancel_auto_delete_timer(self):
+        """ safe cancel timer trying to delete this object """
+        if self._auto_delete_timer is not None:
+            self._auto_delete_timer.cancel()
+            self._auto_delete_timer = None
+
+    # sockets / connection stuff
 
     def connect_socket(
             self, channel_layer: RedisChannelLayer, user: User) -> bool:
+        """ connecting socket channel_layer to self so can send messages """
         if user not in self.players:
             return False
+
         self.channel_layer = channel_layer
+
+        # when somebody connect cancel deleting self
+        self._connected_consumers_count += 1
+        self._cancel_auto_delete_timer()
+
         return True
+
+    def consumer_disconnect(self):
+        """ when some matchConsumer disconnect """
+        self._connected_consumers_count -= 1
+        # when all consumers disconnect set timer deleting self
+        if (self._connected_consumers_count <= 0):
+            self._start_auto_delete_timer()
 
     def _send_to_sockets(self, message: dict, modify=False):
         """ sending given message: dict to match sockets by channel layer,
@@ -109,7 +153,7 @@ class Match:
 
     # turns stuff
 
-    def _start_turn_timer_loop(self):
+    def _turn_timer(self):
         while self.live:
             # sleep task
             time.sleep(TURN_STATUS_REFRESH_TIME)
@@ -258,6 +302,9 @@ class Match:
         # checking if someone win
         if self.winner_index != -1:
             self._send_to_socket_player_win()
+            self.live = False
+            # delete self after some time
+            self._start_auto_delete_timer()
 
     def _check_if_someone_win(self) -> int:
         """ checking if one of player meet conditions to win

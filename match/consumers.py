@@ -66,6 +66,10 @@ class MatchConsumer(WebsocketConsumer):
         self.accept()
 
     def disconnect(self, close_code):
+        # send information to match that consumer disconnect
+        match = self._get_match()
+        if match is not None:
+            match.consumer_disconnect()
         # Leave match group
         async_to_sync(self.channel_layer.group_discard)(
             self.match_name,
