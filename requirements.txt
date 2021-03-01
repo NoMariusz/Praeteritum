@@ -32,6 +32,7 @@ service-identity==18.1.0
 six==1.15.0
 sqlparse==0.4.1
 toml==0.10.2
-Twisted @ file:/Twisted-20.3.0-cp39-cp39-win_amd64.whl
+Twisted==21.2.0
+twisted-iocpsupport==1.0.1
 txaio==20.12.1
 zope.interface==5.2.0
