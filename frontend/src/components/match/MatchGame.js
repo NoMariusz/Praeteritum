@@ -207,7 +207,7 @@ export const MatchGame = ({ matchSocket }) => {
             {/* Elements with absolute positions */}
             <HandBlock forMainPlayer={true} playerData={playerData} />
             <HandBlock forMainPlayer={false} playerData={enemyData} />
-            <OptionsBlock />
+            {/* <OptionsBlock /> */}
             <InfoSnackbar
                 snackbarVisible={snackbarVisible}
                 snackbarMessage={snackbarMessage}
