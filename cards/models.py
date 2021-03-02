@@ -22,7 +22,7 @@ class CardModel(models.Model):
     class CardEffects(models.IntegerChoices):
         pass
 
-    name = models.CharField(max_length=50, null=False, unique=True)
+    name = models.CharField(max_length=50, null=False)
     category = models.IntegerField(choices=CardTypes.choices, null=False)
     rarity = models.IntegerField(choices=CardRarities.choices, null=False)
     attack = models.PositiveIntegerField(null=False)
