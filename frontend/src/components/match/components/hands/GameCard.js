@@ -1,5 +1,6 @@
 import React, { useContext, useState } from "react";
 import { Box, Typography, Collapse, Slide } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 
 import { CARD_MARGIN_X } from "./constants.js";
 import {
@@ -14,11 +15,25 @@ import HpParam from "./cards_elements/HpParam.js";
 import TypeParam from "./cards_elements/TypeParam.js";
 import RarityParam from "./cards_elements/RarityParam.js";
 
-export const GameCard = ({ cardData, maxWidth }) => {
+// to make own css styles
+const useStyles = makeStyles({
+    cardImage: {
+        backgroundImage: (props) => props.path,
+        backgroundPosition: "center",
+        backgroundSize: "cover",
+        backgroundRepeat: "no-repeat",
+    }
+});
+
+export const GameCard = ({ cardData, maxCardWidth }) => {
     const { selectedElement, setSelectedElement } = useContext(
         SelectedElementContext
     );
     const [showFull, setShowFull] = useState(false);
+
+    // making styles for cards elements
+    const imgPath = `url("${CARD_IMAGES_PATH + cardData.image}")`;
+    const styleClasses = useStyles({ path: imgPath });
 
     const isSelected =
         selectedElement.id == cardData.id &&
@@ -48,7 +63,7 @@ export const GameCard = ({ cardData, maxWidth }) => {
     return (
         <Slide direction="up" in>
             <Box
-                maxWidth={showFull ? "1" : maxWidth - CARD_MARGIN_X * 2}
+                maxWidth={showFull ? "10rem" : maxCardWidth - CARD_MARGIN_X * 2}
                 mx={CARD_MARGIN_X * 100 + "%"}
                 onMouseOver={() => setShowFull(true)}
                 onMouseOut={() => setShowFull(false)}
@@ -57,7 +72,7 @@ export const GameCard = ({ cardData, maxWidth }) => {
                     display="flex"
                     flexDirection="column"
                     justifyContent="center"
-                    width="1"
+                    width={1}
                     border={2}
                     borderRadius={8}
                     borderColor={isSelected ? HIGHLIGHT_COLOR : "primary.main"}
@@ -87,14 +102,12 @@ export const GameCard = ({ cardData, maxWidth }) => {
                             display="flex"
                             justifyContent="center"
                         >
-                            <Box width={0.8} borderRadius={8} overflow="hidden">
-                                <img
-                                    src={CARD_IMAGES_PATH + cardData.image}
-                                    title="Card image"
-                                    width="100%"
-                                    height="100%"
-                                />
-                            </Box>
+                            <Box
+                                width={0.8}
+                                height="5rem"
+                                borderRadius={8}
+                                classes={{ root: styleClasses.cardImage }}
+                            />
                         </Box>
                     </Collapse>
                     {/* Block displaying statistics */}
@@ -102,7 +115,7 @@ export const GameCard = ({ cardData, maxWidth }) => {
                         mt={0.5}
                         display="flex"
                         flexDirection="row"
-                        justifyContent="space-between"
+                        justifyContent="space-evenly"
                         alignItems="flex-end"
                         width="1"
                     >
@@ -110,7 +123,7 @@ export const GameCard = ({ cardData, maxWidth }) => {
                             value={cardData.attack}
                             isFull={showFull}
                         />
-                        <Box width={0.5} px={1}>
+                        <Box px={0.5} flex="1">
                             <TypeParam value={cardData.category} />
                             <Collapse in={showFull}>
                                 <RarityParam value={cardData.rarity} />

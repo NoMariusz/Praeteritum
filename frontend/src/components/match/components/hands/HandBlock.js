@@ -20,14 +20,14 @@ export const HandBlock = ({ forMainPlayer, playerData }) => {
                 display="flex"
                 alignItems={forMainPlayer ? "flex-end" : "flex-start"}
                 justifyContent="center"
-                maxWidth="80%"
+                width="80%"
             >
                 {cards.map((card) =>
                     forMainPlayer ? (
                         <GameCard
                             cardData={card}
                             // set card width relative to cards count
-                            maxWidth={Math.min(1 / cards.length, 0.3)}
+                            maxCardWidth={Math.min(1 / cards.length, 0.3)}
                         />
                     ) : (
                         <CoveredCard />

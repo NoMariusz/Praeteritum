@@ -8,6 +8,9 @@ export const CardParam = ({ color, children }) => {
             color="primary.contrastText"
             p={0.5}
             borderRadius={8}
+            flex="1"
+            display="flex"
+            justifyContent="center"
         >
             {children}
         </Box>

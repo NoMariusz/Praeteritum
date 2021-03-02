@@ -1,3 +1,4 @@
+// margin between player cards in hand
 export const CARD_MARGIN_X = 0.003;
 
 // list storing rarity colors in order as in choice in model
