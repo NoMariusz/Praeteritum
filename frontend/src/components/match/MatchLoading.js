@@ -9,6 +9,8 @@ import {
 } from "@material-ui/core";
 
 export const MatchLoading = () => {
+    /* display information about connecting to the Match in backend */
+
     return (
         <Container>
             <Box

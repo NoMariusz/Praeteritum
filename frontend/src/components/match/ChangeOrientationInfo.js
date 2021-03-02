@@ -3,6 +3,8 @@ import { Container, Box, Paper, Typography } from "@material-ui/core";
 import StayPrimaryLandscapeIcon from "@material-ui/icons/StayPrimaryLandscape";
 
 export const ChangeOrientationInfo = () => {
+    /* show information about necessity to change orientation to landscape */
+    
     return (
         <Container>
             <Box
@@ -18,7 +20,7 @@ export const ChangeOrientationInfo = () => {
                             Please, change your orientation to landscape
                         </Typography>
                         <Typography variant="subtitle1" align="center">
-                            We can not display match correctly at portrair mode
+                            We can not display content correctly at portrait mode
                         </Typography>
                     </Box>
                 </Paper>

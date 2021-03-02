@@ -13,6 +13,9 @@ import {
 import ErrorIcon from "@material-ui/icons/Error";
 
 export const MatchConnectError = () => {
+    /* display information about error with connection to match in backend and
+    show some reasons of that situation */
+
     return (
         <Container>
             <Box

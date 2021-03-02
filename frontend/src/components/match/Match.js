@@ -4,9 +4,12 @@ import { MATCH_CONNECTION_STATUSES } from "./constants.js";
 import MatchLoading from "./MatchLoading.js";
 import MatchConnectError from "./MatchConnectError.js";
 import MatchGame from "./MatchGame.js";
-import ChangeOrientationInfo from "./ChangeOrientationInfol.js";
+import ChangeOrientationInfo from "./ChangeOrientationInfo.js";
 
 export const Match = (props) => {
+    /* main match component managing connection with socket and checking
+    screen orientation to render proper Match parts */
+
     // sockets values
     let matchId = props.match.params.matchId;
     const [matchSocket, setMatchSocket] = useState(null);
@@ -52,7 +55,7 @@ export const Match = (props) => {
 
     // rendering
 
-    const renderMatch = () => {
+    const renderGame = () => {
         return isLandscape ? (
             <MatchGame matchSocket={matchSocket} />
         ) : (
@@ -64,7 +67,7 @@ export const Match = (props) => {
         case MATCH_CONNECTION_STATUSES.connecting:
             return <MatchLoading />;
         case MATCH_CONNECTION_STATUSES.connected:
-            return renderMatch();
+            return renderGame();
         case MATCH_CONNECTION_STATUSES.canNotConnect:
             return <MatchConnectError />;
         default:

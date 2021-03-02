@@ -17,8 +17,13 @@ import OptionsBlock from "./components/OptionsBlock.js";
 import InfoSnackbar from "./components/InfoSnackbar.js";
 
 export const MatchGame = ({ matchSocket }) => {
+    /* represents Match object from backend and enable to play a match by store
+    states with match data and manage components responsible for specific
+    parts of play */
+
     const [matchLoaded, setMatchLoaded] = useState(false);
-    // game related values
+
+    // object templates for data related to specific players in match
     const playersDataTemplate = {
         username: "",
         base_points: 0,
@@ -26,6 +31,8 @@ export const MatchGame = ({ matchSocket }) => {
     };
     const playerDataTemplate = { ...playersDataTemplate, hand_cards: [] };
     const enemyDataTemplate = { ...playersDataTemplate, hand_cards_count: 0 };
+
+    // game related states
     const [playerData, setPlayerData] = useState(playerDataTemplate);
     const [enemyData, setEnemyData] = useState(enemyDataTemplate);
     const [playerIndex, setPlayerIndex] = useState(-1);
@@ -55,7 +62,7 @@ export const MatchGame = ({ matchSocket }) => {
         setSnackbarVisible(false);
     };
 
-    // set onmessage
+    // set listener to socket messages
     matchSocket.onmessage = (e) => {
         const data = JSON.parse(e.data);
         console.log(`websocket onmessage: ${data.message.name}`);
@@ -220,7 +227,7 @@ export const MatchGame = ({ matchSocket }) => {
         </Box>
     );
 
-    // render match if fully loads
+    // render match if data from backend is loaded
     return matchLoaded ? (
         <PlayerIndexContext.Provider value={playerIndex}>
             <SelectedElementContext.Provider

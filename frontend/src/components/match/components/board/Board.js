@@ -9,6 +9,10 @@ import {
 import { SelectedElementContext } from "../../matchContexts.js";
 
 export const Board = ({ matchSocket, fields, units, turn }) => {
+    /* represents Board object in backend and is responsible for rendering
+    fields and units on itself and communicating with socket to perform
+    actions related with board */
+
     const { selectedElement, setSelectedElement } = useContext(
         SelectedElementContext
     );
@@ -75,7 +79,8 @@ export const Board = ({ matchSocket, fields, units, turn }) => {
     // rendering field helpers
 
     const getSelectedUnit = () => {
-        /* get selected unit to fields can hightlight proper */
+        /* get selected unit to fields can hightlight self proper and not have
+        to find by itself */
         if (selectedElement.type != SELECTABLE_ELEMENTS.unit) {
             return null;
         }
@@ -85,7 +90,8 @@ export const Board = ({ matchSocket, fields, units, turn }) => {
     };
 
     const getSelectedUnitField = () => {
-        /* get selected unit field, to fields can hightlight proper */
+        /* get selected unit field to fields can hightlight proper and not have
+        to find by itself */
         const unit = getSelectedUnit();
         if (unit == null) {
             return null;

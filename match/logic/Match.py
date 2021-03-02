@@ -16,9 +16,13 @@ from ..constatnts import DEFAULT_BASE_POINTS, TURN_TIME, \
 
 
 class Match:
+    """ store informations and managing them to enable play a match and
+    communicate with sockets by sending them messages with changes of
+    match state, so they recieve information immediately """
+
     def __init__(self, id_: int, players: list, delete_callback: Callable):
-        """ :param delete_callback: Callable - function from parrent deleting
-        Match """
+        """ :param delete_callback: Callable - function from parrent enabling
+        to delete self by remove references in MatchManager """
         self.live: bool = True
         self.id_: int = id_
 
@@ -72,7 +76,7 @@ class Match:
         # board
         self._board = Board(self._send_to_sockets)
 
-    # lifecycle / selfdeleting stuff
+    # lifecycle / deleting self stuff
 
     def __del__(self):
         # to defifnietly stop turn change thread
@@ -217,7 +221,8 @@ class Match:
         return player_cards_ids
 
     def _draw_cards(self, count: int, for_player: int) -> bool:
-        # move cards from deck to hand cunt: int times, for specified plauer
+        """ move cards from deck to hand
+        :param count: int - amount of cards to draw """
         player_data: dict = self._players_data[for_player]
 
         deck: list = player_data["deck_cards_ids"]

@@ -3,10 +3,15 @@ from asgiref.sync import sync_to_async
 
 
 class MatchManager:
-    """ Responsible for creating matches, managing them, and provide
-    connection to them """
+    """ class responsible for:
+    - creating matches for given players
+    - storing references to them, so garbage collector can not delete them
+    - returning matches by giving match id
+    - allowing to delete matches by removing reference to them from matches
+    list """
 
     def __init__(self):
+        # list storing reference to all matches
         self.matches = []
         self.id_counter: int = 0
 
@@ -30,8 +35,7 @@ class MatchManager:
         """ delete reference to Match so garbage collector can delete him """
         if match in self.matches:
             self.matches.remove(match)
-            del match
 
 
-# some kind of singleton managing matches
+# singleton of class MatchManager
 match_manager = MatchManager()
