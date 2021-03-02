@@ -23,10 +23,10 @@ export const FormWrapper = (props) => {
     const classes = useStyles();
 
     return <Box classes={{root: classes.root}}>
-        <Box pt={3}>
+        <Box py={3}>
             <Container maxWidth="xs">
                 <Paper variant="outlined" elevation={3}>
-                    <Box p={1}>
+                    <Box p={1} m={1}>
                         {props.children}
                     </Box>
                 </Paper>
