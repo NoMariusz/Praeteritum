@@ -9,7 +9,7 @@ export const HandBlock = ({ forMainPlayer, playerData }) => {
         : Array(playerData.hand_cards_count).fill(undefined);
     return (
         <Box
-            position="absolute"
+            position="fixed"
             bottom={forMainPlayer ? "0px" : ""}
             top={forMainPlayer ? "" : "0px"}
             display="flex"

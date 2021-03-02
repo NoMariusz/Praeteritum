@@ -153,7 +153,7 @@ export const MatchGame = ({ matchSocket }) => {
     // rendering
 
     const mainComponent = () => (
-        <Box height="100vh" width="100vw">
+        <Box height="100%" width="100%">
             <Grid container>
                 {/* Block at left frem board with player info, and round
                 related stuff */}
@@ -162,7 +162,7 @@ export const MatchGame = ({ matchSocket }) => {
                         display="flex"
                         flexDirection="column"
                         justifyContent="space-between"
-                        height="100vh"
+                        height="100%"
                     >
                         <PlayerInfoMatchBlock
                             playerData={enemyData}

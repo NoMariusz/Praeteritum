@@ -54,7 +54,7 @@ export const PlayerInfoMatchBlock = ({ playerData, positionInBox }) => {
             {positionInBox == PLAYER_INFO_POSITIONS.top
                 ? playerCard
                 : playerPoints}
-            {/* to make margin, without force centering block */}
+            {/* to make margin between blocks */}
             <Box mt={{ xs: 0, sm: 3, md: 6 }} width={1}>
                 {positionInBox == PLAYER_INFO_POSITIONS.top
                     ? playerPoints

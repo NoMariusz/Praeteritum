@@ -95,25 +95,28 @@ export const Board = ({ matchSocket, fields, units, turn }) => {
     };
 
     return (
-        <Box
-            width={MATCH_BOARD_SIZE}
-            my={`calc((100vh - ${MATCH_BOARD_SIZE}) / 2)`}
-            height={MATCH_BOARD_SIZE}
-            display="flex"
-            // to turn the board towards the player
-            flexWrap="wrap-reverse"
-        >
-            {fields.map((field) => (
-                <Field
-                    fieldData={field}
-                    selectedUnitField={getSelectedUnitField()}
-                    selectedUnit={getSelectedUnit()}
-                    handleClickOnField={handleClickOnField}
-                    handleClickOnEnemyUnit={handleClickOnEnemyUnit}
-                    units={units}
-                    turn={turn}
-                />
-            ))}
+        <Box display="flex" alignItems="center" justifyContent="center" height={1}>
+            <Box
+                width={MATCH_BOARD_SIZE}
+                my={`calc((100vh - ${MATCH_BOARD_SIZE}) / 2)`}
+                mx="auto" // to center Board in parent
+                height={MATCH_BOARD_SIZE}
+                display="flex"
+                // to turn the board towards the player
+                flexWrap="wrap-reverse"
+            >
+                {fields.map((field) => (
+                    <Field
+                        fieldData={field}
+                        selectedUnitField={getSelectedUnitField()}
+                        selectedUnit={getSelectedUnit()}
+                        handleClickOnField={handleClickOnField}
+                        handleClickOnEnemyUnit={handleClickOnEnemyUnit}
+                        units={units}
+                        turn={turn}
+                    />
+                ))}
+            </Box>
         </Box>
     );
 };
