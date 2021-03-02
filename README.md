@@ -4,6 +4,10 @@
 
 Online game combining original battle strategy games with fast-paced card games in turn-based form
 
+![Game UI](https://user-images.githubusercontent.com/60425872/109683342-8ce7da00-7b7f-11eb-93a8-f3fae7b65846.jpg)
+
+> ⚠️ Project is in very early stage of development
+
 ## Features
 
 - **Match**: you can combat against other player by your cards to capture his base or destroy his units and gain glory
@@ -15,7 +19,7 @@ Online game combining original battle strategy games with fast-paced card games 
 ## Installation
 
 Praeteritum requires Python 3.9.1, pip >= 20.2.3 and Redis >= 5.0
-###### Note! Redis service should be active to django-channels run correctly
+###### ⚠️ Redis service should be active to django-channels can run correctly
 
 Clone repository from github
 ```
@@ -42,7 +46,7 @@ Finally you can run server
 py manage.py runserver 127.0.0.1:80
 ```
 
-###### Hint! If you want to play a match, not forgot add some cards from admin page
+###### Hint! If you want to play a match, don't forgot add some cards from admin page
 
 ## Contributing
 
