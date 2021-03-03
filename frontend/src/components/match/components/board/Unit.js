@@ -3,10 +3,10 @@ import { Box, Typography, Tooltip, Zoom } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import {
     CARD_IMAGES_PATH,
-    CARD_TYPES,
     SELECTABLE_ELEMENTS,
     SELECTED_ELEMENT_TEMPLATE,
 } from "../../constants.js";
+import { CARD_TYPES } from "components/card/constants.js";
 import {
     PlayerIndexContext,
     SelectedElementContext,

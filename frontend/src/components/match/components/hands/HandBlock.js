@@ -1,7 +1,7 @@
 import React from "react";
 import { Box } from "@material-ui/core";
-import CardInMatch from "./CardInMatch.js";
-import CoveredCard from "./CoveredCard.js";
+import CardInMatch from "./cards/CardInMatch.js";
+import CoveredCard from "./cards/CoveredCard.js";
 
 export const HandBlock = ({ forMainPlayer, playerData }) => {
     const cards = forMainPlayer

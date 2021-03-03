@@ -2,7 +2,7 @@ import React from "react";
 import { Box, Typography, Collapse } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
-import { CARD_IMAGES_PATH, HIGHLIGHT_COLOR } from "../../constants.js";
+import { CARD_IMAGES_PATH, HIGHLIGHT_COLOR } from "../match/constants.js";
 import AttackParam from "./cards_elements/AttackParam.js";
 import HpParam from "./cards_elements/HpParam.js";
 import TypeParam from "./cards_elements/TypeParam.js";
@@ -53,11 +53,11 @@ export const Card_ = ({
             {/* Displaying card name */}
             <Box
                 borderRadius={8}
-                // p={showFull ? 0.5 : 0}
+                p={showFull ? 0.5 : 0}
                 color="primary.main"
             >
                 <Typography
-                    // variant={showFull ? "h6" : "body1"}
+                    variant={showFull ? "h6" : "body1"}
                     align="center"
                     noWrap
                 >
