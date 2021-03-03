@@ -4,7 +4,7 @@
 
 Online game combining original battle strategy games with fast-paced card games in turn-based form
 
-![Game UI](https://user-images.githubusercontent.com/60425872/109683342-8ce7da00-7b7f-11eb-93a8-f3fae7b65846.jpg)
+![Match UI](https://user-images.githubusercontent.com/60425872/109867369-b0d21b00-7c66-11eb-8637-49fd04a0ff60.jpg)
 
 > ⚠️ Project is in very early stage of development
 
@@ -15,6 +15,14 @@ Online game combining original battle strategy games with fast-paced card games 
 - **Units relations**: every unit is unique in some way, units categories affect in different way on each other
 - **Strategy**: arrangement of your units in board is important to win
 - **Accounts**: to information about your deck, collection etc. was safely stored
+
+## Built with
+
+* [Django](https://github.com/django/django)
+* [Django REST framework](https://github.com/encode/django-rest-framework)
+* [Django Channels](https://github.com/django/channels)
+* [React](https://github.com/facebook/react)
+* [Material-UI](https://github.com/mui-org/material-ui)
 
 ## Installation
 
