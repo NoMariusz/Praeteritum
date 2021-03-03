@@ -1,5 +1,4 @@
-// margin between player cards in hand
-export const CARD_MARGIN_X = 0.003;
+export const FULL_CARD_WIDTH = '10rem';
 
 // list storing rarity colors in order as in choice in model
 export const CARD_RARITIES_COLORS = [
@@ -7,5 +6,5 @@ export const CARD_RARITIES_COLORS = [
     "#36B552",
     "#B5B036",
     "#B5515D",
-    "#B5952D",
+    "#E89A3A",
 ];

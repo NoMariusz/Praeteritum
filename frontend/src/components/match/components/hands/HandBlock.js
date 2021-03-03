@@ -1,6 +1,6 @@
 import React from "react";
 import { Box } from "@material-ui/core";
-import GameCard from "./GameCard.js";
+import CardInMatch from "./CardInMatch.js";
 import CoveredCard from "./CoveredCard.js";
 
 export const HandBlock = ({ forMainPlayer, playerData }) => {
@@ -24,10 +24,9 @@ export const HandBlock = ({ forMainPlayer, playerData }) => {
             >
                 {cards.map((card) =>
                     forMainPlayer ? (
-                        <GameCard
+                        <CardInMatch
                             cardData={card}
-                            // set card width relative to cards count
-                            maxCardWidth={Math.min(1 / cards.length, 0.3)}
+                            cardsCount={cards.length}
                         />
                     ) : (
                         <CoveredCard />

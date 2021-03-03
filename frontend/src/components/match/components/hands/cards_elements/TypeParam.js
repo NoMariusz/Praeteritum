@@ -3,9 +3,9 @@ import { Typography, Tooltip } from "@material-ui/core";
 import CardParam from "./CardParam.js";
 import { CARD_TYPES } from "../../../constants.js";
 
-export const TypeParam = ({ value }) => {
+export const TypeParam = ({ typeIndex }) => {
     // const storing card type shortname at index 0, and fullname at index 1
-    const cardTypeList = CARD_TYPES[value];
+    const cardTypeList = CARD_TYPES[typeIndex];
     return (
         <CardParam color="text.secondary">
             <Tooltip
