@@ -10,10 +10,9 @@ class MatchManager:
     - allowing to delete matches by removing reference to them from matches
     list """
 
-    def __init__(self):
-        # list storing reference to all matches
-        self.matches = []
-        self.id_counter: int = 0
+    # list storing reference to all matches
+    matches = []
+    id_counter = 0
 
     async def make_match(self, for_players: list) -> int:
         """ making match for specified players, and return its id """
@@ -35,7 +34,3 @@ class MatchManager:
         """ delete reference to Match so garbage collector can delete him """
         if match in self.matches:
             self.matches.remove(match)
-
-
-# singleton of class MatchManager
-match_manager = MatchManager()

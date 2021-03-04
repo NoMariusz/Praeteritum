@@ -1,7 +1,7 @@
 import json
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
-from .logic.MatchManager import match_manager
+from .logic.MatchManager import MatchManager
 from .logic.Match import Match
 
 
@@ -126,6 +126,7 @@ class MatchConsumer(WebsocketConsumer):
             raise Exception("Socket can not find his player_index")
 
     def _get_match(self) -> Match:
+        match_manager = MatchManager()
         return async_to_sync(match_manager.get_match_by_id)(self.match_id)
 
     # utils related to recieve/send

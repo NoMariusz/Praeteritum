@@ -12,9 +12,10 @@ class MatchAutoDeleting(TestCase):
     """ check if Match delete self proper """
 
     def setUp(self):
-        # creating own match_manager to not influence to global
-        # match_manager singleton
         self.match_manager = MatchManager()
+        # clear match list from match_manager to be sure that is 0 matches at
+        # test start
+        self.match_manager.matches = []
         # make match by self.match_manager
         test_players = async_to_sync(make_test_users)()
         self.match_id: int = async_to_sync(

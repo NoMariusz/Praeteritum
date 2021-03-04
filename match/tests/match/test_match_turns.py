@@ -1,7 +1,7 @@
 import asyncio
 from django.test import TestCase
 
-from ...logic.MatchManager import match_manager
+from ...logic.MatchManager import MatchManager
 from ...logic.Match import Match
 from ...constatnts import TURN_TIME
 from ..utils import make_test_users
@@ -12,6 +12,7 @@ class Matchturns(TestCase):
         """check if match turn changed in time correctly"""
         # make match
         test_players = await make_test_users()
+        match_manager = MatchManager()
         match_id = await match_manager.make_match(test_players)
         match: Match = await match_manager.get_match_by_id(match_id)
 

@@ -2,7 +2,7 @@ import asyncio
 import weakref
 from typing import Optional
 from django.contrib.auth.models import User
-from .MatchManager import match_manager
+from .MatchManager import MatchManager
 
 
 class MatchFinder:
@@ -60,6 +60,7 @@ class MatchFinder:
             # when found other player
             second_player = filered_list[0]
             # making match for players
+            match_manager = MatchManager()
             match_id = await match_manager.make_match(
                 [self.player, second_player])
             # send info to other finders that match is found
