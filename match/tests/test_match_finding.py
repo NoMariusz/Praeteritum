@@ -10,6 +10,7 @@ class FindingMatch(TestCase):
         """check if can find match, get proper ids"""
 
         finder_coros = []
+        finders = []
         match_ids = []
 
         async def wait_to_get_match_id(coroutine):
@@ -20,6 +21,9 @@ class FindingMatch(TestCase):
         test_players = await make_test_users()
         for user in test_players:
             finder = MatchFinder(user)
+            # add finder to list so garbage collector can not delete them
+            # before test end
+            finders.append(finder)
             finder_coros.append(finder.find_match())
         # wait to all users recieve match id
         await asyncio.gather(
