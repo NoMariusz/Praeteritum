@@ -7,7 +7,7 @@ import {
     SELECTED_ELEMENT_TEMPLATE,
 } from "../../../constants.js";
 import { SelectedElementContext } from "../../../matchContexts.js";
-import FullCardWrapper from "./FullCardWrapper.js";
+import CardSizeWrapper from "./CardSizeWrapper.js";
 
 export const CardInMatch = ({ cardData, cardsCount }) => {
     /* adapt Card_ to work with match, handle card hover effect and selecting card */
@@ -43,32 +43,29 @@ export const CardInMatch = ({ cardData, cardsCount }) => {
         }
     };
 
-    const hoverableCard = (
-        <Box
-            onMouseEnter={() => setShowFull(true)}
-            onMouseLeave={() => setShowFull(false)}
-            mx="3%"
-        >
-            <Card_
-                cardData={cardData}
-                showFull={showFull}
-                isSelected={isSelected}
-                clickCallback={selectCard}
-            />
-        </Box>
-    );
-
     return (
-        <Slide direction="up" in>
-            {/* conditionally wrap card in proper size wrapper */}
-            {showFull ? (
-                <FullCardWrapper minimizedCardWidth={minimizedCardWidth}>
-                    {hoverableCard}
-                </FullCardWrapper>
-            ) : (
-                <Box width={minimizedCardWidth}>{hoverableCard}</Box>
-            )}
-        </Slide>
+        // to change card size on hover
+        <CardSizeWrapper
+            showFull={showFull}
+            minimizedCardWidth={minimizedCardWidth}
+        >
+            {/* to provide slide when new card is inserted */}
+            <Slide direction="up" in>
+                {/* to provide hover and margin between cards */}
+                <Box
+                    onMouseEnter={() => setShowFull(true)}
+                    onMouseLeave={() => setShowFull(false)}
+                    mx="3%"
+                >
+                    <Card_
+                        cardData={cardData}
+                        showFull={showFull}
+                        isSelected={isSelected}
+                        clickCallback={selectCard}
+                    />
+                </Box>
+            </Slide>
+        </CardSizeWrapper>
     );
 };
 
