@@ -24,7 +24,6 @@ class MatchConsumer(WebsocketConsumer):
 
         self.recieve_commands = {
             "get-initial-data": self.get_initial_match_data,
-            "get-player-index": self.get_player_index,
             "end-turn": self.end_turn,
             "play-a-card": self.play_a_card,
             "move-unit": self.move_unit,
@@ -138,16 +137,6 @@ class MatchConsumer(WebsocketConsumer):
             'message': {
                 'name': message,
                 'data': data
-            }
-        }))
-
-    def get_player_index(self, data, message, *args, **kwargs):
-        self.send(text_data=json.dumps({
-            'message': {
-                'name': message,
-                'data': {
-                    'player_index': self.player_index
-                }
             }
         }))
 

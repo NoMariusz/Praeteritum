@@ -78,8 +78,6 @@ export const MatchGame = ({ matchSocket }) => {
                 setUnits(messageData.units);
                 setMatchLoaded(true);
                 setWinnerIndex(messageData.winner_index)
-                break;
-            case "get-player-index":
                 setPlayerIndex(messageData.player_index);
                 break;
             case "turn-changed":
@@ -151,8 +149,6 @@ export const MatchGame = ({ matchSocket }) => {
     // useEffect with [] as second argument trigger the callback only after
     // the first render
     useEffect(() => {
-        // to know which player is client
-        matchSocket.send(JSON.stringify({ message: "get-player-index" }));
         // to get start data about match
         matchSocket.send(JSON.stringify({ message: "get-initial-data" }));
     }, []);

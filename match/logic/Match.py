@@ -408,7 +408,8 @@ class Match:
             "turn": self.player_turn,
             "fields": self._board.get_fields_dicts(player_index),
             "units": self._board.get_units_dicts(),
-            'winner_index': self.winner_index,
+            "winner_index": self.winner_index,
+            "player_index": player_index,
         }
 
     @_run_only_when_player_has_turn
