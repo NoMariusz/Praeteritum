@@ -20,6 +20,8 @@ export const CardInMatch = ({ cardData, cardsCount }) => {
     // to set card width relative to cards count in hand
     const minimizedCardWidth = `${Math.min(100 / cardsCount, 15)}%`;
 
+    // selecting card stuff
+
     const isSelected =
         selectedElement.id == cardData.id &&
         selectedElement.type == SELECTABLE_ELEMENTS.card;
@@ -43,8 +45,8 @@ export const CardInMatch = ({ cardData, cardsCount }) => {
 
     const hoverableCard = (
         <Box
-            onMouseOver={() => setShowFull(true)}
-            onMouseOut={() => setShowFull(false)}
+            onMouseEnter={() => setShowFull(true)}
+            onMouseLeave={() => setShowFull(false)}
             mx="3%"
         >
             <Card_
