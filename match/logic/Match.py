@@ -1,7 +1,5 @@
 import random
-import time
-from threading import Thread, Timer
-from datetime import datetime
+from threading import Timer
 from typing import Callable, Optional
 from asgiref.sync import async_to_sync
 from django.contrib.auth.models import User
@@ -10,8 +8,8 @@ from cards.utlis import get_deck_cards_ids_for_player
 from cards.models import CardModel
 from cards.serializers import CardSerializer
 from .match_modules.Board import Board
-from ..constatnts import DEFAULT_BASE_POINTS, TURN_TIME, \
-    TURN_STATUS_REFRESH_TIME, CARDS_DRAWED_AT_START_COUNT, \
+from .match_modules.TurnManager import TurnManager
+from ..constatnts import DEFAULT_BASE_POINTS, CARDS_DRAWED_AT_START_COUNT, \
     CARDS_DRAWED_AT_TURN_COUNT, MATCH_DELETE_TIMEOUT
 
 
@@ -23,7 +21,6 @@ class Match:
     def __init__(self, id_: int, players: list, delete_callback: Callable):
         """ :param delete_callback: Callable - function from parrent enabling
         to delete self by remove references in MatchManager """
-        self.live: bool = True
         self.id_: int = id_
 
         self.channel_layer: Optional[RedisChannelLayer] = None
@@ -47,16 +44,6 @@ class Match:
             },
         ]
 
-        # turns related stuff
-        self.player_turn: int = random.randint(0, 1)
-        self.turn_progress: float = 0
-        self._last_turn_start_time: datetime = datetime.now()
-
-        # start thread with timer to change turn
-        self._turn_timer_thread: Thread = Thread(
-            target=self._turn_timer, daemon=True)
-        self._turn_timer_thread.start()
-
         # drawing cards
         self._draw_cards(count=CARDS_DRAWED_AT_START_COUNT, for_player=0)
         self._draw_cards(count=CARDS_DRAWED_AT_START_COUNT, for_player=1)
@@ -69,18 +56,21 @@ class Match:
         self._delete_callback = delete_callback
         self._auto_delete_timer: Optional[Timer] = None
         self._connected_consumers_count = 0
+
+        # initializing support classes
+        self._board = Board(self._send_to_sockets)
+        self._turn_manager = TurnManager(
+            self._send_to_sockets, self._on_turn_change)
+
         # start auto deleting timer, he will be cancelled when somebody
         # connect
         self._start_auto_delete_timer()
-
-        # board
-        self._board = Board(self._send_to_sockets)
 
     # lifecycle / deleting self stuff
 
     def __del__(self):
         # to defifnietly stop turn change thread
-        self.live = False
+        self._turn_manager.stop_turn_thread()
 
     def _auto_delete(self):
         print("\tInfo: Match: Automatic deleting %s" % self)
@@ -157,58 +147,20 @@ class Match:
 
     # turns stuff
 
-    def _turn_timer(self):
-        while self.live:
-            # sleep task
-            time.sleep(TURN_STATUS_REFRESH_TIME)
-            # get how much time passes
-            now: datetime = datetime.now()
-            seconds_from_start: int = (
-                now - self._last_turn_start_time).seconds
-            # update progress
-            self.turn_progress = seconds_from_start / TURN_TIME * 100
+    @property
+    def _player_turn(self) -> int:
+        return self._turn_manager.player_turn
 
-            if self.turn_progress >= 100:
-                self._start_next_turn()
-
-            self._send_progress_changed()
-
-    def _start_next_turn(self):
-        # set next turn
-        self._set_next_turn()
-        self.turn_progress = 0
-        self._last_turn_start_time = datetime.now()
+    def _on_turn_change(self):
         # draw card for player who start his turn now
         self._draw_cards(
-            count=CARDS_DRAWED_AT_TURN_COUNT, for_player=self.player_turn)
+            count=CARDS_DRAWED_AT_TURN_COUNT, for_player=self._player_turn)
         # modify players basepoints
         self._modify_base_points()
         # send info to board that turn change
         self._board.on_turn_change()
         # check is someone win
         self._check_someone_win()
-
-    def _set_next_turn(self):
-        self.player_turn = 1 if self.player_turn == 0 else 0
-        self._send_to_sockets_turn_change()
-
-    def _send_progress_changed(self):
-        message = {
-            'name': 'turn-progress-changed',
-            'data': {
-                'progress': self.turn_progress
-            }
-        }
-        self._send_to_sockets(message, modify=False)
-
-    def _send_to_sockets_turn_change(self):
-        message = {
-            'name': 'turn-changed',
-            'data': {
-                'turn': self.player_turn
-            }
-        }
-        self._send_to_sockets(message, modify=False)
 
     # cards related stuff
 
@@ -307,7 +259,7 @@ class Match:
         # checking if someone win
         if self.winner_index != -1:
             self._send_to_socket_player_win()
-            self.live = False
+            self._turn_manager.stop_turn_thread()
             # delete self after some time
             self._start_auto_delete_timer()
 
@@ -384,7 +336,7 @@ class Match:
         }
 
     def _run_only_when_player_has_turn(func) -> Callable:
-        """ decorator allowing run only when player has turn
+        """ decorator allowing run only when player has turn,
         function decorates should have 'player_index' kwarg """
         def wrapper(*args, **kwargs):
             # get self as first arg for func
@@ -392,7 +344,7 @@ class Match:
             # get player_index requesting for action
             player_index = kwargs["player_index"]
             # if is not the player turn he can not run func
-            if self.player_turn != player_index:
+            if self._player_turn != player_index:
                 return False
 
             return func(*args, **kwargs)
@@ -405,7 +357,7 @@ class Match:
         player_data: dict = self._get_safe_player_data_dict(player_index)
         return {
             **player_data,
-            "turn": self.player_turn,
+            "turn": self._player_turn,
             "fields": self._board.get_fields_dicts(player_index),
             "units": self._board.get_units_dicts(),
             "winner_index": self.winner_index,
@@ -415,7 +367,7 @@ class Match:
     @_run_only_when_player_has_turn
     def end_turn(self, player_index: int) -> bool:
         """ end turn for specified player by player_index """
-        self._start_next_turn()
+        self._turn_manager.start_next_turn()
         return True
 
     @_run_only_when_player_has_turn

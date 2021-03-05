@@ -17,8 +17,8 @@ class Matchturns(TestCase):
         match: Match = await match_manager.get_match_by_id(match_id)
 
         # get start turn, wait to change it, and assert if turn change
-        start_turn = match.player_turn
+        start_turn = match._player_turn
         # wait a little bit longer to turn have time to change
         await asyncio.sleep(TURN_TIME*1.1)
-        next_turn = match.player_turn
+        next_turn = match._player_turn
         self.assertNotEqual(start_turn, next_turn)

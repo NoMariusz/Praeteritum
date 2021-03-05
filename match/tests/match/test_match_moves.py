@@ -14,13 +14,13 @@ class MatchMoves(TestCase):
         self.match: Match = make_match(test_players)
 
     def test_when_have_move(self):
-        player_idx_with_turn: int = self.match.player_turn
+        player_idx_with_turn: int = self.match._player_turn
         played = self.match.end_turn(player_index=player_idx_with_turn)
         self.assertTrue(played)
 
     def test_when_not_have_turn(self):
         player_idx_without_turn: int = self.match._get_opposed_index(
-            self.match.player_turn)
+            self.match._player_turn)
         played_bad_move = self.match.end_turn(
             player_index=player_idx_without_turn)
         self.assertFalse(played_bad_move)
