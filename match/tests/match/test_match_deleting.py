@@ -1,16 +1,18 @@
 import asyncio
 from asgiref.sync import async_to_sync
 from django.test import TestCase
+from unittest.mock import patch
 
 from match.logic.Match import Match
 from match.logic.MatchManager import MatchManager
-from match.constatnts import MATCH_DELETE_TIMEOUT
 from ..utils import make_test_users
 
 
 class MatchAutoDeleting(TestCase):
     """ check if Match delete self proper """
 
+    # patch deleting time for Match to speed up tests
+    @patch("match.logic.Match.MATCH_DELETE_TIMEOUT", 0.1)
     def setUp(self):
         self.match_manager = MatchManager()
         # clear match list from match_manager to be sure that is 0 matches at
@@ -29,7 +31,7 @@ class MatchAutoDeleting(TestCase):
     async def test_when_nobody_connect(self):
         """ test if deleting when nobody is in Match """
         # wait to match should delete self
-        await asyncio.sleep(MATCH_DELETE_TIMEOUT * 1.1)
+        await asyncio.sleep(0.2)
         # check if match is deleted from match_manager list
         matches_len = len(self.match_manager.matches)
         self.assertEqual(matches_len, 0)
@@ -42,7 +44,7 @@ class MatchAutoDeleting(TestCase):
         match._base_points[0] = -4
         match._check_someone_win()
         # wait to match should delete self
-        await asyncio.sleep(MATCH_DELETE_TIMEOUT * 1.1)
+        await asyncio.sleep(0.2)
         # check if match is deleted from match_manager list
         matches_len = len(self.match_manager.matches)
         self.assertEqual(matches_len, 0)

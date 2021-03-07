@@ -2,7 +2,7 @@ from django.test import TestCase
 from asgiref.sync import async_to_sync
 
 from match.logic.Match import Match
-from match.constatnts import BOARD_COLUMNS
+from match.constants import BOARD_COLUMNS
 from ..utils import make_test_users, make_match, make_test_card
 
 

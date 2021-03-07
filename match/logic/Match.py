@@ -9,7 +9,7 @@ from cards.models import CardModel
 from cards.serializers import CardSerializer
 from .match_modules.Board import Board
 from .match_modules.TurnManager import TurnManager
-from ..constatnts import DEFAULT_BASE_POINTS, CARDS_DRAWED_AT_START_COUNT, \
+from ..constants import DEFAULT_BASE_POINTS, CARDS_DRAWED_AT_START_COUNT, \
     CARDS_DRAWED_AT_TURN_COUNT, MATCH_DELETE_TIMEOUT
 
 

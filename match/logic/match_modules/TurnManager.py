@@ -3,7 +3,7 @@ import time
 from datetime import datetime
 from typing import Callable
 from threading import Thread
-from ...constatnts import TURN_TIME, TURN_STATUS_REFRESH_TIME
+from ...constants import TURN_TIME, TURN_STATUS_REFRESH_TIME
 
 
 class TurnManager:

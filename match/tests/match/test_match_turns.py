@@ -1,13 +1,16 @@
 import asyncio
 from django.test import TestCase
+from unittest.mock import patch
 
 from ...logic.MatchManager import MatchManager
 from ...logic.Match import Match
-from ...constatnts import TURN_TIME
 from ..utils import make_test_users
 
 
-class Matchturns(TestCase):
+class MatchTurns(TestCase):
+    # patch refreshing and right turn time for TurnManager to speed up test
+    @patch("match.logic.match_modules.TurnManager.TURN_TIME", 1)
+    @patch("match.logic.match_modules.TurnManager.TURN_STATUS_REFRESH_TIME", 1)
     async def test_match_turn_changing(self):
         """check if match turn changed in time correctly"""
         # make match
@@ -19,6 +22,6 @@ class Matchturns(TestCase):
         # get start turn, wait to change it, and assert if turn change
         start_turn = match._player_turn
         # wait a little bit longer to turn have time to change
-        await asyncio.sleep(TURN_TIME*1.1)
+        await asyncio.sleep(1.1)
         next_turn = match._player_turn
         self.assertNotEqual(start_turn, next_turn)
