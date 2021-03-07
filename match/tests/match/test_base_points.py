@@ -44,11 +44,10 @@ class BasePointsChange(TestCase):
         self.match._board.move_unit(
             self.p1_index, self.unit_id, player2_field.id_)
         # get start base points of player2
-        player_2_data: dict = self.match._players_data[self.p2_index]
-        start_points: int = player_2_data["base_points"]
+        start_points: dict = self.match._base_points[self.p2_index]
         # modify base points
         self.match._modify_base_points()
         # get points after check
-        end_points: int = player_2_data["base_points"]
+        end_points: dict = self.match._base_points[self.p2_index]
 
         self.assertNotEqual(start_points, end_points)

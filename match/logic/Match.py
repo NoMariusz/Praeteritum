@@ -26,27 +26,18 @@ class Match:
         self.channel_layer: Optional[RedisChannelLayer] = None
         self.match_name: str = "match%s" % self.id_
 
-        # list of Users in match
-        self.players: list = players
         # data related to players
-        self._players_data: list = [
-            {
-                "username": players[0].username,
-                "base_points": DEFAULT_BASE_POINTS,
-                "hand_cards_ids": [],
-                "deck_cards_ids": self._get_player_cards(0),
-            },
-            {
-                "username": players[1].username,
-                "base_points": DEFAULT_BASE_POINTS,
-                "hand_cards_ids": [],
-                "deck_cards_ids": self._get_player_cards(1),
-            },
-        ]
+
+        # list of Users in match
+        self._players: list = players
+        self._base_points = [DEFAULT_BASE_POINTS, DEFAULT_BASE_POINTS]
+        self._hand_cards_ids = [[], []]
+        self._deck_cards_ids = [
+            self._get_player_cards(0), self._get_player_cards(1)]
 
         # drawing cards
-        self._draw_cards(count=CARDS_DRAWED_AT_START_COUNT, for_player=0)
-        self._draw_cards(count=CARDS_DRAWED_AT_START_COUNT, for_player=1)
+        self._draw_cards(count=CARDS_DRAWED_AT_START_COUNT, player_index=0)
+        self._draw_cards(count=CARDS_DRAWED_AT_START_COUNT, player_index=1)
 
         # store index of winner globally to have access when sending initial
         # data
@@ -95,7 +86,7 @@ class Match:
     def connect_socket(
             self, channel_layer: RedisChannelLayer, user: User) -> bool:
         """ connecting socket channel_layer to self so can send messages """
-        if user not in self.players:
+        if user not in self._players:
             return False
 
         self.channel_layer = channel_layer
@@ -137,7 +128,7 @@ class Match:
     # player index stuff
 
     def get_player_index_by_name(self, username: str) -> int:
-        for i, player in enumerate(self.players):
+        for i, player in enumerate(self._players):
             if player.username == username:
                 return i
         return -1
@@ -154,7 +145,7 @@ class Match:
     def _on_turn_change(self):
         # draw card for player who start his turn now
         self._draw_cards(
-            count=CARDS_DRAWED_AT_TURN_COUNT, for_player=self._player_turn)
+            count=CARDS_DRAWED_AT_TURN_COUNT, player_index=self._player_turn)
         # modify players basepoints
         self._modify_base_points()
         # send info to board that turn change
@@ -166,19 +157,18 @@ class Match:
 
     def _get_player_cards(self, player_index: int) -> list:
         # get cards for player
-        player: User = self.players[player_index]
+        player: User = self._players[player_index]
         player_cards_ids: list = get_deck_cards_ids_for_player(player)
         # shuffle cards in deck
         random.shuffle(player_cards_ids)
         return player_cards_ids
 
-    def _draw_cards(self, count: int, for_player: int) -> bool:
+    def _draw_cards(self, count: int, player_index: int) -> bool:
         """ move cards from deck to hand
-        :param count: int - amount of cards to draw """
-        player_data: dict = self._players_data[for_player]
-
-        deck: list = player_data["deck_cards_ids"]
-        hand: list = player_data["hand_cards_ids"]
+        :param count: int - amount of cards to draw
+        :param player_index: int - index of player which drawing cards """
+        deck: list = self._deck_cards_ids[player_index]
+        hand: list = self._hand_cards_ids[player_index]
 
         for move in range(count):
             # if deck is empty can not draw card from it
@@ -187,8 +177,8 @@ class Match:
             card_id: int = deck.pop()
             hand.append(card_id)
 
-        self._send_to_sockets_decks_cards_count_changed(for_player)
-        self._send_to_sockets_hand_changed(for_player)
+        self._send_to_sockets_decks_cards_count_changed(player_index)
+        self._send_to_sockets_hand_changed(player_index)
         return True
 
     def _made_card_data_by_id(self, card_id: int) -> dict:
@@ -200,19 +190,18 @@ class Match:
 
     def _get_cards_data(self, player_index: int) -> list:
         """ Get list of cards objects for specified player """
-        player_data: dict = self._players_data[player_index]
+        player_hand_ids = self._hand_cards_ids[player_index]
         cards_data: list = list(map(
             lambda id_: self._made_card_data_by_id(id_),
-            player_data["hand_cards_ids"]))
+            player_hand_ids))
         return cards_data
 
     def _send_to_sockets_decks_cards_count_changed(self, player_index: int):
-        player_data: dict = self._players_data[player_index]
         message = {
             'name': 'deck-cards-count-changed',
             'data': {
                 'for_player_at_index': player_index,
-                'new_count': len(player_data["deck_cards_ids"])
+                'new_count': len(self._deck_cards_ids[player_index])
             }
         }
         self._send_to_sockets(message, modify=False)
@@ -232,21 +221,21 @@ class Match:
     def _modify_base_points(self):
         """ modify players base points depending on enemies occuping base
         count and send info when points change to sockets """
-        for playerIdx in range(2):
+        for player_index in range(2):
             # get how much points player lost
             lost_points: int = self._board.get_player_lost_base_points(
-                playerIdx)
+                player_index)
             if lost_points > 0:
-                self._players_data[playerIdx]['base_points'] -= lost_points
+                self._base_points[player_index] -= lost_points
                 # send info to sockets
-                self._send_to_socket_base_points_changed(playerIdx)
+                self._send_to_socket_base_points_changed(player_index)
 
     def _send_to_socket_base_points_changed(self, player_index: int):
         message = {
             'name': 'base-points-changed',
             'data': {
                 'for_player_at_index': player_index,
-                'new_points': self._players_data[player_index]["base_points"]
+                'new_points': self._base_points[player_index]
             }
         }
         self._send_to_sockets(message, modify=False)
@@ -270,8 +259,8 @@ class Match:
 
         # check base_points
 
-        player0_points: int = self._players_data[0]["base_points"]
-        player1_points: int = self._players_data[1]["base_points"]
+        player0_points: int = self._base_points[0]
+        player1_points: int = self._base_points[1]
         if (player0_points <= 0 or player1_points <= 0):
             if player0_points == player1_points:
                 return -2   # when both players lost all points
@@ -281,9 +270,8 @@ class Match:
 
         players_actions = [0, 0]
         for player_index in range(2):
-            player_data: dict = self._players_data[player_index]
-            cards_count: int = len(player_data["hand_cards_ids"]) + \
-                len(player_data["deck_cards_ids"])
+            cards_count: int = len(self._hand_cards_ids[player_index]) + \
+                len(self._deck_cards_ids[player_index])
             units_count: int = self._board.get_units_count_for_player(
                 player_index)
             players_actions[player_index] = cards_count + units_count
@@ -316,21 +304,20 @@ class Match:
     def _get_safe_player_data_dict(self, player_index: int) -> dict:
         enemy_index: int = self._get_opposed_index(player_index)
 
-        player_data: dict = self._players_data[player_index]
-        enemy_data: dict = self._players_data[enemy_index]
         return {
             "players_data": {
                 "player": {
-                    "username": player_data["username"],
-                    "base_points": player_data["base_points"],
-                    "deck_cards_count": len(player_data["deck_cards_ids"]),
+                    "username": self._players[player_index].username,
+                    "base_points": self._base_points[player_index],
+                    "deck_cards_count": len(
+                        self._deck_cards_ids[player_index]),
                     "hand_cards": self._get_cards_data(player_index)
                 },
                 "enemy": {
-                    "username": enemy_data["username"],
-                    "base_points": enemy_data["base_points"],
-                    "deck_cards_count": len(enemy_data["deck_cards_ids"]),
-                    "hand_cards_count": len(enemy_data["hand_cards_ids"])
+                    "username": self._players[enemy_index].username,
+                    "base_points": self._base_points[enemy_index],
+                    "deck_cards_count": len(self._deck_cards_ids[enemy_index]),
+                    "hand_cards_count": len(self._hand_cards_ids[enemy_index])
                 }
             }
         }
@@ -378,7 +365,7 @@ class Match:
         :param field_id: int - field id to play there card
         :return: bool - whether it worked """
         # get list with cards ids in hand, and check if card in hand
-        player_hand: list = self._players_data[player_index]["hand_cards_ids"]
+        player_hand: list = self._hand_cards_ids[player_index]
         if card_id not in player_hand:
             return False
         # check if player can play card at that field

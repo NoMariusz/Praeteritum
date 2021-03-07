@@ -39,7 +39,7 @@ class MatchAutoDeleting(TestCase):
         # get match by self.match_manager
         match: Match = await self.match_manager.get_match_by_id(self.match_id)
         # change base points to somebody lose
-        match._players_data[0]["base_points"] = -4
+        match._base_points[0] = -4
         match._check_someone_win()
         # wait to match should delete self
         await asyncio.sleep(MATCH_DELETE_TIMEOUT * 1.1)

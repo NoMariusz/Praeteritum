@@ -26,7 +26,7 @@ class MatchWinDetection(TestCase):
 
     def test_base_points(self):
         """ check win detection by changing base points """
-        self.match._players_data[self.p1_index]["base_points"] = -4
+        self.match._base_points[self.p1_index] = -4
         check1_result: int = self.match._check_if_someone_win()
         # if player1 lost all point then wind player2
         self.assertEqual(self.p2_index, check1_result)
@@ -34,7 +34,7 @@ class MatchWinDetection(TestCase):
     def test_base_points_draw(self):
         """ check draw by changing base points """
         for p_index in [self.p1_index, self.p2_index]:
-            self.match._players_data[p_index]["base_points"] = 0
+            self.match._base_points[p_index] = 0
         check2_result: int = self.match._check_if_someone_win()
         # if both players lost points with the same count should be -2, draw
         self.assertEqual(-2, check2_result)
@@ -42,8 +42,8 @@ class MatchWinDetection(TestCase):
     def test_cards(self):
         """ test if match check win at cards count changes """
         # when player lost all cards
-        self.match._players_data[self.p1_index]["hand_cards_ids"] = []
-        self.match._players_data[self.p1_index]["deck_cards_ids"] = []
+        self.match._hand_cards_ids[self.p1_index] = []
+        self.match._deck_cards_ids[self.p1_index] = []
         check_result: int = self.match._check_if_someone_win()
         # when player1 have not any card, player2 win
         self.assertEqual(self.p2_index, check_result)
@@ -52,8 +52,8 @@ class MatchWinDetection(TestCase):
         """ test if match detect draw at cards count changes """
         # when both player lost all cards
         for p_index in [self.p1_index, self.p2_index]:
-            self.match._players_data[p_index]["hand_cards_ids"] = []
-            self.match._players_data[p_index]["deck_cards_ids"] = []
+            self.match._hand_cards_ids[p_index] = []
+            self.match._deck_cards_ids[p_index] = []
         check2_result: int = self.match._check_if_someone_win()
         # when player1 and player2 have not any card should be -2, draw
         self.assertEqual(-2, check2_result)
