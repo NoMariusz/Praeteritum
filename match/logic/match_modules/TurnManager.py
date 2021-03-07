@@ -21,7 +21,7 @@ class TurnManager:
         self._on_turn_change_callback = on_turn_change_callback
         # turns related stuff
         self.player_turn: int = random.randint(0, 1)
-        self.turn_progres: float = 0
+        self.turn_progress: float = 0
         self._last_turn_start_time: datetime = datetime.now()
 
         self._live = True
@@ -38,12 +38,14 @@ class TurnManager:
             time.sleep(TURN_STATUS_REFRESH_TIME)
             # get how much time passes
             now: datetime = datetime.now()
-            seconds_from_start: int = (
-                now - self._last_turn_start_time).seconds
+            # use microseconds to allow work with TURN_TIME < 1
+            microseconds_from_start: int = (
+                now - self._last_turn_start_time).microseconds
+            seconds_from_start = microseconds_from_start / 1000000
             # update progress
-            self.turn_progres = seconds_from_start / TURN_TIME * 100
+            self.turn_progress = seconds_from_start / TURN_TIME * 100
 
-            if self.turn_progres >= 100:
+            if self.turn_progress >= 100:
                 self.start_next_turn()
 
             self._send_progress_changed()
@@ -52,8 +54,8 @@ class TurnManager:
         # set next turn
         self.player_turn = 1 if self.player_turn == 0 else 0
         self._send_to_sockets_turn_change()
-        # reset progres
-        self.turn_progres = 0
+        # reset progress
+        self.turn_progress = 0
         self._last_turn_start_time = datetime.now()
         # call function from parent
         self._on_turn_change_callback()
@@ -66,7 +68,7 @@ class TurnManager:
         message = {
             'name': 'turn-progress-changed',
             'data': {
-                'progress': self.turn_progres
+                'progress': self.turn_progress
             }
         }
         self._send_to_sockets(message, modify=False)
