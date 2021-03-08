@@ -23,8 +23,10 @@ class UnitsAttacks(TestCase):
         self.p1_index = 0
         self.p2_index = 1
         # made unit by card and add to board
-        card_data: dict = self.match._made_card_data_by_id(card.id)
-        card_data3: dict = self.match._made_card_data_by_id(card3.id)
+        card_data: dict = self.match._cards_manager.made_card_data_by_id(
+            card.id)
+        card_data3: dict = self.match._cards_manager.made_card_data_by_id(
+            card3.id)
         self.unit1_id = self.match._board.add_unit_by_card_data(
             card_data, self.p1_index, 1)
         self.unit2_id = self.match._board.add_unit_by_card_data(

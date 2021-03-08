@@ -1,14 +1,11 @@
-import random
 from threading import Timer
 from typing import Callable, Optional
 from asgiref.sync import async_to_sync
 from django.contrib.auth.models import User
 from channels_redis.core import RedisChannelLayer
-from cards.utlis import get_deck_cards_ids_for_player
-from cards.models import CardModel
-from cards.serializers import CardSerializer
 from .match_modules.Board import Board
 from .match_modules.TurnManager import TurnManager
+from .match_modules.CardsManager import CardsManager
 from ..constants import DEFAULT_BASE_POINTS, CARDS_DRAWED_AT_START_COUNT, \
     CARDS_DRAWED_AT_TURN_COUNT, MATCH_DELETE_TIMEOUT
 
@@ -26,18 +23,9 @@ class Match:
         self.channel_layer: Optional[RedisChannelLayer] = None
         self.match_name: str = "match%s" % self.id_
 
-        # data related to players
-
         # list of Users in match
         self._players: list = players
         self._base_points = [DEFAULT_BASE_POINTS, DEFAULT_BASE_POINTS]
-        self._hand_cards_ids = [[], []]
-        self._deck_cards_ids = [
-            self._get_player_cards(0), self._get_player_cards(1)]
-
-        # drawing cards
-        self._draw_cards(count=CARDS_DRAWED_AT_START_COUNT, player_index=0)
-        self._draw_cards(count=CARDS_DRAWED_AT_START_COUNT, player_index=1)
 
         # store index of winner globally to have access when sending initial
         # data
@@ -52,6 +40,14 @@ class Match:
         self._board = Board(self._send_to_sockets)
         self._turn_manager = TurnManager(
             self._send_to_sockets, self._on_turn_change)
+        self._cards_manager = CardsManager(
+            self._send_to_sockets, self._players)
+
+        # draw cards at start
+        self._cards_manager.draw_cards(
+            count=CARDS_DRAWED_AT_START_COUNT, player_index=0)
+        self._cards_manager.draw_cards(
+            count=CARDS_DRAWED_AT_START_COUNT, player_index=1)
 
         # start auto deleting timer, he will be cancelled when somebody
         # connect
@@ -144,7 +140,7 @@ class Match:
 
     def _on_turn_change(self):
         # draw card for player who start his turn now
-        self._draw_cards(
+        self._cards_manager.draw_cards(
             count=CARDS_DRAWED_AT_TURN_COUNT, player_index=self._player_turn)
         # modify players basepoints
         self._modify_base_points()
@@ -153,68 +149,15 @@ class Match:
         # check is someone win
         self._check_someone_win()
 
-    # cards related stuff
+    # cards stuff
 
-    def _get_player_cards(self, player_index: int) -> list:
-        # get cards for player
-        player: User = self._players[player_index]
-        player_cards_ids: list = get_deck_cards_ids_for_player(player)
-        # shuffle cards in deck
-        random.shuffle(player_cards_ids)
-        return player_cards_ids
+    @property
+    def _hand_cards_ids(self) -> list:
+        return self._cards_manager.hand_cards_ids
 
-    def _draw_cards(self, count: int, player_index: int) -> bool:
-        """ move cards from deck to hand
-        :param count: int - amount of cards to draw
-        :param player_index: int - index of player which drawing cards """
-        deck: list = self._deck_cards_ids[player_index]
-        hand: list = self._hand_cards_ids[player_index]
-
-        for move in range(count):
-            # if deck is empty can not draw card from it
-            if len(deck) <= 0:
-                return False
-            card_id: int = deck.pop()
-            hand.append(card_id)
-
-        self._send_to_sockets_decks_cards_count_changed(player_index)
-        self._send_to_sockets_hand_changed(player_index)
-        return True
-
-    def _made_card_data_by_id(self, card_id: int) -> dict:
-        """ Get card object by given card_id, then made from that card data
-        dict friendly for fronend """
-        card: CardModel = CardModel.objects.get(id=card_id)
-        card_serializer: CardSerializer = CardSerializer(card)
-        return card_serializer.data
-
-    def _get_cards_data(self, player_index: int) -> list:
-        """ Get list of cards objects for specified player """
-        player_hand_ids = self._hand_cards_ids[player_index]
-        cards_data: list = list(map(
-            lambda id_: self._made_card_data_by_id(id_),
-            player_hand_ids))
-        return cards_data
-
-    def _send_to_sockets_decks_cards_count_changed(self, player_index: int):
-        message = {
-            'name': 'deck-cards-count-changed',
-            'data': {
-                'for_player_at_index': player_index,
-                'new_count': len(self._deck_cards_ids[player_index])
-            }
-        }
-        self._send_to_sockets(message, modify=False)
-
-    def _send_to_sockets_hand_changed(self, player_index: int):
-        message = {
-            'name': 'hand-cards-changed',
-            'data': {
-                'for_player_at_index': player_index,
-                'new_cards': self._get_cards_data(player_index)
-            }
-        }
-        self._send_to_sockets(message, modify=True)
+    @property
+    def _deck_cards_ids(self) -> list:
+        return self._cards_manager.deck_cards_ids
 
     # base points stuff
 
@@ -311,7 +254,8 @@ class Match:
                     "base_points": self._base_points[player_index],
                     "deck_cards_count": len(
                         self._deck_cards_ids[player_index]),
-                    "hand_cards": self._get_cards_data(player_index)
+                    "hand_cards": self._cards_manager.get_cards_data(
+                        player_index)
                 },
                 "enemy": {
                     "username": self._players[enemy_index].username,
@@ -374,9 +318,9 @@ class Match:
             return False
 
         player_hand.remove(card_id)
-        self._send_to_sockets_hand_changed(player_index)
+        self._cards_manager.send_to_sockets_hand_changed(player_index)
         # create and add unit to board
-        card_data: dict = self._made_card_data_by_id(card_id)
+        card_data: dict = self._cards_manager.made_card_data_by_id(card_id)
         self._board.add_unit_by_card_data(card_data, player_index, field_id)
         return True
 

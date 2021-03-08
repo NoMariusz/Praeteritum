@@ -20,5 +20,5 @@ class MatchCards(TestCase):
             rarity=CardModel.CardRarities.COMMON, attack=20, hp=60)
         card.save()
         # made it data
-        data = match._made_card_data_by_id(card.id)
+        data = match._cards_manager.made_card_data_by_id(card.id)
         self.assertEqual(test_card_name, data["name"])
