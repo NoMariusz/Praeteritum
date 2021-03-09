@@ -3,8 +3,8 @@ from django.test import TestCase
 from asgiref.sync import async_to_sync
 
 from match.logic.Match import Match
-from match.logic.match_modules.Unit import Unit
-from match.logic.match_modules.Field import Field
+from match.logic.match_modules.board_items.Unit import Unit
+from match.logic.match_modules.board_items.Field import Field
 from ..utils import make_test_users, make_match, make_test_card
 
 

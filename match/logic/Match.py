@@ -2,6 +2,7 @@ from typing import Callable, Optional
 from asgiref.sync import async_to_sync
 from django.contrib.auth.models import User
 from channels_redis.core import RedisChannelLayer
+
 from .match_modules.Board import Board
 from .match_modules.TurnManager import TurnManager
 from .match_modules.CardsManager import CardsManager

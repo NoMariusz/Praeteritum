@@ -3,8 +3,8 @@ from typing import Callable, Optional
 from ...constants import BOARD_COLUMNS, BOARD_ROWS, BASE_FIELDS_IDS, \
     DEFAULT_MOVE_POINTS, DEFAULT_ATTACK_POINTS, STRONG_AGAINST_CAT_TO_CAT, \
     WEAK_AGAINST_CAT_TO_CAT, ONLY_ATTACKER_CAT
-from .Field import Field
-from .Unit import Unit
+from .board_items.Field import Field
+from .board_items.Unit import Unit
 
 
 class Board():

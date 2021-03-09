@@ -1,4 +1,4 @@
-from ...constants import DEFAULT_MOVE_POINTS, DEFAULT_ATTACK_POINTS, \
+from match.constants import DEFAULT_MOVE_POINTS, DEFAULT_ATTACK_POINTS, \
     ATACK_RANGE_FOR_TYPES
 
 

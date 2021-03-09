@@ -3,7 +3,7 @@ from asgiref.sync import async_to_sync
 
 from cards.models import CardModel
 from match.logic.Match import Match
-from match.logic.match_modules.Unit import Unit
+from match.logic.match_modules.board_items.Unit import Unit
 from match.constants import BOARD_COLUMNS, DEFAULT_ATTACK_POINTS
 from ..utils import make_test_users, make_match, make_test_card
 
