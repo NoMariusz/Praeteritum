@@ -1,18 +1,19 @@
 from math import floor
 from typing import Callable, Optional
-from ...constants import BOARD_COLUMNS, BOARD_ROWS, BASE_FIELDS_IDS, \
-    DEFAULT_MOVE_POINTS, DEFAULT_ATTACK_POINTS, STRONG_AGAINST_CAT_TO_CAT, \
-    WEAK_AGAINST_CAT_TO_CAT, ONLY_ATTACKER_CAT
+from ...constants import DEFAULT_MOVE_POINTS, DEFAULT_ATTACK_POINTS, \
+    ONLY_ATTACKER_CAT
+from ..utils import make_fields, calc_attack_multiplier, \
+    calc_distance_from_fields
 from .board_items.Field import Field
 from .board_items.Unit import Unit
 
 
-class Board():
+class Board:
     def __init__(self, send_to_sockets: Callable):
         """ :param send_to_sockets: Callable - function from parent who enable
         sending messages to sockets from board """
         # _fields is list of Field ordered by id
-        self._fields: list = self._make_fields()
+        self._fields: list = make_fields()
         # _units is list of Unit ordered by id
         self._units = []
         self._unit_id_counter = 0
@@ -26,24 +27,6 @@ class Board():
             unit.attack_points = DEFAULT_ATTACK_POINTS
 
     # fields
-
-    def _make_fields(self) -> list:
-        """ function making suitable fields objects for board and returning
-        list of that fields sorted in id order """
-        fields = []
-        fields_count: int = BOARD_ROWS * BOARD_COLUMNS
-        for field_id in range(fields_count):
-            row: int = field_id // BOARD_ROWS
-            column: int = field_id % BOARD_COLUMNS
-            is_base: bool = field_id in BASE_FIELDS_IDS
-            # plyer_half specify near which player is field, fields with
-            # smaller id are near player 0, and fields with bigger id are
-            # near player 1
-            player_half: int = 1 if row > BOARD_ROWS / 2 else 0
-
-            field = Field(field_id, row, column, is_base, player_half)
-            fields.append(field)
-        return fields
 
     def get_fields_dicts(self, for_player: int) -> list:
         """
@@ -134,7 +117,7 @@ class Board():
 
         old_field: Field = self._fields[unit.field_id]
         # calculate distance before move
-        distance: int = self._calc_distance_from_fields(
+        distance: int = calc_distance_from_fields(
             old_field, new_field)
         # delete unit from old field
         old_field.unit = None
@@ -163,7 +146,7 @@ class Board():
 
         # if unit have enough move_points
         old_field: Field = self._fields[unit.field_id]
-        distance: int = self._calc_distance_from_fields(
+        distance: int = calc_distance_from_fields(
             old_field, new_field)
         if distance > unit.move_points:
             return False
@@ -219,7 +202,7 @@ class Board():
         # if attacker not have range
         attacker_field: Field = self._fields[attacker.field_id]
         defender_field: Field = self._fields[defender.field_id]
-        distance: int = self._calc_distance_from_fields(
+        distance: int = calc_distance_from_fields(
             attacker_field, defender_field)
         if distance > attacker.attack_range:
             return False
@@ -239,7 +222,7 @@ class Board():
         # check if attacker have range
         dealer_field: Field = self._fields[damage_dealer.field_id]
         taken_field: Field = self._fields[damage_taken.field_id]
-        distance: int = self._calc_distance_from_fields(
+        distance: int = calc_distance_from_fields(
             dealer_field, taken_field)
         if distance > damage_dealer.attack_range:
             return False
@@ -249,7 +232,7 @@ class Board():
             return False
 
         # made attack
-        multiplier: float = self._calc_attack_multiplier(
+        multiplier: float = calc_attack_multiplier(
             damage_dealer, damage_taken)
         attack_power: int = floor(damage_dealer.attack * multiplier)
         damage_taken.hp -= attack_power
@@ -291,21 +274,3 @@ class Board():
         if len(matches) <= 0:
             return None
         return matches[0]
-
-    @staticmethod
-    def _calc_distance_from_fields(old_field: Field, new_field: Field) -> int:
-        """ calculate how far is field from field """
-        distance: int = (abs(old_field.column - new_field.column)
-                         + abs(old_field.row - new_field.row))
-        return distance
-
-    @staticmethod
-    def _calc_attack_multiplier(attacker: Unit, defender: Unit) -> float:
-        """ calculate bonus multiplayier for given units """
-        # if attacker is strong against defender
-        if STRONG_AGAINST_CAT_TO_CAT[attacker.category] == defender.category:
-            return 2
-        # if attacker is weak against defender
-        if WEAK_AGAINST_CAT_TO_CAT[attacker.category] == defender.category:
-            return 0.5
-        return 1

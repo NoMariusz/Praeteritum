@@ -2,6 +2,7 @@ from django.test import TestCase
 from asgiref.sync import async_to_sync
 
 from ...logic.Match import Match
+from ...logic.utils import get_opposed_index
 from ..utils import make_test_users, make_match
 
 
@@ -19,7 +20,7 @@ class MatchMoves(TestCase):
         self.assertTrue(played)
 
     def test_when_not_have_turn(self):
-        player_idx_without_turn: int = self.match._get_opposed_index(
+        player_idx_without_turn: int = get_opposed_index(
             self.match._player_turn)
         played_bad_move = self.match.end_turn(
             player_index=player_idx_without_turn)

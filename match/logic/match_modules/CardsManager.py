@@ -1,7 +1,5 @@
-import random
 from typing import Callable
-from django.contrib.auth.models import User
-from cards.utlis import get_deck_cards_ids_for_player
+from ..utils import get_player_deck
 from cards.models import CardModel
 from cards.serializers import CardSerializer
 
@@ -18,16 +16,7 @@ class CardsManager:
 
         self.hand_cards_ids = [[], []]
         self.deck_cards_ids = [
-            self._get_player_deck(players[0]),
-            self._get_player_deck(players[1])]
-
-    def _get_player_deck(self, player: User) -> list:
-        """ :return: list - shuffled deck cards ids for player """
-        # get cards for player
-        player_cards_ids: list = get_deck_cards_ids_for_player(player)
-        # shuffle cards in deck
-        random.shuffle(player_cards_ids)
-        return player_cards_ids
+            get_player_deck(players[0]), get_player_deck(players[1])]
 
     def draw_cards(self, count: int, player_index: int) -> bool:
         """ move cards from deck to hand
@@ -47,9 +36,10 @@ class CardsManager:
         self.send_to_sockets_hand_changed(player_index)
         return True
 
-    def made_card_data_by_id(self, card_id: int) -> dict:
+    @staticmethod
+    def made_card_data_by_id(card_id: int) -> dict:
         """ Get card object by given card_id, then made from that card data
-        dict friendly for fronend """
+        dict friendly for frontend """
         card: CardModel = CardModel.objects.get(id=card_id)
         card_serializer: CardSerializer = CardSerializer(card)
         return card_serializer.data

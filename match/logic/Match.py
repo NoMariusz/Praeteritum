@@ -3,6 +3,7 @@ from asgiref.sync import async_to_sync
 from django.contrib.auth.models import User
 from channels_redis.core import RedisChannelLayer
 
+from .utils import run_only_when_player_has_turn, get_opposed_index
 from .match_modules.Board import Board
 from .match_modules.TurnManager import TurnManager
 from .match_modules.CardsManager import CardsManager
@@ -113,9 +114,6 @@ class Match:
                 return i
         return -1
 
-    def _get_opposed_index(self, player_index: int) -> int:
-        return (player_index + 1) % 2
-
     # turns stuff
 
     @property
@@ -212,7 +210,7 @@ class Match:
             return -1
         # when somebody lost return index of his enemy because he win
         lost_player_index: int = players_actions.index(0)
-        return -1 if lost_player_index == -1 else self._get_opposed_index(
+        return -1 if lost_player_index == -1 else get_opposed_index(
             lost_player_index)
 
     def _send_to_socket_player_win(self):
@@ -227,7 +225,7 @@ class Match:
     # overall utils
 
     def _get_safe_player_data_dict(self, player_index: int) -> dict:
-        enemy_index: int = self._get_opposed_index(player_index)
+        enemy_index: int = get_opposed_index(player_index)
 
         return {
             "players_data": {
@@ -248,21 +246,6 @@ class Match:
             }
         }
 
-    def _run_only_when_player_has_turn(func) -> Callable:
-        """ decorator allowing run only when player has turn,
-        function decorates should have 'player_index' kwarg """
-        def wrapper(*args, **kwargs):
-            # get self as first arg for func
-            self = args[0]
-            # get player_index requesting for action
-            player_index = kwargs["player_index"]
-            # if is not the player turn he can not run func
-            if self._player_turn != player_index:
-                return False
-
-            return func(*args, **kwargs)
-        return wrapper
-
     # Section with public methods returning data to sockets
 
     def give_initial_data(self, player_index: int) -> dict:
@@ -277,13 +260,13 @@ class Match:
             "player_index": player_index,
         }
 
-    @_run_only_when_player_has_turn
+    @run_only_when_player_has_turn
     def end_turn(self, player_index: int) -> bool:
         """ end turn for specified player by player_index """
         self._turn_manager.start_next_turn()
         return True
 
-    @_run_only_when_player_has_turn
+    @run_only_when_player_has_turn
     def play_a_card(
             self, player_index: int, card_id: int, field_id: int) -> bool:
         """ try to play a card from hand to board
@@ -307,14 +290,14 @@ class Match:
         self._board.add_unit_by_card_data(card_data, player_index, field_id)
         return True
 
-    @_run_only_when_player_has_turn
+    @run_only_when_player_has_turn
     def move_unit(
             self, player_index: int, unit_id: int, field_id: int) -> bool:
         """ delegate board to move unit
         :return: bool - if board move_unit """
         return self._board.move_unit(player_index, unit_id, field_id)
 
-    @_run_only_when_player_has_turn
+    @run_only_when_player_has_turn
     def attack_unit(
             self, player_index: int, attacker_id: int, defender_id: int
     ) -> bool:
