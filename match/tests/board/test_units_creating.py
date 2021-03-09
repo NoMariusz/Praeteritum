@@ -16,5 +16,5 @@ class UnitsCreating(TestCase):
         # made unit by card
         card_data: dict = match._cards_manager.made_card_data_by_id(card.id)
         unit = match._board._create_new_unit(card_data, 1, -1)
-        # check some informations
+        # check some information
         self.assertTrue(unit.name == card.name and unit.image == card.image)

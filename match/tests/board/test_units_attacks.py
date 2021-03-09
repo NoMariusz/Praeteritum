@@ -36,25 +36,25 @@ class UnitsAttacks(TestCase):
 
     def test_normal_attack(self):
         # make good attack
-        action_1_succes = self.match._board.attack_unit(
+        action_1_success = self.match._board.attack_unit(
             self.p1_index, self.unit1_id, self.unit2_id)
-        self.assertTrue(action_1_succes)
+        self.assertTrue(action_1_success)
 
     def test_attack_points(self):
         # make bad attack because unit1 has not attack points
         for i in range(DEFAULT_ATTACK_POINTS):   # to drain attack points
             self.match._board.attack_unit(
                 self.p1_index, self.unit1_id, self.unit2_id)
-        action_2_succes = self.match._board.attack_unit(
+        action_2_success = self.match._board.attack_unit(
             self.p1_index, self.unit1_id, self.unit2_id)
         self.match._board.on_turn_change()   # to restore attack points
-        self.assertFalse(action_2_succes)
+        self.assertFalse(action_2_success)
 
     def test_attacking_by_enemy_unit(self):
         # make bad attack because player1 can not attack by player2 unit
-        action_3_succes = self.match._board.attack_unit(
+        action_3_success = self.match._board.attack_unit(
             self.p1_index, self.unit2_id, self.unit1_id)
-        self.assertFalse(action_3_succes)
+        self.assertFalse(action_3_success)
 
     def test_attacking_out_of_range(self):
         # make bad attack because unit is too far
@@ -63,15 +63,15 @@ class UnitsAttacks(TestCase):
         # move unit2 far from unit1
         self.match._board.move_unit(
             self.p2_index, self.unit2_id, BOARD_COLUMNS-1)
-        action_4_succes = self.match._board.attack_unit(
+        action_4_success = self.match._board.attack_unit(
             self.p1_index, self.unit1_id, self.unit2_id)
-        self.assertFalse(action_4_succes)
+        self.assertFalse(action_4_success)
 
     def test_attacking_self(self):
         # make bad attack because can not attack himself
-        action_5_succes = self.match._board.attack_unit(
+        action_5_success = self.match._board.attack_unit(
             self.p1_index, self.unit1_id, self.unit1_id)
-        self.assertFalse(action_5_succes)
+        self.assertFalse(action_5_success)
 
     def test_missleman_not_attack_as_defender(self):
         """ check if units of type MISSLEMAN only deal damage when they attack

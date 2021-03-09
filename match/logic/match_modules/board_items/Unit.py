@@ -20,13 +20,13 @@ class Unit:
         self.attack = attack
         self.category = category
         self.image = image
-        # points determinig how far unit can move
+        # points determining how far unit can move
         self.move_points = DEFAULT_MOVE_POINTS
         self.attack_points = DEFAULT_ATTACK_POINTS
         self.attack_range = ATACK_RANGE_FOR_TYPES[self.category]
 
     def get_data_for_frontend(self) -> dict:
-        """ :return: dict - contain data for frontned in dict that can be
+        """ :return: dict - contain data for frontend in dict that can be
         transformed to json
         """
         return {

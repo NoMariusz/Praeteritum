@@ -29,24 +29,24 @@ class UnitsMove(TestCase):
 
     def test_normal_move(self):
         # make good move
-        move_succes = self.match._board.move_unit(
+        move_success = self.match._board.move_unit(
             self.p1_index, self.unit1_id, 2)
-        self.assertTrue(move_succes)
+        self.assertTrue(move_success)
 
     def test_move_on_occupied_field(self):
         # make bad move because in field 2 is other unit
-        move_succes = self.match._board.move_unit(
+        move_success = self.match._board.move_unit(
             self.p1_index, self.unit1_id, 1)
-        self.assertFalse(move_succes)
+        self.assertFalse(move_success)
 
     def test_moving_enemy_unit(self):
         # make bad move because player1 can not move player2 unit
-        move_succes = self.match._board.move_unit(
+        move_success = self.match._board.move_unit(
             self.p1_index, self.unit2_id, 3)
-        self.assertFalse(move_succes)
+        self.assertFalse(move_success)
 
     def test_too_far_move(self):
         # make bad move because field is too far
-        move_succes = self.match._board.move_unit(
+        move_success = self.match._board.move_unit(
             self.p1_index, self.unit1_id, BOARD_COLUMNS-1)
-        self.assertFalse(move_succes)
+        self.assertFalse(move_success)

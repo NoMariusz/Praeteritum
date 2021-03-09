@@ -12,19 +12,19 @@ from ..constants import DEFAULT_BASE_POINTS, CARDS_DRAWED_AT_START_COUNT, \
 
 
 class Match:
-    """ store informations and managing them to enable play a match and
+    """ store information and managing them to enable play a match and
     communicate with sockets by sending them messages with changes of
-    match state, so they recieve information immediately """
+    match state, so they receive information immediately """
 
     def __init__(self, id_: int, players: list, delete_callback: Callable):
-        """ :param delete_callback: Callable - function from parrent enabling
-        to delete self by remove references in MatchManager """
+        """ :param delete_callback: Callable - function from parent enabling
+        to delete self by remove references in MatchManager
+        :param players: list - users playing that match"""
         self.id_: int = id_
 
         self.channel_layer: Optional[RedisChannelLayer] = None
         self.match_name: str = "match%s" % self.id_
 
-        # list of Users in match
         self._players: list = players
         self._base_points = [DEFAULT_BASE_POINTS, DEFAULT_BASE_POINTS]
 
@@ -53,7 +53,7 @@ class Match:
     # lifecycle / deleting self stuff
 
     def __del__(self):
-        # to defifnietly stop turn change thread
+        # to definitely stop turn change thread
         self._turn_manager.stop_turn_thread()
 
     def _delete_self(self):
@@ -81,7 +81,7 @@ class Match:
         """ when some matchConsumer disconnect """
         self._connected_consumers_count -= 1
         # when all consumers disconnect set timer deleting self
-        if (self._connected_consumers_count <= 0):
+        if self._connected_consumers_count <= 0:
             self._match_deleter.start_auto_delete_timer()
 
     def _send_to_sockets(self, message: dict, modify=False):
@@ -188,7 +188,7 @@ class Match:
 
         player0_points: int = self._base_points[0]
         player1_points: int = self._base_points[1]
-        if (player0_points <= 0 or player1_points <= 0):
+        if player0_points <= 0 or player1_points <= 0:
             if player0_points == player1_points:
                 return -2   # when both players lost all points
             return 0 if player0_points > player1_points else 1
@@ -216,8 +216,6 @@ class Match:
             lost_player_index)
 
     def _send_to_socket_player_win(self):
-        """ :param winner_index: int - index of player who win, can be -2 then
-        it is draw """
         message = {
             'name': 'player-win',
             'data': {
@@ -289,6 +287,7 @@ class Match:
     def play_a_card(
             self, player_index: int, card_id: int, field_id: int) -> bool:
         """ try to play a card from hand to board
+        :param player_index: int - index of player trying to play a card
         :param card_id: int - card id to play
         :param field_id: int - field id to play there card
         :return: bool - whether it worked """

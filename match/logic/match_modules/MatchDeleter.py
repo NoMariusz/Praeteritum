@@ -7,7 +7,7 @@ class MatchDeleter:
     """ module for Match managing timer deleting Match """
 
     def __init__(self, delete_callback: Callable):
-        """ :param delete_callback: Callable - function from parrent which
+        """ :param delete_callback: Callable - function from parent which
         perform deletion """
         self._delete_callback: Callable = delete_callback
         self._auto_delete_timer: Optional[Timer] = None

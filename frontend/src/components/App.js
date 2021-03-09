@@ -19,5 +19,5 @@ const App = () => {
 }
 
 
-const appdiv = document.getElementById('app')
-render(<App/>, appdiv)
+const appDiv = document.getElementById('app')
+render(<App/>, appDiv)

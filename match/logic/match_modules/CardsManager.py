@@ -7,7 +7,7 @@ from cards.serializers import CardSerializer
 
 
 class CardsManager:
-    """ manage Cards in match, store informations about them and enable to
+    """ manage Cards in match, store information about them and enable to
     operate on them and send information about changes to sockets """
 
     def __init__(self, send_to_sockets: Callable, players: list):

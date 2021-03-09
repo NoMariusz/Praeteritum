@@ -25,7 +25,7 @@ class FindingMatch(TestCase):
             # before test end
             finders.append(finder)
             finder_coros.append(finder.find_match())
-        # wait to all users recieve match id
+        # wait to all users receive match id
         await asyncio.gather(
             wait_to_get_match_id(finder_coros[0]),
             wait_to_get_match_id(finder_coros[1])

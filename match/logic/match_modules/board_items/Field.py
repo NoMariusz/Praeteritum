@@ -16,7 +16,7 @@ class Field:
         self.unit = None
 
     def get_data_for_frontend(self, for_player: int) -> dict:
-        """ :return: dict - contain data for frontned in dict that can be
+        """ :return: dict - contain data for frontend in dict that can be
         transformed to json
         """
         return {

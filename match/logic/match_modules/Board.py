@@ -9,7 +9,7 @@ from .board_items.Unit import Unit
 
 class Board():
     def __init__(self, send_to_sockets: Callable):
-        """ :param sent_to_socket: Callable - function from parent who enable
+        """ :param send_to_sockets: Callable - function from parent who enable
         sending messages to sockets from board """
         # _fields is list of Field ordered by id
         self._fields: list = self._make_fields()
@@ -165,7 +165,7 @@ class Board():
         old_field: Field = self._fields[unit.field_id]
         distance: int = self._calc_distance_from_fields(
             old_field, new_field)
-        if(distance > unit.move_points):
+        if distance > unit.move_points:
             return False
 
         return True
@@ -176,9 +176,10 @@ class Board():
             self, player_index: int, attacker_id: int, defender_id: int
     ) -> bool:
         """ attack other unit and simulate battle by attacking one another
+        :param player_index: int - index of player who attack
         :param attacker_id: int - id of unit that attack
         :param defender_id: int - id of unit which are attacked
-        :return: bool - if attacking succes (if unit attack other) """
+        :return: bool - if attacking success (if unit attack other) """
         attacker: Unit = self._get_unit_by_id(attacker_id)
         defender: Unit = self._get_unit_by_id(defender_id)
 
@@ -232,7 +233,7 @@ class Board():
     def _made_attack(
             self, damage_dealer: Unit, damage_taken: Unit, as_attacker: bool
     ) -> bool:
-        """ made single attack where only defneder get damage if attacker can
+        """ made single attack where only defender get damage if attacker can
         attack him
         :return: bool - if attack success """
         # check if attacker have range
@@ -273,7 +274,7 @@ class Board():
         lost_base_points = 0
         for field in self._fields:
             # if Field is part of player base
-            if (field.is_base and field.player_half == player_index):
+            if field.is_base and field.player_half == player_index:
                 unit_in_field: Unit = field.unit
                 # if is Unit on Field and is enemy
                 if (unit_in_field is not None

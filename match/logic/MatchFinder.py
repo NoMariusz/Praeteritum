@@ -8,8 +8,8 @@ from .MatchManager import MatchManager
 class MatchFinder:
     """ class searching match for players, work:
     - adding player to waiting_players_list
-    - checking in interval if there is oponent for player
-    - if found oponent, then delegate MatchManager to create match for players
+    - checking in interval if there is opponent for player
+    - if found opponent, then delegate MatchManager to create match for players
     and return its id
     - if other finder instance create match, then simply returning id
     - if it is needed to cancel finding, you can use class Method that find
@@ -24,7 +24,7 @@ class MatchFinder:
 
         self.player: User = player
         # store match id for player, can be set bo other finder
-        self.match_id: Optional[str] = None
+        self.match_id: Optional[int] = None
         self.search_for_match = True
 
     def __del__(self):
@@ -45,18 +45,18 @@ class MatchFinder:
                 return self.match_id
 
             # get list with finders for other players
-            filered_list = list(
+            filtered_list = list(
                 filter(
                     lambda inst: inst.player != self.player,
                     self.instances
                 )
             )
             # go to next iteration when not find other players finders
-            if len(filered_list) <= 0:
+            if len(filtered_list) <= 0:
                 continue
 
             # when found other player finder
-            second_finder = filered_list[0]
+            second_finder = filtered_list[0]
             # making match for players
             match_manager = MatchManager()
             match_id = await match_manager.make_match(

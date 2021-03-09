@@ -22,7 +22,7 @@ class MatchConsumer(WebsocketConsumer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.recieve_commands = {
+        self.receive_commands = {
             "get-initial-data": self.get_initial_match_data,
             "end-turn": self.end_turn,
             "play-a-card": self.play_a_card,
@@ -75,16 +75,16 @@ class MatchConsumer(WebsocketConsumer):
             self.channel_name
         )
 
-    def receive(self, text_data):
-        """ recieve message from client WebSocket """
+    def receive(self, text_data=None, bytes_data=None):
+        """ receive message from client WebSocket """
         # get data from text_data
         text_data_json = json.loads(text_data)
         message = text_data_json['message']
         data = text_data_json['data'] \
             if 'data' in text_data_json.keys() else None
-        # delegate work to proper function specified in self.recieve_commands
-        if message in self.recieve_commands.keys():
-            self.recieve_commands[message](data, message)
+        # delegate work to proper function specified in self.receive_commands
+        if message in self.receive_commands.keys():
+            self.receive_commands[message](data, message)
 
     def send_to_socket(self, event):
         """ receive message from room group and send to client """
@@ -128,9 +128,9 @@ class MatchConsumer(WebsocketConsumer):
         match_manager = MatchManager()
         return async_to_sync(match_manager.get_match_by_id)(self.match_id)
 
-    # utils related to recieve/send
+    # utils related to receive/send
 
-    def get_initial_match_data(self, data, message, *args, **kwargs):
+    def get_initial_match_data(self, _, message):
         match = self._get_match()
         data = match.give_initial_data(self.player_index)
         self.send(text_data=json.dumps({
@@ -140,7 +140,7 @@ class MatchConsumer(WebsocketConsumer):
             }
         }))
 
-    def end_turn(self, data, message, *args, **kwargs):
+    def end_turn(self, _, message):
         match = self._get_match()
         if_ended_turn = match.end_turn(player_index=self.player_index)
         self.send(text_data=json.dumps({
@@ -152,7 +152,7 @@ class MatchConsumer(WebsocketConsumer):
             }
         }))
 
-    def play_a_card(self, data, message, *args, **kwargs):
+    def play_a_card(self, data, message):
         # validate socket message data
         if "card_id" not in data.keys() or "field_id" not in data.keys():
             self.send(text_data=json.dumps({
@@ -182,7 +182,7 @@ class MatchConsumer(WebsocketConsumer):
             }
         }))
 
-    def move_unit(self, data, message, *args, **kwargs):
+    def move_unit(self, data, message):
         # validate socket message data
         if "unit_id" not in data.keys() or "field_id" not in data.keys():
             self.send(text_data=json.dumps({
@@ -212,7 +212,7 @@ class MatchConsumer(WebsocketConsumer):
             }
         }))
 
-    def attack_unit(self, data, message, *args, **kwargs):
+    def attack_unit(self, data, message):
         # validate socket message data
         if "attacker_id" not in data.keys() \
                 or "defender_id" not in data.keys():
