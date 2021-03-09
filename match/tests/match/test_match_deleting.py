@@ -12,7 +12,7 @@ class MatchAutoDeleting(TestCase):
     """ check if Match delete self proper """
 
     # patch deleting time for Match to speed up tests
-    @patch("match.logic.Match.MATCH_DELETE_TIMEOUT", 0.1)
+    @patch("match.logic.match_modules.MatchDeleter.MATCH_DELETE_TIMEOUT", 0.1)
     def setUp(self):
         self.match_manager = MatchManager()
         # clear match list from match_manager to be sure that is 0 matches at
