@@ -1,36 +1,27 @@
-from django.test import TestCase
-from asgiref.sync import async_to_sync
-
 from cards.models import CardModel
-from match.logic.Match import Match
 from match.logic.match_modules.board_items.Unit import Unit
 from match.constants import BOARD_COLUMNS, DEFAULT_ATTACK_POINTS
-from ..utils import make_test_users, make_match, make_test_card
+from ..utils import make_test_card
+from ..MatchWithCardDataTestCase import MatchWithCardDataTestCase
 
 
-class UnitsAttacks(TestCase):
+class UnitsAttacks(MatchWithCardDataTestCase):
     """ check if units in board can attack each other and if his attacks
     are proper restricted"""
 
     def setUp(self):
-        # prepare match
-        test_players = async_to_sync(make_test_users)()
-        self.match: Match = make_match(test_players)
-        # made card for unit
-        card = make_test_card()
+        # prepare things to test by MatchWithUnitTestCase
+        super().setUp()
+        # made special MISSLEMAN card for unit
         card3 = make_test_card(CardModel.CardTypes.MISSLEMAN)
-        # prepare player indexes
-        self.p1_index = 0
-        self.p2_index = 1
-        # made unit by card and add to board
-        card_data: dict = self.match._cards_manager.made_card_data_by_id(
-            card.id)
+        # made MISSLEMAN unit by card3
         card_data3: dict = self.match._cards_manager.made_card_data_by_id(
             card3.id)
+        # made units
         self.unit1_id = self.match._board.add_unit_by_card_data(
-            card_data, self.p1_index, 1)
+            self.card_data, self.p1_index, 1)
         self.unit2_id = self.match._board.add_unit_by_card_data(
-            card_data, self.p2_index, 2)
+            self.card_data, self.p2_index, 2)
         self.unit3_id = self.match._board.add_unit_by_card_data(
             card_data3, self.p2_index, 0)
 

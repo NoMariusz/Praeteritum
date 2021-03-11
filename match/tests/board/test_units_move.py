@@ -1,31 +1,19 @@
-from django.test import TestCase
-from asgiref.sync import async_to_sync
-
-from match.logic.Match import Match
 from match.constants import BOARD_COLUMNS
-from ..utils import make_test_users, make_match, make_test_card
+from ..MatchWithCardDataTestCase import MatchWithCardDataTestCase
 
 
-class UnitsMove(TestCase):
+class UnitsMove(MatchWithCardDataTestCase):
     """ check if units in board can be moved, and if moves are proper
     restricted """
 
     def setUp(self):
-        # prepare match
-        test_players = async_to_sync(make_test_users)()
-        self.match: Match = make_match(test_players)
-        # made card for unit
-        card = make_test_card()
-        # prepare player indexes
-        self.p1_index = 0
-        self.p2_index = 1
-        # made unit by card and add to board
-        card_data: dict = self.match._cards_manager.made_card_data_by_id(
-            card.id)
+        # prepare things to test by MatchWithUnitTestCase
+        super().setUp()
+        # made units by card data and add to board
         self.unit1_id = self.match._board.add_unit_by_card_data(
-            card_data, self.p1_index, 0)
+            self.card_data, self.p1_index, 0)
         self.unit2_id = self.match._board.add_unit_by_card_data(
-            card_data, self.p2_index, 1)
+            self.card_data, self.p2_index, 1)
 
     def test_normal_move(self):
         # make good move
