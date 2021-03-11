@@ -1,6 +1,6 @@
 import random
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Callable
 from threading import Thread
 from ...constants import TURN_TIME, TURN_STATUS_REFRESH_TIME
@@ -38,10 +38,9 @@ class TurnManager:
             time.sleep(TURN_STATUS_REFRESH_TIME)
             # get how much time passes
             now: datetime = datetime.now()
-            # use microseconds to allow work with TURN_TIME < 1
-            microseconds_from_start: int = (
-                now - self._last_turn_start_time).microseconds
-            seconds_from_start = microseconds_from_start / 1000000
+            # use total_seconds() to allow work with TURN_TIME < 1
+            delta: timedelta = now - self._last_turn_start_time
+            seconds_from_start = delta.total_seconds()
             # update progress
             self.turn_progress = seconds_from_start / TURN_TIME * 100
 
