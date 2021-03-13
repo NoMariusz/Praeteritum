@@ -84,14 +84,18 @@ export const Card_ = ({
                 alignItems="flex-end"
                 width="1"
             >
-                <AttackParam attack={cardData.attack} isFull={showFull} />
-                <Box px={0.5} flex="1">
+                <Box flex="1 0 2rem">
+                    <AttackParam attack={cardData.attack} isFull={showFull} />
+                </Box>
+                <Box px={0.5} flex="1 1 2rem">
                     <TypeParam typeIndex={cardData.category} />
                     <Collapse in={showFull}>
                         <RarityParam rarityIndex={cardData.rarity} />
                     </Collapse>
                 </Box>
-                <HpParam hp={cardData.hp} isFull={showFull} />
+                <Box flex="1 0 2rem">
+                    <HpParam hp={cardData.hp} isFull={showFull} />
+                </Box>
             </Box>
         </Box>
     );
