@@ -1,7 +1,7 @@
 import asyncio
 from django.test import TestCase
 
-from ..logic.MatchFinder import MatchFinder
+from ..logic.searching.MatchFinder import MatchFinder
 from .utils import make_test_users
 
 
