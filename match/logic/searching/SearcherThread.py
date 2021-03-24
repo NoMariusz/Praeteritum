@@ -1,6 +1,5 @@
 import time
 from threading import Thread
-from asgiref.sync import async_to_sync
 from ..MatchManager import MatchManager
 
 
@@ -31,7 +30,7 @@ class SearcherThread(Thread):
             finder2 = self.finders[1]
             # making match for players
             match_manager = MatchManager()
-            match_id = async_to_sync(match_manager.make_match)(
+            match_id = match_manager.make_match(
                 [finder1.player, finder2.player])
             # send info to finders that match is found
             finder1.match_id = match_id

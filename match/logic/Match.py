@@ -8,6 +8,7 @@ from .match_modules.Board import Board
 from .match_modules.TurnManager import TurnManager
 from .match_modules.CardsManager import CardsManager
 from .match_modules.MatchDeleter import MatchDeleter
+from .DbInformationManager import DbInformationManager
 from ..constants import DEFAULT_BASE_POINTS, CARDS_DRAWED_AT_START_COUNT, \
     CARDS_DRAWED_AT_TURN_COUNT
 
@@ -54,6 +55,8 @@ class Match:
     # lifecycle / deleting self stuff
 
     def __del__(self):
+        # to set information in db that match is ended
+        DbInformationManager.set_match_ended(self._winner, self.id_)
         # to definitely stop turn change thread
         self._turn_manager.stop_turn_thread()
 
@@ -61,6 +64,8 @@ class Match:
         print("\tInfo: Match: Deleting %s" % self)
         # to delete references in match_manager
         self._delete_callback(self)
+        # to set information in db about match status
+        DbInformationManager.set_match_ended(self._winner, self.id_)
 
     # sockets / connection stuff
 
@@ -167,15 +172,27 @@ class Match:
 
     # win/lost stuff
 
+    @property
+    def _winner(self) -> Optional[User]:
+        return self._players[self.winner_index] \
+            if self.winner_index != -1 else None
+
+    def _on_win(self):
+        """ function made all action when somabody meet conditions to win
+        match """
+        self._send_to_socket_player_win()
+        self._turn_manager.stop_turn_thread()
+        # to set at db that match is end
+        DbInformationManager.set_match_ended(self._winner, self.id_)
+        # delete self after some time
+        self._match_deleter.start_auto_delete_timer()
+
     def _check_someone_win(self):
         """ check if some player win and end game """
         self.winner_index: int = self._check_if_someone_win()
         # checking if someone win
         if self.winner_index != -1:
-            self._send_to_socket_player_win()
-            self._turn_manager.stop_turn_thread()
-            # delete self after some time
-            self._match_deleter.start_auto_delete_timer()
+            self._on_win()
 
     def _check_if_someone_win(self) -> int:
         """ checking if one of player meet conditions to win
