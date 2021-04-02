@@ -1,5 +1,6 @@
 import asyncio
 from asgiref.sync import async_to_sync
+from channels.db import database_sync_to_async
 from django.test import TestCase
 from unittest.mock import patch
 
@@ -20,8 +21,7 @@ class MatchAutoDeleting(TestCase):
         self.match_manager.matches = []
         # make match by self.match_manager
         test_players = async_to_sync(make_test_users)()
-        self.match_id: int = async_to_sync(
-            self.match_manager.make_match)(test_players)
+        self.match_id: int = self.match_manager.make_match(test_players)
 
     def test_if_default_exists(self):
         """ check if after making Match match_manager add it to list """
@@ -42,7 +42,7 @@ class MatchAutoDeleting(TestCase):
         match: Match = await self.match_manager.get_match_by_id(self.match_id)
         # change base points to somebody lose
         match._base_points[0] = -4
-        match._check_someone_win()
+        await database_sync_to_async(match._check_someone_win)()
         # wait to match should delete self
         await asyncio.sleep(0.2)
         # check if match is deleted from match_manager list

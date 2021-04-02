@@ -19,11 +19,15 @@ class DbInformationManager:
         return match_db_info.id
 
     @staticmethod
-    def set_match_ended(winner: Optional[User], match_id: int):
+    def set_match_ended(winner: Optional[User], match_id: int) -> bool:
         """ modify MatchInformation in db to set match ended and set winner
         :param winner: Optional[User] - player who win game
         :param match_id: int - id of match to set ended """
-        db_match_info = MatchInformation.objects.get(id=match_id)
+        db_match_infos = MatchInformation.objects.filter(id=match_id)
+        if not db_match_infos.exists():
+            return False
+        db_match_info = db_match_infos[0]
         db_match_info.status = MatchInformation.Statuses.ENDED
         db_match_info.winner = winner
         db_match_info.save()
+        return True

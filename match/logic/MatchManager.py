@@ -1,7 +1,6 @@
 from typing import Optional
 from asgiref.sync import sync_to_async
 from .Match import Match
-from .DbInformationManager import DbInformationManager
 
 
 class MatchManager:
@@ -17,12 +16,8 @@ class MatchManager:
 
     def make_match(self, for_players: list) -> int:
         """ making match for specified players, and return its id """
-        # set in database information about match, and get its id
-        match_id = DbInformationManager.make_match_information(for_players)
         # make match in memory
-        match: Match = Match(
-            match_id, for_players, delete_callback=self._end_match
-        )
+        match: Match = Match(for_players, delete_callback=self._end_match)
         self.matches.append(match)
         return match.id_
 

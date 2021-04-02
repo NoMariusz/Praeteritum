@@ -7,7 +7,7 @@ from ..logic.Match import Match
 def make_match(players: list) -> Match:
     """ making match directly by Class constructor and return it """
     return Match(
-        1, players=players,
+        players=players,
         delete_callback=lambda _: _)
 
 

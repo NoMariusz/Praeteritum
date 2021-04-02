@@ -18,11 +18,13 @@ class Match:
     communicate with sockets by sending them messages with changes of
     match state, so they receive information immediately """
 
-    def __init__(self, id_: int, players: list, delete_callback: Callable):
+    def __init__(self, players: list, delete_callback: Callable):
         """ :param delete_callback: Callable - function from parent enabling
         to delete self by remove references in MatchManager
         :param players: list - users playing that match"""
-        self.id_: int = id_
+        # set in database information about match, and get its id
+        self.id_: int = DbInformationManager.make_match_information(
+            players)
 
         self.channel_layer: Optional[RedisChannelLayer] = None
         self.match_name: str = "match%s" % self.id_
