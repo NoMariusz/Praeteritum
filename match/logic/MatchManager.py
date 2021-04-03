@@ -1,5 +1,4 @@
 from typing import Optional
-from asgiref.sync import sync_to_async
 from .Match import Match
 
 
@@ -21,10 +20,10 @@ class MatchManager:
         self.matches.append(match)
         return match.id_
 
-    async def get_match_by_id(self, id_: int) -> Optional[Match]:
+    def get_match_by_id(self, id_: int) -> Optional[Match]:
         """ :return: Match - match object in self.matches with given id """
-        match_list = await sync_to_async(list)(
-            filter(lambda match: match.id_ == id_, self.matches))
+        match_list = list(filter(
+            lambda match: match.id_ == id_, self.matches))
         return match_list[0] if len(match_list) > 0 else None
 
     def _end_match(self, match: Match):

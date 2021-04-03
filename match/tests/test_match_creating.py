@@ -10,13 +10,13 @@ class MatchCreating(TestCase):
         self.match_manager = MatchManager()
         self.match_id = self.match_manager.make_match(test_players)
 
-    async def test_match_remember(self):
+    def test_match_remember(self):
         """check if match remember his properties so overall work properly"""
         # get match
-        match = await self.match_manager.get_match_by_id(self.match_id)
+        match = self.match_manager.get_match_by_id(self.match_id)
         # set him property
         match.match_name = 'test_match_name'
         # get again
-        match2 = await self.match_manager.get_match_by_id(self.match_id)
+        match2 = self.match_manager.get_match_by_id(self.match_id)
         # check if property match
         self.assertEqual(match2.match_name, 'test_match_name')

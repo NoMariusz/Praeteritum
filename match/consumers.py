@@ -126,7 +126,7 @@ class MatchConsumer(WebsocketConsumer):
 
     def _get_match(self) -> Match:
         match_manager = MatchManager()
-        return async_to_sync(match_manager.get_match_by_id)(self.match_id)
+        return match_manager.get_match_by_id(self.match_id)
 
     # utils related to receive/send
 

@@ -56,7 +56,8 @@ async def test_when_nobody_connect(match_manager, match_id):
 async def test_when_match_end(match_manager, match_id):
     """ test if deleting Match after game end """
     # get match by match_manager
-    match: Match = await match_manager.get_match_by_id(match_id)
+    match: Match = await database_sync_to_async(
+        match_manager.get_match_by_id)(match_id)
     # change base points to somebody lose
     match._base_points[0] = -4
     await database_sync_to_async(match._check_someone_win)()

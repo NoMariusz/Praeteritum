@@ -22,7 +22,8 @@ async def test_match_turn_changing():
     match_manager = MatchManager()
     match_id: int = await database_sync_to_async(match_manager.make_match)(
         test_players)
-    match: Match = await match_manager.get_match_by_id(match_id)
+    match: Match = await database_sync_to_async(
+        match_manager.get_match_by_id)(match_id)
 
     # get start turn, wait to change it, and assert if turn change
     start_turn = match._player_turn
