@@ -1,5 +1,4 @@
 from django.test import TestCase
-from asgiref.sync import async_to_sync
 
 from match.logic.Match import Match
 from ..utils import make_test_users, make_match, make_test_card
@@ -12,7 +11,7 @@ class MatchWinDetection(TestCase):
         # make card to players have card at start
         make_test_card(default_in_deck=True)
         # prepare match
-        test_players = async_to_sync(make_test_users)()
+        test_players = make_test_users()
         self.match: Match = make_match(test_players)
         # prepare player indexes
         self.p1_index = 0

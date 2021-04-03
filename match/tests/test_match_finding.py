@@ -11,12 +11,14 @@ from .utils import make_test_users
 @pytest.mark.django_db(transaction=True)
 @pytest.mark.asyncio
 async def test_can_find_match():
+    """ Check if MatchFinder work good and return new created match id to
+    users correctly """
     # count number of users at start
     count = await database_sync_to_async(User.objects.count)()
     assert count == 0
 
     # make users
-    players: list = await make_test_users()
+    players: list = await database_sync_to_async(make_test_users)()
     count: int = await database_sync_to_async(User.objects.count)()
     assert count == 2
 

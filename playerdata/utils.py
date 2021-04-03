@@ -1,9 +1,7 @@
-from channels.db import database_sync_to_async
 from playerdata.models import PlayerData
 from cards.models import CardModel
 
 
-@database_sync_to_async
 def make_player_data(user):
     # init userdata
     playerdata = PlayerData(user=user)

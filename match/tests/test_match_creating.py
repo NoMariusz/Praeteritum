@@ -1,4 +1,3 @@
-from asgiref.sync import async_to_sync
 from django.test import TestCase
 
 from ..logic.MatchManager import MatchManager
@@ -7,7 +6,7 @@ from .utils import make_test_users
 
 class MatchCreating(TestCase):
     def setUp(self):
-        test_players = async_to_sync(make_test_users)()
+        test_players = make_test_users()
         self.match_manager = MatchManager()
         self.match_id = self.match_manager.make_match(test_players)
 

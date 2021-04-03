@@ -1,5 +1,4 @@
 from django.test import TestCase
-from asgiref.sync import async_to_sync
 
 from ...logic.Match import Match
 from ...logic.utils import get_opposed_index
@@ -11,7 +10,7 @@ class MatchMoves(TestCase):
     when has no turn """
     def setUp(self):
         # prepare match
-        test_players = async_to_sync(make_test_users)()
+        test_players = make_test_users()
         self.match: Match = make_match(test_players)
 
     def test_when_have_move(self):

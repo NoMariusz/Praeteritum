@@ -18,7 +18,7 @@ from ..utils import make_test_users
 async def test_match_turn_changing():
     """check if match turn changed in time correctly"""
     # make match
-    test_players: list = await make_test_users()
+    test_players: list = await database_sync_to_async(make_test_users)()
     match_manager = MatchManager()
     match_id: int = await database_sync_to_async(match_manager.make_match)(
         test_players)

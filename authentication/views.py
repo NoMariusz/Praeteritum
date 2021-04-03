@@ -25,7 +25,7 @@ class RegisterUser(AsyncView):
             password = serializer.validated_data["password"]
             email = serializer.validated_data["email"]
 
-            user = await create_user(
+            user = await sync_to_async(create_user)(
                 username=username, password=password, email=email)
 
             # auto login after create user

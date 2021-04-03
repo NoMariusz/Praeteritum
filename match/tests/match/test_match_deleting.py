@@ -1,5 +1,4 @@
 import asyncio
-from asgiref.sync import async_to_sync
 from channels.db import database_sync_to_async
 from django.test import TestCase
 from unittest.mock import patch
@@ -20,7 +19,7 @@ class MatchAutoDeleting(TestCase):
         # test start
         self.match_manager.matches = []
         # make match by self.match_manager
-        test_players = async_to_sync(make_test_users)()
+        test_players = make_test_users()
         self.match_id: int = self.match_manager.make_match(test_players)
 
     def test_if_default_exists(self):
