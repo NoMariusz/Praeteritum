@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Container, Grid, Box } from "@material-ui/core";
 import HomeNavBar from "./HomeNavBar";
 import SearchMatchPanel from "./SearchMatchPanel";
+import RunningMatchesNotifer from "./matches_notifer/RunningMatchesNotifer";
 
 export const HomePage = (props) => {
     const [isLogged, setIsLogged] = useState(false);
@@ -22,7 +23,7 @@ export const HomePage = (props) => {
 
     const goToMatchCallback = (matchId) => {
         props.history.push(`/match/${matchId}`);
-    }
+    };
 
     checkIfLogged();
 
@@ -44,12 +45,17 @@ export const HomePage = (props) => {
                     >
                         {isLogged ? (
                             <Grid item xs={12}>
-                                <SearchMatchPanel goToMatchCallback={goToMatchCallback}/>
+                                <SearchMatchPanel
+                                    goToMatchCallback={goToMatchCallback}
+                                />
                             </Grid>
                         ) : null}
                     </Grid>
                 </Container>
             </Box>
+            {isLogged ? (
+                <RunningMatchesNotifer goToMatchCallback={goToMatchCallback} />
+            ) : null}
         </Box>
     );
 };
