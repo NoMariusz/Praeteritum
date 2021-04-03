@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Button, Snackbar } from "@material-ui/core";
+import { Snackbar } from "@material-ui/core";
 import { getCSRF, sleep } from "components/../utils";
+import RunningMatchInfo from "./RunningMatchInfo";
 
 export const RunningMatchesNotifer = ({ goToMatchCallback }) => {
     /* displaying information about running matches */
@@ -50,17 +51,12 @@ export const RunningMatchesNotifer = ({ goToMatchCallback }) => {
             open={true}
             onClose={null}
             message="You have running Match"
-            action={
-                <Button
-                    color="primary"
-                    onClick={() => {
-                        goToMatchCallback(runningMatch.id);
-                    }}
-                >
-                    Reconnect
-                </Button>
-            }
-        />
+        >
+            <RunningMatchInfo
+                matchInfo={runningMatch}
+                goToMatchCallback={goToMatchCallback}
+            />
+        </Snackbar>
     ));
 };
 
