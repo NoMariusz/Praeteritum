@@ -27,7 +27,7 @@ Online game combining original battle strategy games with fast-paced card games 
 ## Installation
 
 Praeteritum requires Python 3.9.1, pip >= 20.2.3 and Redis >= 5.0
-###### ⚠️ Redis service should be active to django-channels can run correctly
+> ⚠️ Redis service should be active to django-channels can run correctly
 
 Clone repository from github
 ```
@@ -54,14 +54,19 @@ Finally you can run server
 py manage.py runserver 127.0.0.1:80
 ```
 
-###### Hint! If you want to play a match, don't forgot add some cards from admin page
+> Hint! If you want to play a match, don't forgot add some cards from admin page
 
 ## Contributing
 
 Praeteritum code should be viewed and edited with your editor set to use four spaces per tab.
 In Python part of code please follow [PEP 8](https://www.python.org/dev/peps/pep-0008/).
 JavaScript / React part is written mostly at function components and tries to follow [Airbnb React/JSX Style Guide](https://github.com/airbnb/javascript/tree/master/react).
-##### Images are mostly from [Pixabay](pixabay.com)
+> Images are mostly from [Pixabay](pixabay.com)
+
+### Testing
+
+Application uses [pytest](pytest.org) with [pytest-asyncio](https://pypi.org/project/pytest-asyncio) and [pytest-django](https://pypi.org/project/pytest-django/).
+That combination help a lot to test asyncronous code and threads which needs to access django ORM.
 
 ## License
 

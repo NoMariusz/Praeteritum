@@ -1,5 +1,4 @@
 from django.test import TestCase
-from asgiref.sync import async_to_sync
 
 from match.logic.Match import Match
 from ..utils import make_test_users, make_match, make_test_card
@@ -9,7 +8,7 @@ class UnitsCreating(TestCase):
     def test_units_made_proper(self):
         """ check if board made proper units by given card data """
         # prepare match
-        test_players = async_to_sync(make_test_users)()
+        test_players = make_test_users()
         match: Match = make_match(test_players)
         # made card
         card = make_test_card()

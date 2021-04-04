@@ -1,4 +1,3 @@
-from asgiref.sync import async_to_sync
 from django.test import TestCase
 
 from cards.models import CardModel
@@ -12,7 +11,7 @@ class MatchCards(TestCase):
         """
         test_card_name = "test_card_123#@!"
         # made match
-        test_players = async_to_sync(make_test_users)()
+        test_players = make_test_users()
         match: Match = make_match(test_players)
         # made card
         card = CardModel(

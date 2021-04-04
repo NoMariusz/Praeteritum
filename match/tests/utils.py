@@ -7,15 +7,15 @@ from ..logic.Match import Match
 def make_match(players: list) -> Match:
     """ making match directly by Class constructor and return it """
     return Match(
-        1, players=players,
+        players=players,
         delete_callback=lambda _: _)
 
 
-async def make_test_users() -> list:
+def make_test_users() -> list:
     """ Make two test players in base and return list of them """
-    user1 = await create_user(
+    user1 = create_user(
         username='test1', password='test1', email='test1@tt.com')
-    user2 = await create_user(
+    user2 = create_user(
         username='test2', password='test2', email='test2@tt.com')
     return [user1, user2]
 

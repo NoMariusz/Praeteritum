@@ -1,5 +1,4 @@
 from django.test import TestCase
-from asgiref.sync import async_to_sync
 
 from ...logic.Match import Match
 from ...constants import BOARD_ROWS, BOARD_COLUMNS
@@ -10,7 +9,7 @@ class BoardFields(TestCase):
     def test_fields_are_put_in_order_for_player(self):
         """ check if board returning fields in proper order for players"""
         # made match
-        test_players = async_to_sync(make_test_users)()
+        test_players = make_test_users()
         match: Match = make_match(test_players)
         # get fields
         fields_for_0: list = match._board.get_fields_dicts(0)

@@ -1,12 +1,18 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button, Typography, Grid, Paper } from "@material-ui/core";
 import { getCSRF } from "../../utils";
 
-export const SearchMatchPanel = ({goToMatchCallback}) => {
+export const SearchMatchPanel = ({ goToMatchCallback }) => {
+    /* component enabling to search for match and cancel searching */
+
     const [isSearching, setIsSearching] = useState(false);
 
-    const searchMatch = () => {
+    const searchMatch = async () => {
+        /* send something like long pooling request starting searching
+        and returning match id when find match */
+
         setIsSearching(true);
+
         const requestOptions = {
             method: "POST",
             headers: {
@@ -14,21 +20,21 @@ export const SearchMatchPanel = ({goToMatchCallback}) => {
                 "X-CSRFToken": getCSRF(),
             },
         };
-        fetch("/match-api/search", requestOptions)
-            .then((res) => {
-                if (res.ok){
-                    res.json().then(data => {
-                        goToMatchCallback(data.match_id)
-                    })
-                } else {
-                    setIsSearching(false);
-                    console.info('match not found')
-                }
-            })
+        const res = await fetch("/match-api/search", requestOptions);
+
+        if (res.ok) {
+            // when response ok go to match
+            const data = await res.json();
+            goToMatchCallback(data.match_id);
+        } else if (res.status != 404){
+            // when problem with response set that is not searching
+            setIsSearching(false);
+        }
     };
 
-    const cancelSearch = () => {
-        setIsSearching(false);
+    const cancelSearch = async () => {
+        /* cancel searching for match in server */
+
         const requestOptions = {
             method: "POST",
             headers: {
@@ -36,29 +42,50 @@ export const SearchMatchPanel = ({goToMatchCallback}) => {
                 "X-CSRFToken": getCSRF(),
             },
         };
-        fetch("/match-api/cancel-search", requestOptions)
-            .then((res) => res.json())
-            .then((data) => {
-                console.log(`cancel search: ${data.message}`);
-            });
+        await fetch("/match-api/cancel-search", requestOptions);
+        setIsSearching(false);
     };
+
+    const loadIsSearching = async () => {
+        /* check if server is searching form match now, and update self status
+        depending on result */
+
+        const requestOptions = {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": getCSRF(),
+            },
+        };
+        const res = await fetch("/match-api/is-searching", requestOptions);
+        const data = await res.json();
+        // if user searching for match, restart searching
+        if (data.result) {
+            searchMatch();
+        }
+    };
+
+    useEffect(() => {
+        // at first rednder load if user searching for match
+        loadIsSearching();
+    }, []);
 
     return (
         <Paper elevation={1}>
             <Grid container spacing={3} justify="center" alignItems="center">
                 <Grid item align="center">
-                    {!isSearching ? (
-                        <Typography variant="h4">Start now</Typography>
-                    ) : (
-                        <Typography variant="h4">Searching ...</Typography>
-                    )}
+                    <Typography variant="h4">
+                        {isSearching ? "Searching ..." : "Start now"}
+                    </Typography>
                 </Grid>
                 <Grid item align="center">
                     {!isSearching ? (
                         <Button
                             variant="contained"
                             color="primary"
-                            onClick={() => {searchMatch()}}
+                            onClick={() => {
+                                searchMatch();
+                            }}
                         >
                             Search match
                         </Button>

@@ -26,3 +26,7 @@ export const formatIfTooLong = (toFormat, maxLen) => {
     }
     return toFormat
 }
+
+export const sleep = (ms) => {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
