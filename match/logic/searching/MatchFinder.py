@@ -34,6 +34,17 @@ class MatchFinder:
         # self from instances list
         self.cancel_finding()
 
+    def clear_duplicate_finders(self):
+        """ stop work of finders searching for match for that same player as
+        self """
+        duplicate_finders = list(filter(
+            lambda finder: finder.player == self.player, self.instances))
+        # cancel duplicate work
+        for finder in duplicate_finders:
+            finder.cancel_finding()
+
+    # finding
+
     async def find_match(self) -> Optional[int]:
         """ run loop trying to find other player, make match for it and return
         new match id, in special case return id when other instance give her
@@ -46,6 +57,8 @@ class MatchFinder:
             if self.match_id is not None:
                 return self.match_id
         return None
+
+    # canceling finding
 
     @classmethod
     def cancel(cls, for_player: User):
@@ -66,11 +79,13 @@ class MatchFinder:
             self.search_for_match = False
             self.instances.remove(self)
 
-    def clear_duplicate_finders(self):
-        """ stop work of finders searching for match for that same player as
-        self """
-        duplicate_finders = list(filter(
-            lambda finder: finder.player == self.player, self.instances))
-        # cancel duplicate work
-        for finder in duplicate_finders:
-            finder.cancel_finding()
+    # checking if finding match
+
+    @classmethod
+    def isFinding(cls, for_player: User) -> bool:
+        """ :param for_player: User -  user for which check if actually
+        finding match
+        :return: bool - if MatchFinder actually find for match"""
+        return any(
+            inst.player == for_player and inst.match_id is None
+            for inst in cls.instances)

@@ -37,6 +37,17 @@ class CancelFindMatch(APIView):
             {'message': 'cancel finding match'}, status=status.HTTP_200_OK)
 
 
+class IsFindingMatch(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, format=None):
+        """ return if actual finding match for user """
+        user: User = request.user
+        is_finding = MatchFinder.isFinding(for_player=user)
+        return Response(
+            {'result': is_finding}, status=status.HTTP_200_OK)
+
+
 class ActiveMatches(APIView):
     serializer_class = RunningMatchSerializer
     permission_classes = [permissions.IsAuthenticated]
