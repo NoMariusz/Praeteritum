@@ -1,12 +1,13 @@
 import React, { useContext } from "react";
 import { Box } from "@material-ui/core";
 import Field from "./Field.js";
-import { MATCH_BOARD_SIZE } from "./constants.js";
 import {
     SELECTABLE_ELEMENTS,
     SELECTED_ELEMENT_TEMPLATE,
 } from "../../constants.js";
 import { SelectedElementContext } from "../../matchContexts.js";
+
+const MATCH_BOARD_SIZE = "40rem";
 
 export const Board = ({ matchSocket, fields, units, turn }) => {
     /* represents Board object in backend and is responsible for rendering
@@ -101,10 +102,14 @@ export const Board = ({ matchSocket, fields, units, turn }) => {
     };
 
     return (
-        <Box display="flex" alignItems="center" justifyContent="center" height={1}>
+        <Box
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            height={1}
+        >
             <Box
                 width={MATCH_BOARD_SIZE}
-                my={`calc((100vh - ${MATCH_BOARD_SIZE}) / 2)`}
                 mx="auto" // to center Board in parent
                 height={MATCH_BOARD_SIZE}
                 display="flex"

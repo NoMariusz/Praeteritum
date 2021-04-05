@@ -77,7 +77,7 @@ export const MatchGame = ({ matchSocket }) => {
                 setFields(messageData.fields);
                 setUnits(messageData.units);
                 setMatchLoaded(true);
-                setWinnerIndex(messageData.winner_index)
+                setWinnerIndex(messageData.winner_index);
                 setPlayerIndex(messageData.player_index);
                 break;
             case "turn-changed":
@@ -156,61 +156,63 @@ export const MatchGame = ({ matchSocket }) => {
     // rendering
 
     const mainComponent = () => (
-        <Box height="100%" width="100%">
-            <Grid container>
-                {/* Block at left frem board with player info, and round
+        <Box
+            height={1}
+            width={1}
+            my="5rem" // to cards not overlap on board and other elements
+            display="flex"
+            alignItems="center"
+        >
+            {/* Block at left frem board with player info, and round
                 related stuff */}
-                <Grid item xs>
-                    <Box
-                        display="flex"
-                        flexDirection="column"
-                        justifyContent="space-between"
-                        height="100%"
-                    >
-                        <PlayerInfoMatchBlock
-                            playerData={enemyData}
-                            positionInBox={PLAYER_INFO_POSITIONS.top}
-                        />
-                        <TurnsBlock
-                            matchSocket={matchSocket}
-                            turn={turn}
-                            turnProgress={turnProgress}
-                        />
-                        <PlayerInfoMatchBlock
-                            playerData={playerData}
-                            positionInBox={PLAYER_INFO_POSITIONS.bottom}
-                        />
-                    </Box>
-                </Grid>
-                {/* Middle block with board */}
-                <Grid item xs>
-                    <Board
-                        matchSocket={matchSocket}
-                        fields={fields}
-                        units={units}
-                        turn={turn}
-                    />
-                </Grid>
-                {/* Right block with deck cards counter */}
-                <Grid item xs>
-                    <Box
-                        display="flex"
-                        flexDirection="column"
-                        alignItems="flex-start"
-                        justifyContent="center"
-                        height="100%"
-                    >
-                        <DecksBlock
-                            playerData={playerData}
-                            enemyData={enemyData}
-                        />
-                    </Box>
-                </Grid>
-            </Grid>
+            <Box
+                flex="1 0 10rem"
+                display="flex"
+                flexDirection="column"
+                justifyContent="space-between"
+                height={1}
+                width={1}
+            >
+                <PlayerInfoMatchBlock
+                    playerData={enemyData}
+                    positionInBox={PLAYER_INFO_POSITIONS.top}
+                />
+                <TurnsBlock
+                    matchSocket={matchSocket}
+                    turn={turn}
+                    turnProgress={turnProgress}
+                />
+                <PlayerInfoMatchBlock
+                    playerData={playerData}
+                    positionInBox={PLAYER_INFO_POSITIONS.bottom}
+                />
+            </Box>
+
+            {/* Middle block with board */}
+            <Board
+                matchSocket={matchSocket}
+                fields={fields}
+                units={units}
+                turn={turn}
+            />
+
+            {/* Right block with deck cards counter */}
+            <Box
+                flex="1 0 10rem"
+                display="flex"
+                flexDirection="column"
+                alignItems="flex-start"
+                justifyContent="center"
+                height={1}
+                width={1}
+            >
+                <DecksBlock playerData={playerData} enemyData={enemyData} />
+            </Box>
+
             {/* Elements with absolute positions */}
             <HandBlock forMainPlayer={true} playerData={playerData} />
             <HandBlock forMainPlayer={false} playerData={enemyData} />
-            {/* <OptionsBlock /> */}
+
             <InfoSnackbar
                 snackbarVisible={snackbarVisible}
                 snackbarMessage={snackbarMessage}
