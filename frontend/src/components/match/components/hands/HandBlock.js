@@ -27,6 +27,7 @@ export const HandBlock = ({ forMainPlayer, playerData }) => {
                         <CardInMatch
                             cardData={card}
                             cardsCount={cards.length}
+                            key={card.id}
                         />
                     ) : (
                         <CoveredCard />

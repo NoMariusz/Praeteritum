@@ -125,6 +125,7 @@ export const Board = ({ matchSocket, fields, units, turn }) => {
                         handleClickOnEnemyUnit={handleClickOnEnemyUnit}
                         units={units}
                         turn={turn}
+                        key={field.id}
                     />
                 ))}
             </Box>
