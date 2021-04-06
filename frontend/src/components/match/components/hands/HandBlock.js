@@ -15,12 +15,14 @@ export const HandBlock = ({ forMainPlayer, playerData }) => {
             display="flex"
             justifyContent="center"
             width="1"
+            height={0}
         >
             <Box
                 display="flex"
                 alignItems={forMainPlayer ? "flex-end" : "flex-start"}
                 justifyContent="center"
                 width="80%"
+                height={0}
             >
                 {cards.map((card) =>
                     forMainPlayer ? (
