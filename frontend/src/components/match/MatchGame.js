@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Grid, Box } from "@material-ui/core";
+import { Box } from "@material-ui/core";
 
 import MatchLoading from "./MatchLoading.js";
 import {

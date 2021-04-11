@@ -100,5 +100,26 @@ export const Card_ = ({
         </Box>
     );
 };
+  
+const compareFunction = (prevProps, nextProps) => {
+    /* return true if props are equal */
 
-export default Card_;
+    // cardData
+    if (prevProps.cardData != nextProps.cardData) {
+        return false;
+    }
+
+    // showFull
+    if (prevProps.showFull != nextProps.showFull) {
+        return false;
+    }
+
+    // isSelected
+    if (prevProps.isSelected != nextProps.isSelected) {
+        return false;
+    }
+    return true;
+}
+
+// to not render again card when nothing changed
+export default React.memo(Card_, compareFunction);
