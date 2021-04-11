@@ -37,7 +37,6 @@ export const MatchGame = ({ matchSocket }) => {
     const [enemyData, setEnemyData] = useState(enemyDataTemplate);
     const [playerIndex, setPlayerIndex] = useState(-1);
     const [turn, setTurn] = useState(-1);
-    const [turnProgress, setTurnProgress] = useState(0);
     const [fields, setFields] = useState([]);
     const [units, setUnits] = useState([]);
     const [winnerIndex, setWinnerIndex] = useState(-1);
@@ -62,8 +61,8 @@ export const MatchGame = ({ matchSocket }) => {
         setSnackbarVisible(false);
     };
 
-    // set listener to socket messages
-    matchSocket.onmessage = (e) => {
+    // make handler for socket messages
+    const matchSocketMessageHandler = (e) => {
         const data = JSON.parse(e.data);
         console.log(`websocket onmessage: ${data.message.name}`);
 
@@ -82,9 +81,6 @@ export const MatchGame = ({ matchSocket }) => {
                 break;
             case "turn-changed":
                 setTurn(messageData.turn);
-                break;
-            case "turn-progress-changed":
-                setTurnProgress(messageData.progress);
                 break;
             case "deck-cards-count-changed":
                 const setThatPlayerData =
@@ -151,7 +147,17 @@ export const MatchGame = ({ matchSocket }) => {
     useEffect(() => {
         // to get start data about match
         matchSocket.send(JSON.stringify({ message: "get-initial-data" }));
-    }, []);
+    }, [])
+
+    useEffect(() => {
+        // connect to websocket messages
+        matchSocket.addEventListener("message", matchSocketMessageHandler);
+
+        return () => {
+            // to delete listener for deleted components
+            matchSocket.removeEventListener("message", matchSocketMessageHandler);
+        }
+    });
 
     // rendering
 
@@ -180,7 +186,6 @@ export const MatchGame = ({ matchSocket }) => {
                 <TurnsBlock
                     matchSocket={matchSocket}
                     turn={turn}
-                    turnProgress={turnProgress}
                 />
                 <PlayerInfoMatchBlock
                     playerData={playerData}
