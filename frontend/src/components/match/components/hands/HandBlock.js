@@ -15,18 +15,21 @@ export const HandBlock = ({ forMainPlayer, playerData }) => {
             display="flex"
             justifyContent="center"
             width="1"
+            height={0}
         >
             <Box
                 display="flex"
                 alignItems={forMainPlayer ? "flex-end" : "flex-start"}
                 justifyContent="center"
                 width="80%"
+                height={0}
             >
                 {cards.map((card) =>
                     forMainPlayer ? (
                         <CardInMatch
                             cardData={card}
                             cardsCount={cards.length}
+                            key={card.id}
                         />
                     ) : (
                         <CoveredCard />
@@ -37,4 +40,42 @@ export const HandBlock = ({ forMainPlayer, playerData }) => {
     );
 };
 
-export default HandBlock;
+const compareFunction = (prevProps, nextProps) => {
+    /* return true if props are equal */
+
+    if (prevProps.forMainPlayer != nextProps.forMainPlayer) {
+        return false;
+    }
+
+    // if props for enemy
+    if (!nextProps.forMainPlayer) {
+        if (
+            nextProps.playerData.hand_cards_count !=
+            prevProps.playerData.hand_cards_count
+        ) {
+            return false;
+        }
+    }
+    // if props for main player
+    else {
+        if (
+            nextProps.playerData.hand_cards.length !=
+            prevProps.playerData.hand_cards.length
+        ) {
+            return false;
+        }
+        if (
+            !nextProps.playerData.hand_cards.every((newCard) =>
+                prevProps.playerData.hand_cards.some(
+                    (oldCard) => newCard.id == oldCard.id
+                )
+            )
+        ) {
+            return false;
+        }
+    }
+
+    return true;
+};
+
+export default React.memo(HandBlock, compareFunction);

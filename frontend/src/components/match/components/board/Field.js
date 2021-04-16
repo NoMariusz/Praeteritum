@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { Box } from "@material-ui/core";
-import Unit from "./Unit.js";
+import UnitInMatch from "./unit/UnitInMatch.js";
 import {
     BOARD_COLUMNS,
     BOARD_ROWS,
@@ -100,7 +100,7 @@ export const Field = ({
 
     const unitBlock =
         unitInField != undefined ? (
-            <Unit
+            <UnitInMatch
                 unitData={unitInField}
                 handleClickOnEnemyUnit={handleClickOnEnemyUnit}
                 highlight={getUnitHighlight()}

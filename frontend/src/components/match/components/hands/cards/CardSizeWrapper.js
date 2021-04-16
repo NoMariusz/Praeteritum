@@ -19,10 +19,19 @@ export const CardSizeWrapper = ({ showFull, minimizedCardWidth, children }) => {
     prop and provide transitions for size changes */
 
     // make transition to better animate size changes
-    const allTransition = theme.transitions.create("all", {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.leavingScreen,
-    });
+    const allTransition = theme.transitions.create(
+        ["width", "margin"],
+        [
+            {
+                easing: theme.transitions.easing.sharp,
+                duration: theme.transitions.duration.leavingScreen,
+            },
+            {
+                easing: theme.transitions.easing.sharp,
+                duration: theme.transitions.duration.leavingScreen,
+            },
+        ]
+    );
 
     // make styles with transition
     const styles = useStyles({ allTransition });

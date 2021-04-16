@@ -32,6 +32,8 @@ module.exports = {
     resolve: {
         alias: {
             "components": path.resolve(__dirname, "./src/components"),
+            'react-dom$': 'react-dom/profiling',
+            'scheduler/tracing': 'scheduler/tracing-profiling',
         },
     },
 };

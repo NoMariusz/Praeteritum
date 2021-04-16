@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Grid, Box } from "@material-ui/core";
+import { Box } from "@material-ui/core";
 
 import MatchLoading from "./MatchLoading.js";
 import {
@@ -37,7 +37,6 @@ export const MatchGame = ({ matchSocket }) => {
     const [enemyData, setEnemyData] = useState(enemyDataTemplate);
     const [playerIndex, setPlayerIndex] = useState(-1);
     const [turn, setTurn] = useState(-1);
-    const [turnProgress, setTurnProgress] = useState(0);
     const [fields, setFields] = useState([]);
     const [units, setUnits] = useState([]);
     const [winnerIndex, setWinnerIndex] = useState(-1);
@@ -62,8 +61,8 @@ export const MatchGame = ({ matchSocket }) => {
         setSnackbarVisible(false);
     };
 
-    // set listener to socket messages
-    matchSocket.onmessage = (e) => {
+    // make handler for socket messages
+    const matchSocketMessageHandler = (e) => {
         const data = JSON.parse(e.data);
         console.log(`websocket onmessage: ${data.message.name}`);
 
@@ -77,14 +76,11 @@ export const MatchGame = ({ matchSocket }) => {
                 setFields(messageData.fields);
                 setUnits(messageData.units);
                 setMatchLoaded(true);
-                setWinnerIndex(messageData.winner_index)
+                setWinnerIndex(messageData.winner_index);
                 setPlayerIndex(messageData.player_index);
                 break;
             case "turn-changed":
                 setTurn(messageData.turn);
-                break;
-            case "turn-progress-changed":
-                setTurnProgress(messageData.progress);
                 break;
             case "deck-cards-count-changed":
                 const setThatPlayerData =
@@ -151,66 +147,77 @@ export const MatchGame = ({ matchSocket }) => {
     useEffect(() => {
         // to get start data about match
         matchSocket.send(JSON.stringify({ message: "get-initial-data" }));
-    }, []);
+    }, [])
+
+    useEffect(() => {
+        // connect to websocket messages
+        matchSocket.addEventListener("message", matchSocketMessageHandler);
+
+        return () => {
+            // to delete listener for deleted components
+            matchSocket.removeEventListener("message", matchSocketMessageHandler);
+        }
+    });
 
     // rendering
 
     const mainComponent = () => (
-        <Box height="100%" width="100%">
-            <Grid container>
-                {/* Block at left frem board with player info, and round
+        <Box
+            height={1}
+            width={1}
+            my="5rem" // to cards not overlap on board and other elements
+            display="flex"
+            alignItems="center"
+        >
+            {/* Block at left frem board with player info, and round
                 related stuff */}
-                <Grid item xs>
-                    <Box
-                        display="flex"
-                        flexDirection="column"
-                        justifyContent="space-between"
-                        height="100%"
-                    >
-                        <PlayerInfoMatchBlock
-                            playerData={enemyData}
-                            positionInBox={PLAYER_INFO_POSITIONS.top}
-                        />
-                        <TurnsBlock
-                            matchSocket={matchSocket}
-                            turn={turn}
-                            turnProgress={turnProgress}
-                        />
-                        <PlayerInfoMatchBlock
-                            playerData={playerData}
-                            positionInBox={PLAYER_INFO_POSITIONS.bottom}
-                        />
-                    </Box>
-                </Grid>
-                {/* Middle block with board */}
-                <Grid item xs>
-                    <Board
-                        matchSocket={matchSocket}
-                        fields={fields}
-                        units={units}
-                        turn={turn}
-                    />
-                </Grid>
-                {/* Right block with deck cards counter */}
-                <Grid item xs>
-                    <Box
-                        display="flex"
-                        flexDirection="column"
-                        alignItems="flex-start"
-                        justifyContent="center"
-                        height="100%"
-                    >
-                        <DecksBlock
-                            playerData={playerData}
-                            enemyData={enemyData}
-                        />
-                    </Box>
-                </Grid>
-            </Grid>
+            <Box
+                flex="1 0 10rem"
+                display="flex"
+                flexDirection="column"
+                justifyContent="space-between"
+                height={1}
+                width={1}
+            >
+                <PlayerInfoMatchBlock
+                    playerData={enemyData}
+                    positionInBox={PLAYER_INFO_POSITIONS.top}
+                />
+                <TurnsBlock
+                    matchSocket={matchSocket}
+                    turn={turn}
+                />
+                <PlayerInfoMatchBlock
+                    playerData={playerData}
+                    positionInBox={PLAYER_INFO_POSITIONS.bottom}
+                />
+            </Box>
+
+            {/* Middle block with board */}
+            <Board
+                matchSocket={matchSocket}
+                fields={fields}
+                units={units}
+                turn={turn}
+            />
+
+            {/* Right block with deck cards counter */}
+            <Box
+                flex="1 0 10rem"
+                display="flex"
+                flexDirection="column"
+                alignItems="flex-start"
+                justifyContent="center"
+                height={1}
+                width={1}
+            >
+                <DecksBlock playerData={playerData} enemyData={enemyData} />
+            </Box>
+
             {/* Elements with absolute positions */}
             <HandBlock forMainPlayer={true} playerData={playerData} />
             <HandBlock forMainPlayer={false} playerData={enemyData} />
-            {/* <OptionsBlock /> */}
+
             <InfoSnackbar
                 snackbarVisible={snackbarVisible}
                 snackbarMessage={snackbarMessage}
