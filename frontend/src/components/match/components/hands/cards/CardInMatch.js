@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { Box, Slide } from "@material-ui/core";
+import { Box, Slide, ClickAwayListener } from "@material-ui/core";
 
 import Card_ from "components/card/Card_.js";
 import {
@@ -26,6 +26,12 @@ export const CardInMatch = ({ cardData, cardsCount }) => {
         selectedElement.id == cardData.id &&
         selectedElement.type == SELECTABLE_ELEMENTS.card;
 
+    const onCardClick = (cardId) => {
+        selectCard(cardId);
+        // to be sure at mobile card is maximized at click
+        setShowFull(true);
+    }
+
     const selectCard = (cardId) => {
         /* select card if none or other is selected, unselect when try select
         that same card once again */
@@ -49,22 +55,25 @@ export const CardInMatch = ({ cardData, cardsCount }) => {
             showFull={showFull}
             minimizedCardWidth={minimizedCardWidth}
         >
-            {/* to provide slide when new card is inserted */}
-            <Slide direction="up" in>
-                {/* to provide hover and margin between cards */}
-                <Box
-                    onMouseEnter={() => setShowFull(true)}
-                    onMouseLeave={() => setShowFull(false)}
-                    mx="3%"
-                >
-                    <Card_
-                        cardData={cardData}
-                        showFull={showFull}
-                        isSelected={isSelected}
-                        clickCallback={selectCard}
-                    />
-                </Box>
-            </Slide>
+            {/* to be sure at mobile cards are minimized when click away */}
+            <ClickAwayListener onClickAway={() => setShowFull(false)}>
+                {/* to provide slide when new card is inserted */}
+                <Slide direction="up" in>
+                    {/* to provide hover and margin between cards */}
+                    <Box
+                        onMouseEnter={() => setShowFull(true)}
+                        onMouseLeave={() => setShowFull(false)}
+                        mx="3%"
+                    >
+                        <Card_
+                            cardData={cardData}
+                            showFull={showFull}
+                            isSelected={isSelected}
+                            clickCallback={onCardClick}
+                        />
+                    </Box>
+                </Slide>
+            </ClickAwayListener>
         </CardSizeWrapper>
     );
 };
