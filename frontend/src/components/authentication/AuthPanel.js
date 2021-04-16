@@ -17,7 +17,7 @@ export const AuthPanel = (props) => {
     };
 
     return (
-        <Box p={[0, 1, 2]}>
+        <Box p={{xs: 0.5, sm: 1, md: 2}}>
             {!props.isLogged ? (
                 <ButtonGroup
                     variant="text"
