@@ -4,7 +4,7 @@ import HomeNavBar from "./HomeNavBar";
 import SearchMatchBlock from "./SearchMatchBlock";
 import RunningMatchesNotifer from "./matches_notifer/RunningMatchesNotifer";
 
-export const HomePage = ({history}) => {
+export const HomePage = () => {
     const [isLogged, setIsLogged] = useState(false);
 
     const checkIfLogged = () => {
@@ -17,10 +17,6 @@ export const HomePage = ({history}) => {
             .then((data) => {
                 setIsLogged(data.isAuthenticated);
             });
-    };
-
-    const goToMatchCallback = (matchId) => {
-        history.push(`/match/${matchId}`);
     };
 
     checkIfLogged();
@@ -39,17 +35,13 @@ export const HomePage = ({history}) => {
                     >
                         {isLogged ? (
                             <Grid item xs={12}>
-                                <SearchMatchBlock
-                                    goToMatchCallback={goToMatchCallback}
-                                />
+                                <SearchMatchBlock />
                             </Grid>
                         ) : null}
                     </Grid>
                 </Container>
             </Box>
-            {isLogged ? (
-                <RunningMatchesNotifer goToMatchCallback={goToMatchCallback} />
-            ) : null}
+            {isLogged ? <RunningMatchesNotifer /> : null}
         </Box>
     );
 };

@@ -2,7 +2,7 @@ import React from "react";
 import MatchesSnackbarsRenderer from "./MatchesSnackbarsRenderer";
 import { SnackbarProvider } from "notistack";
 
-export const RunningMatchesNotifer = ({ goToMatchCallback }) => {
+export const RunningMatchesNotifer = () => {
     /* display information about running matches */
 
     return (
@@ -11,7 +11,7 @@ export const RunningMatchesNotifer = ({ goToMatchCallback }) => {
             anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
             autoHideDuration={null}
         >
-            <MatchesSnackbarsRenderer goToMatchCallback={goToMatchCallback} />
+            <MatchesSnackbarsRenderer />
         </SnackbarProvider>
     );
 };

@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from "react";
+import { useHistory } from "react-router-dom";
 import { Button, Typography, Grid, Paper } from "@material-ui/core";
 import { getCSRF } from "../../utils";
 
-export const SearchMatchBlock = ({ goToMatchCallback }) => {
+export const SearchMatchBlock = () => {
     /* component enabling to search for match and cancel searching */
 
     const [isSearching, setIsSearching] = useState(false);
 
+    const history = useHistory();
+
     const searchMatch = async () => {
         /* send something like long pooling request starting searching
-        and returning match id when find match */
+        and returning match id when found match */
 
         setIsSearching(true);
 
@@ -25,8 +28,9 @@ export const SearchMatchBlock = ({ goToMatchCallback }) => {
         if (res.ok) {
             // when response ok go to match
             const data = await res.json();
-            goToMatchCallback(data.match_id);
-        } else if (res.status != 404){
+            // redirect to match
+            history.push(`/match/${data.match_id}`);
+        } else if (res.status != 404) {
             // when problem with response set that is not searching
             setIsSearching(false);
         }

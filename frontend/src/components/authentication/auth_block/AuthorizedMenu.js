@@ -17,7 +17,7 @@ export const AuthorizedMenu = ({ username }) => {
         };
         await fetch("/authentication/logout", reqOptions);
         // force redirect to home page
-        history.push("/");
+        history.go(0);
     };
 
     return (
