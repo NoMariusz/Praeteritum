@@ -4,9 +4,8 @@ import HomeNavBar from "./HomeNavBar";
 import SearchMatchBlock from "./SearchMatchBlock";
 import RunningMatchesNotifer from "./matches_notifer/RunningMatchesNotifer";
 
-export const HomePage = (props) => {
+export const HomePage = ({history}) => {
     const [isLogged, setIsLogged] = useState(false);
-    const [username, setUsername] = useState("???");
 
     const checkIfLogged = () => {
         const requestOptions = {
@@ -17,23 +16,18 @@ export const HomePage = (props) => {
             .then((res) => res.json())
             .then((data) => {
                 setIsLogged(data.isAuthenticated);
-                setUsername(data.username);
             });
     };
 
     const goToMatchCallback = (matchId) => {
-        props.history.push(`/match/${matchId}`);
+        history.push(`/match/${matchId}`);
     };
 
     checkIfLogged();
 
     return (
         <Box>
-            <HomeNavBar
-                isLogged={isLogged}
-                username={username}
-                checkIfLogged={checkIfLogged}
-            />
+            <HomeNavBar />
             <Box my={3}>
                 {/* container to store homapage content */}
                 <Container maxWidth="xs">

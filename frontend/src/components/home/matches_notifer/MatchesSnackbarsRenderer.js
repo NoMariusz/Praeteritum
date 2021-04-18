@@ -34,8 +34,6 @@ export const MatchesSnackbarsRenderer = ({ goToMatchCallback }) => {
                 res.json().then((data) => {
                     updateSnacks(data.active_matches)
                 });
-            } else {
-                console.error("Can not get runningMAtches information");
             }
         });
     };
