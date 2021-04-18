@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Button, Typography, Grid, Paper } from "@material-ui/core";
 import { getCSRF } from "../../utils";
 
-export const SearchMatchPanel = ({ goToMatchCallback }) => {
+export const SearchMatchBlock = ({ goToMatchCallback }) => {
     /* component enabling to search for match and cancel searching */
 
     const [isSearching, setIsSearching] = useState(false);
@@ -104,4 +104,4 @@ export const SearchMatchPanel = ({ goToMatchCallback }) => {
     );
 };
 
-export default SearchMatchPanel;
+export default SearchMatchBlock;

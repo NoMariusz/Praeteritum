@@ -2,7 +2,7 @@ import React from "react";
 import { Button, ButtonGroup, Box, Typography, Grid } from "@material-ui/core";
 import { getCSRF } from "../../utils";
 
-export const AuthPanel = (props) => {
+export const AuthBlock = (props) => {
     const handleLogout = () => {
         const requestOptions = {
             method: "POST",
@@ -51,4 +51,4 @@ export const AuthPanel = (props) => {
     );
 };
 
-export default AuthPanel;
+export default AuthBlock;

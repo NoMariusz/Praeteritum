@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Container, Grid, Box } from "@material-ui/core";
 import HomeNavBar from "./HomeNavBar";
-import SearchMatchPanel from "./SearchMatchPanel";
+import SearchMatchBlock from "./SearchMatchBlock";
 import RunningMatchesNotifer from "./matches_notifer/RunningMatchesNotifer";
 
 export const HomePage = (props) => {
@@ -45,7 +45,7 @@ export const HomePage = (props) => {
                     >
                         {isLogged ? (
                             <Grid item xs={12}>
-                                <SearchMatchPanel
+                                <SearchMatchBlock
                                     goToMatchCallback={goToMatchCallback}
                                 />
                             </Grid>
