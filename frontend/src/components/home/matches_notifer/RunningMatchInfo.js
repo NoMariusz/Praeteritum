@@ -11,6 +11,9 @@ let theme = createMuiTheme();
 theme = responsiveFontSizes(theme);
 
 export const RunningMatchInfo = ({ matchInfo }) => {
+    /* provides information about actual running match and enable to reconnect
+    to that match */
+
     const history = useHistory();
 
     const connectToMatch = () => {

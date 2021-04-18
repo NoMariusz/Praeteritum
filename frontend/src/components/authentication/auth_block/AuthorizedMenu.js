@@ -4,6 +4,9 @@ import { Button, Grid, Typography } from "@material-ui/core";
 import { getCSRF } from "../../../utils.js";
 
 export const AuthorizedMenu = ({ username }) => {
+    /* mini menu displaying when user is authenticated, enable to log out and
+    display information and actions specified for only authorized users */
+
     const history = useHistory();
 
     const handleLogout = async () => {

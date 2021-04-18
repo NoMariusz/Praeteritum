@@ -4,6 +4,9 @@ import AuthorizedMenu from "./AuthorizedMenu.js";
 import UnauthorizedMenu from "./UnauthorizedMenu.js";
 
 export const AuthBlock = () => {
+    /* block responsible for changing and displaying information about login
+    session with server, enable user to login, register, logout */
+
     const [isLogged, setIsLogged] = useState(false);
     const [username, setUsername] = useState("???");
 

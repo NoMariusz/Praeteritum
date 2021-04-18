@@ -11,6 +11,9 @@ import FormWrapper from "./FormWrapper";
 import { getCSRF } from "../../utils";
 
 export const RegisterPage = (props) => {
+    /* page enabling user to create account, after create account redirects
+    to HomePage */
+
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");

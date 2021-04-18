@@ -8,6 +8,9 @@ import { getCSRF } from "../../utils";
 
 
 export const LoginPage = (props) => {
+    /* page enable user to log in to server session, after end redirect to
+    HomePage */
+
     const [password, setPassword] = useState("");
     const [username, setUsername] = useState("");
     const [error, setError] = useState(undefined);
