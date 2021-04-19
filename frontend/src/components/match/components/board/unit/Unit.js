@@ -108,7 +108,6 @@ const compareFunction = (prevProps, nextProps) => {
         return false;
     }
 
-
     // highlight
     if (prevProps.highlight != nextProps.highlight) {
         return false;
