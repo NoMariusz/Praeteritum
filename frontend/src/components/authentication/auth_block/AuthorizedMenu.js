@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
-import { Button, Grid, Typography } from "@material-ui/core";
+import { IconButton, Menu, MenuItem } from "@material-ui/core";
+import { AccountCircle as AccountCircleIcon } from "@material-ui/icons";
 import { getCSRF } from "../../../utils.js";
 
 export const AuthorizedMenu = ({ username }) => {
@@ -8,6 +9,8 @@ export const AuthorizedMenu = ({ username }) => {
     display information and actions specified for only authorized users */
 
     const history = useHistory();
+
+    const [anchorEl, setAnchorEl] = useState(null);
 
     const handleLogout = async () => {
         /* logout user from his session and redirect to home page */
@@ -23,21 +26,46 @@ export const AuthorizedMenu = ({ username }) => {
         history.go(0);
     };
 
+    // menu stuff
+
+    const openMenu = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const closeMenu = () => {
+        setAnchorEl(null);
+    };
+
     return (
-        <Grid container spacing={2}>
-            <Grid item>
-                <Typography variant="subtitle1">Welcome {username}</Typography>
-            </Grid>
-            <Grid item>
-                <Button
-                    variant="outlined"
-                    color="secondary"
-                    onClick={handleLogout}
-                >
-                    Logout
-                </Button>
-            </Grid>
-        </Grid>
+        <>
+            <IconButton
+                aria-label="Account menu"
+                color="inherit"
+                edge="end"
+                onClick={openMenu}
+            >
+                <AccountCircleIcon />
+            </IconButton>
+            <Menu
+                id="account-menu"
+                anchorEl={anchorEl}
+                keepMounted
+                open={Boolean(anchorEl)}
+                onClose={closeMenu}
+                getContentAnchorEl={null}
+                anchorOrigin={{
+                    vertical: "bottom",
+                    horizontal: "center",
+                }}
+                transformOrigin={{
+                    vertical: "top",
+                    horizontal: "center",
+                }}
+            >
+                <MenuItem disabled>Logged as {username}</MenuItem>
+                <MenuItem onClick={handleLogout}>Logout</MenuItem>
+            </Menu>
+        </>
     );
 };
 
