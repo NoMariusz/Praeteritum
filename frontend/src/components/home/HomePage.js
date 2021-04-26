@@ -1,25 +1,10 @@
-import React, { useState } from "react";
-import { Container, Grid, Box } from "@material-ui/core";
+import React from "react";
+import { Container, Grid, Box, Typography, Paper } from "@material-ui/core";
 import HomeNavBar from "./HomeNavBar";
-import SearchMatchBlock from "./SearchMatchBlock";
-import RunningMatchesNotifer from "./matches_notifer/RunningMatchesNotifer";
 
 export const HomePage = () => {
-    const [isLogged, setIsLogged] = useState(false);
-
-    const checkIfLogged = () => {
-        const requestOptions = {
-            method: "GET",
-            headers: { "Content-Type": "application/json" },
-        };
-        fetch("/authentication/isAuthenticated", requestOptions)
-            .then((res) => res.json())
-            .then((data) => {
-                setIsLogged(data.isAuthenticated);
-            });
-    };
-
-    checkIfLogged();
+    /* page presenting project and enabling to login and register, some kind
+    of landing page */
 
     return (
         <Box>
@@ -33,15 +18,19 @@ export const HomePage = () => {
                         justify="center"
                         alignItems="center"
                     >
-                        {isLogged ? (
-                            <Grid item xs={12}>
-                                <SearchMatchBlock />
-                            </Grid>
-                        ) : null}
+                        <Paper>
+                            <Box p={3} display="flex">
+                                <Typography variant="h2">
+                                    👋
+                                </Typography>
+                                <Typography variant="h5">
+                                    Hello, this is home page, login to see more
+                                </Typography>
+                            </Box>
+                        </Paper>
                     </Grid>
                 </Container>
             </Box>
-            {isLogged ? <RunningMatchesNotifer /> : null}
         </Box>
     );
 };
