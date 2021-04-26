@@ -30,7 +30,7 @@ export const LoginPage = (props) => {
         fetch('/authentication/login', requestOptions)
         .then(res => {
             if (res.ok){
-                props.history.push(`/`);
+                props.history.push("/menu");
             } else {
                 setError("Username and password not match")
             }

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useHistory } from "react-router-dom";
+import { useHistory, Link } from "react-router-dom";
 import { IconButton, Menu, MenuItem } from "@material-ui/core";
 import { AccountCircle as AccountCircleIcon } from "@material-ui/icons";
 import { getCSRF } from "../../../utils.js";
@@ -23,6 +23,8 @@ export const AuthorizedMenu = ({ username }) => {
         };
         await fetch("/authentication/logout", reqOptions);
         // force redirect to home page
+        history.push("/");
+        // to load page correctly after redirect
         history.go(0);
     };
 
@@ -63,6 +65,9 @@ export const AuthorizedMenu = ({ username }) => {
                 }}
             >
                 <MenuItem disabled>Logged as {username}</MenuItem>
+                <MenuItem component={Link} to="/menu" underline="none">
+                    Game menu
+                </MenuItem>
                 <MenuItem onClick={handleLogout}>Logout</MenuItem>
             </Menu>
         </>

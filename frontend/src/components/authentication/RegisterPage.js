@@ -43,14 +43,13 @@ export const RegisterPage = (props) => {
                     if (data.error) {
                         showError(data.error);
                     } else {
-                        props.history.push(`/`);
+                        props.history.push("/menu");
                     }
                 });
         }
     };
 
     const showError = (errorObj) => {
-        console.log(errorObj);
         let errorMessage = "";
         for (const [key, value] of Object.entries(errorObj)) {
             errorMessage += `${key}: ${value.join(", ")} `;

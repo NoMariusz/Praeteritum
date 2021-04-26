@@ -6,6 +6,7 @@ import {
     List,
     ListItem,
     ListItemText,
+    Divider
 } from "@material-ui/core";
 import { Menu as MenuIcon } from "@material-ui/icons";
 
@@ -49,6 +50,15 @@ export const MenuDrawer = () => {
                         underline="none"
                     >
                         <ListItemText>Searching</ListItemText>
+                    </ListItem>
+                    <Divider/>
+                    <ListItem
+                        button
+                        component={Link}
+                        to="/"
+                        underline="none"
+                    >
+                        <ListItemText>Go home</ListItemText>
                     </ListItem>
                 </List>
             </Drawer>
