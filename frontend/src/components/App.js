@@ -4,6 +4,7 @@ import { BrowserRouter, Route, Switch } from "react-router-dom";
 import LoginPage from "./authentication/LoginPage";
 import RegisterPage from "./authentication/RegisterPage";
 import HomePage from "./home/HomePage";
+import MenuPage from "./game_menu/MenuPage.js";
 import Match from "./match/Match";
 
 
@@ -13,6 +14,7 @@ const App = () => {
             <Route path="/login" component={LoginPage}/>
             <Route path="/register" component={RegisterPage}/>
             <Route path="/match/:matchId" component={Match}/>
+            <Route path="/menu" component={MenuPage}/>
             <Route path="/" component={HomePage}/>
         </Switch>
     </BrowserRouter>
