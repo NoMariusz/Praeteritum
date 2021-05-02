@@ -1,12 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
-import { Button, Typography, Grid, Paper } from "@material-ui/core";
-import { getCSRF } from "../../utils";
+import { Button } from "@material-ui/core";
+import { getCSRF } from "../../../utils";
 
-export const SearchMatchBlock = () => {
+export const SearchMatchBlock = ({isSearching, setIsSearching}) => {
     /* component enabling to search for match and cancel searching */
-
-    const [isSearching, setIsSearching] = useState(false);
 
     const history = useHistory();
 
@@ -74,37 +72,20 @@ export const SearchMatchBlock = () => {
         loadIsSearching();
     }, []);
 
-    return (
-        <Paper elevation={1}>
-            <Grid container spacing={3} justify="center" alignItems="center">
-                <Grid item align="center">
-                    <Typography variant="h4">
-                        {isSearching ? "Searching ..." : "Start now"}
-                    </Typography>
-                </Grid>
-                <Grid item align="center">
-                    {!isSearching ? (
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            onClick={() => {
-                                searchMatch();
-                            }}
-                        >
-                            Search match
-                        </Button>
-                    ) : (
-                        <Button
-                            variant="contained"
-                            color="secondary"
-                            onClick={cancelSearch}
-                        >
-                            Cancel
-                        </Button>
-                    )}
-                </Grid>
-            </Grid>
-        </Paper>
+    return !isSearching ? (
+        <Button
+            variant="contained"
+            color="primary"
+            onClick={() => {
+                searchMatch();
+            }}
+        >
+            Find match
+        </Button>
+    ) : (
+        <Button variant="contained" color="secondary" onClick={cancelSearch}>
+            Cancel finding
+        </Button>
     );
 };
 
