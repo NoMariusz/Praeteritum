@@ -20,6 +20,8 @@ const useStyles = makeStyles({
 
 
 export const FormWrapper = (props) => {
+    /* wrapper making container for app forms */
+
     const classes = useStyles();
 
     return <Box classes={{root: classes.root}}>

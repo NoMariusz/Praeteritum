@@ -8,6 +8,9 @@ import { getCSRF } from "../../utils";
 
 
 export const LoginPage = (props) => {
+    /* page enable user to log in to server session, after end redirect to
+    HomePage */
+
     const [password, setPassword] = useState("");
     const [username, setUsername] = useState("");
     const [error, setError] = useState(undefined);
@@ -27,7 +30,7 @@ export const LoginPage = (props) => {
         fetch('/authentication/login', requestOptions)
         .then(res => {
             if (res.ok){
-                props.history.push(`/`);
+                props.history.push("/menu");
             } else {
                 setError("Username and password not match")
             }

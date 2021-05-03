@@ -1,15 +1,16 @@
-import React, { useState, useEffect } from "react";
-import { Button, Typography, Grid, Paper } from "@material-ui/core";
-import { getCSRF } from "../../utils";
+import React, { useEffect } from "react";
+import { useHistory } from "react-router-dom";
+import { Button } from "@material-ui/core";
+import { getCSRF } from "../../../utils";
 
-export const SearchMatchPanel = ({ goToMatchCallback }) => {
+export const SearchMatchBlock = ({isSearching, setIsSearching}) => {
     /* component enabling to search for match and cancel searching */
 
-    const [isSearching, setIsSearching] = useState(false);
+    const history = useHistory();
 
     const searchMatch = async () => {
         /* send something like long pooling request starting searching
-        and returning match id when find match */
+        and returning match id when found match */
 
         setIsSearching(true);
 
@@ -25,8 +26,9 @@ export const SearchMatchPanel = ({ goToMatchCallback }) => {
         if (res.ok) {
             // when response ok go to match
             const data = await res.json();
-            goToMatchCallback(data.match_id);
-        } else if (res.status != 404){
+            // redirect to match
+            history.push(`/match/${data.match_id}`);
+        } else if (res.status != 404) {
             // when problem with response set that is not searching
             setIsSearching(false);
         }
@@ -70,38 +72,21 @@ export const SearchMatchPanel = ({ goToMatchCallback }) => {
         loadIsSearching();
     }, []);
 
-    return (
-        <Paper elevation={1}>
-            <Grid container spacing={3} justify="center" alignItems="center">
-                <Grid item align="center">
-                    <Typography variant="h4">
-                        {isSearching ? "Searching ..." : "Start now"}
-                    </Typography>
-                </Grid>
-                <Grid item align="center">
-                    {!isSearching ? (
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            onClick={() => {
-                                searchMatch();
-                            }}
-                        >
-                            Search match
-                        </Button>
-                    ) : (
-                        <Button
-                            variant="contained"
-                            color="secondary"
-                            onClick={cancelSearch}
-                        >
-                            Cancel
-                        </Button>
-                    )}
-                </Grid>
-            </Grid>
-        </Paper>
+    return !isSearching ? (
+        <Button
+            variant="contained"
+            color="primary"
+            onClick={() => {
+                searchMatch();
+            }}
+        >
+            Find match
+        </Button>
+    ) : (
+        <Button variant="contained" color="secondary" onClick={cancelSearch}>
+            Cancel finding
+        </Button>
     );
 };
 
-export default SearchMatchPanel;
+export default SearchMatchBlock;

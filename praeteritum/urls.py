@@ -20,5 +20,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('authentication/', include('authentication.urls')),
     path('match-api/', include('match.urls')),
+    path('player-data/', include('playerdata.urls')),
     path('', include('frontend.urls'), name="frontend")
 ]

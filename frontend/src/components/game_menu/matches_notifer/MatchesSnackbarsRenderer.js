@@ -3,12 +3,12 @@ import { getCSRF, sleep } from "components/../utils";
 import RunningMatchInfo from "./RunningMatchInfo";
 import { useSnackbar } from "notistack";
 
-export const MatchesSnackbarsRenderer = ({ goToMatchCallback }) => {
+export const MatchesSnackbarsRenderer = () => {
     /* render snackbars with information about running matches as stack */
 
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
-    let runningMatches = []
+    let runningMatches = [];
     let live = true;
 
     // searching for running matches to player
@@ -32,10 +32,8 @@ export const MatchesSnackbarsRenderer = ({ goToMatchCallback }) => {
         fetch("/match-api/active-matches", requestOptions).then((res) => {
             if (res.ok) {
                 res.json().then((data) => {
-                    updateSnacks(data.active_matches)
+                    updateSnacks(data.active_matches);
                 });
-            } else {
-                console.error("Can not get runningMAtches information");
             }
         });
     };
@@ -46,18 +44,16 @@ export const MatchesSnackbarsRenderer = ({ goToMatchCallback }) => {
 
         // make snacks for new matches
         newMatches.forEach((newMatch) => {
-            const foundInActual = runningMatches.findIndex(m => m.id == newMatch.id) != -1
-            if (foundInActual){
+            const foundInActual =
+                runningMatches.findIndex((m) => m.id == newMatch.id) != -1;
+            if (foundInActual) {
                 return false;
             }
             enqueueSnackbar("", {
                 key: newMatch.id,
                 content: (
                     <div>
-                        <RunningMatchInfo
-                            matchInfo={newMatch}
-                            goToMatchCallback={goToMatchCallback}
-                        />
+                        <RunningMatchInfo matchInfo={newMatch} />
                     </div>
                 ),
             });
@@ -65,16 +61,17 @@ export const MatchesSnackbarsRenderer = ({ goToMatchCallback }) => {
 
         // close snacks for ended matches
         runningMatches.forEach((runningMatch) => {
-            const foundInNew = newMatches.findIndex(m => m.id == runningMatch.id) != -1
-            if (foundInNew){
+            const foundInNew =
+                newMatches.findIndex((m) => m.id == runningMatch.id) != -1;
+            if (foundInNew) {
                 return false;
             }
             closeSnackbar(runningMatch.id);
         });
 
         // update running matches
-        runningMatches = newMatches
-    }
+        runningMatches = newMatches;
+    };
 
     // to start loop searching for running matches only at first render
     useEffect(() => {

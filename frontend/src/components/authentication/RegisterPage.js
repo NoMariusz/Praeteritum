@@ -11,6 +11,9 @@ import FormWrapper from "./FormWrapper";
 import { getCSRF } from "../../utils";
 
 export const RegisterPage = (props) => {
+    /* page enabling user to create account, after create account redirects
+    to HomePage */
+
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -40,14 +43,13 @@ export const RegisterPage = (props) => {
                     if (data.error) {
                         showError(data.error);
                     } else {
-                        props.history.push(`/`);
+                        props.history.push("/menu");
                     }
                 });
         }
     };
 
     const showError = (errorObj) => {
-        console.log(errorObj);
         let errorMessage = "";
         for (const [key, value] of Object.entries(errorObj)) {
             errorMessage += `${key}: ${value.join(", ")} `;

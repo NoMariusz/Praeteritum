@@ -1,39 +1,14 @@
-import React, { useState } from "react";
-import { Container, Grid, Box } from "@material-ui/core";
+import React from "react";
+import { Container, Grid, Box, Typography, Paper } from "@material-ui/core";
 import HomeNavBar from "./HomeNavBar";
-import SearchMatchPanel from "./SearchMatchPanel";
-import RunningMatchesNotifer from "./matches_notifer/RunningMatchesNotifer";
 
-export const HomePage = (props) => {
-    const [isLogged, setIsLogged] = useState(false);
-    const [username, setUsername] = useState("???");
-
-    const checkIfLogged = () => {
-        const requestOptions = {
-            method: "GET",
-            headers: { "Content-Type": "application/json" },
-        };
-        fetch("/authentication/isAuthenticated", requestOptions)
-            .then((res) => res.json())
-            .then((data) => {
-                setIsLogged(data.isAuthenticated);
-                setUsername(data.username);
-            });
-    };
-
-    const goToMatchCallback = (matchId) => {
-        props.history.push(`/match/${matchId}`);
-    };
-
-    checkIfLogged();
+export const HomePage = () => {
+    /* page presenting project and enabling to login and register, some kind
+    of landing page */
 
     return (
         <Box>
-            <HomeNavBar
-                isLogged={isLogged}
-                username={username}
-                checkIfLogged={checkIfLogged}
-            />
+            <HomeNavBar />
             <Box my={3}>
                 {/* container to store homapage content */}
                 <Container maxWidth="xs">
@@ -43,19 +18,19 @@ export const HomePage = (props) => {
                         justify="center"
                         alignItems="center"
                     >
-                        {isLogged ? (
-                            <Grid item xs={12}>
-                                <SearchMatchPanel
-                                    goToMatchCallback={goToMatchCallback}
-                                />
-                            </Grid>
-                        ) : null}
+                        <Paper>
+                            <Box p={3} display="flex">
+                                <Typography variant="h2">
+                                    👋
+                                </Typography>
+                                <Typography variant="h5">
+                                    Hello, this is home page, login to see more
+                                </Typography>
+                            </Box>
+                        </Paper>
                     </Grid>
                 </Container>
             </Box>
-            {isLogged ? (
-                <RunningMatchesNotifer goToMatchCallback={goToMatchCallback} />
-            ) : null}
         </Box>
     );
 };
