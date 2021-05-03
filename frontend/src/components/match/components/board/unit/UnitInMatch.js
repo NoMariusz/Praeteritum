@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { Zoom } from "@material-ui/core";
+import { Box, Zoom } from "@material-ui/core";
 import {
     SELECTABLE_ELEMENTS,
     SELECTED_ELEMENT_TEMPLATE,
@@ -52,12 +52,14 @@ export const UnitInMatch = ({
 
     return (
         <Zoom in>
-            <Unit
-                clickCallback={handleClick}
-                unitData={unitData}
-                highlight={highlight}
-                belongsToPlayer={belongsToPlayer}
-            />
+            <Box width={1} height={1}>
+                <Unit
+                    clickCallback={handleClick}
+                    unitData={unitData}
+                    highlight={highlight}
+                    belongsToPlayer={belongsToPlayer}
+                />
+            </Box>
         </Zoom>
     );
 };
