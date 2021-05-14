@@ -90,13 +90,16 @@ CHANNEL_LAYERS = {
             "hosts": [('127.0.0.1', 6379)],
         },
     },
-    'default': {
+    'main': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
             "hosts": [os.environ['MAIN_REDIS_CONNECT_STRING']],
         },
     },
 }
+
+default_channel_layer = os.environ.get('DJANGO_CHANNEL_LAYER', 'main')
+CHANNEL_LAYERS['default'] = CHANNEL_LAYERS[default_channel_layer]
 
 
 # Database
@@ -107,7 +110,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     },
-    'default': {
+    'main': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': os.environ['MAIN_DB_NAME'],
         'USER': os.environ['MAIN_DB_USER'],
@@ -116,6 +119,9 @@ DATABASES = {
         'PORT': os.environ['MAIN_DB_PORT'],
     }
 }
+
+default_database = os.environ.get('DJANGO_DATABASE', 'main')
+DATABASES['default'] = DATABASES[default_database]
 
 
 # Password validation
