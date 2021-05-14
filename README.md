@@ -6,6 +6,8 @@ Online game combining original battle strategy games with fast-paced card games 
 
 ![Match UI](https://user-images.githubusercontent.com/60425872/109867369-b0d21b00-7c66-11eb-8637-49fd04a0ff60.jpg)
 
+### See the project in action 👉 [https://praeteritum.herokuapp.com](https://praeteritum.herokuapp.com)
+
 > ⚠️ Project is in very early stage of development
 
 ## Features
@@ -37,6 +39,11 @@ git clone https://github.com/NoMariusz/Praeteritum.git
 After that if you want, make venv for packages and install dependencies by pip install
 ```
 pip install -r requirements.txt
+```
+
+It will be good to make now .env file with all necessary environment variables
+```
+echo > .env
 ```
 
 Now run migrate to django create database
