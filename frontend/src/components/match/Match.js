@@ -31,8 +31,11 @@ export const Match = (props) => {
     // socket connection
 
     if (matchSocket == null) {
+        // check which websocket protocol should use
+        const  ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
+        
         setMatchSocket(
-            new WebSocket(`ws://${window.location.host}/match-api/${matchId}/`)
+            new WebSocket(`${ws_scheme}://${window.location.host}/match-api/${matchId}/`)
         );
     } else {
         matchSocket.onopen = (e) => {
