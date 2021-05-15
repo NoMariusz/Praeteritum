@@ -13,15 +13,34 @@ class FindMatchConsumer(AsyncHttpConsumer):
         user: User = self.scope["user"]
         # make finder
         finder = MatchFinder(user)
-        # wait to math_finder find match
-        match_id: int = await finder.find_match()
 
-        # send response
-        if match_id is not None:
-            await self.send_response(
-                200, json.dumps({"match_id": match_id}).encode("utf-8"))
+        # wait to math_finder try find match
+        finding_results: dict = await finder.find_match()
+
+        # praepare dict with responses for every finding_results status codes
+        responses_to_result_codes: dict = {
+            1: [
+                201,
+                json.dumps({
+                    "match_id": finding_results["match_id"]
+                }).encode("utf-8")
+            ],
+            4: [
+                404,
+                json.dumps({
+                    "status":
+                        "MatchFinder can not find any Match, probably" +
+                        "cancelled finding"
+                }).encode("utf-8")
+            ],
+            5: [
+                503,
+                json.dumps({
+                    "status": "Not find any Match, searching time is over"
+                }).encode("utf-8")
+            ],
+        }
+
+        # send proper response depending on findig results
         await self.send_response(
-            404, json.dumps({
-                "status": "MatchFinder can not find any match, probably"
-                + " cancelled finding"
-            }).encode("utf-8"))
+            *responses_to_result_codes[finding_results["status_code"]])

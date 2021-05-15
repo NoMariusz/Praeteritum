@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { Button } from "@material-ui/core";
-import { getCSRF } from "../../../utils";
+import { getCSRF, sleep } from "../../../utils";
 
 export const SearchMatchBlock = ({isSearching, setIsSearching}) => {
     /* component enabling to search for match and cancel searching */
@@ -23,14 +23,28 @@ export const SearchMatchBlock = ({isSearching, setIsSearching}) => {
         };
         const res = await fetch("/match-api/search", requestOptions);
 
-        if (res.ok) {
-            // when response ok go to match
-            const data = await res.json();
-            // redirect to match
-            history.push(`/match/${data.match_id}`);
-        } else if (res.status != 404) {
-            // when problem with response set that is not searching
-            setIsSearching(false);
+        // made proper action depending on result status
+        switch (res.status) {
+            case 201:
+                // when response ok go to match
+                const data = await res.json();
+                // redirect to match
+                history.push(`/match/${data.match_id}`);
+                break;
+
+            case 404:
+                // when problem with response set that is not searching
+                setIsSearching(false);
+                break;
+
+            case 503:
+                // when searching time out, retry searching
+                await sleep(1500)
+                searchMatch();
+                break;
+
+            default:
+                break;
         }
     };
 
