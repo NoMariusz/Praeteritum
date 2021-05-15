@@ -10,7 +10,14 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
+import os
+
 from pathlib import Path
+from dotenv import load_dotenv
+
+# Load environment variables
+dotenv_path = os.path.join(os.path.dirname(__file__), "../", '.env')
+load_dotenv(dotenv_path)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,7 +27,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'b1)+n#j)5)r7@9-bm73hvr7&3ll!+r!pfqz+!#-2!^ajckii4#'
+SECRET_KEY = os.environ['SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -54,6 +61,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'praeteritum.urls'
@@ -76,24 +84,44 @@ TEMPLATES = [
 
 ASGI_APPLICATION = 'praeteritum.asgi.application'
 CHANNEL_LAYERS = {
-    'default': {
+    'dev': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
             "hosts": [('127.0.0.1', 6379)],
         },
     },
+    'main': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [os.environ['MAIN_REDIS_CONNECT_STRING']],
+        },
+    },
 }
+
+DEFAULT_CHANNEL_LAYER = os.environ.get('DJANGO_CHANNEL_LAYER', 'dev')
+CHANNEL_LAYERS['default'] = CHANNEL_LAYERS[DEFAULT_CHANNEL_LAYER]
 
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
+    'dev': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
+    },
+    'main': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ['MAIN_DB_NAME'],
+        'USER': os.environ['MAIN_DB_USER'],
+        'PASSWORD': os.environ['MAIN_DB_PASSWORD'],
+        'HOST': os.environ['MAIN_DB_HOST'],
+        'PORT': os.environ['MAIN_DB_PORT'],
     }
 }
+
+DEFAULT_DATABASE = os.environ.get('DJANGO_DATABASE', 'dev')
+DATABASES['default'] = DATABASES[DEFAULT_DATABASE]
 
 
 # Password validation
@@ -101,16 +129,20 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        'NAME': 'django.contrib.auth.password_validation.' +
+                'UserAttributeSimilarityValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'NAME': 'django.contrib.auth.password_validation.' +
+                'MinimumLengthValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        'NAME': 'django.contrib.auth.password_validation.' +
+                'CommonPasswordValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        'NAME': 'django.contrib.auth.password_validation.' +
+                'NumericPasswordValidator',
     },
 ]
 
@@ -133,6 +165,15 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# Extra places for collectstatic to find static files.
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'frontend/static'),
+)
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Custom project configurations
 

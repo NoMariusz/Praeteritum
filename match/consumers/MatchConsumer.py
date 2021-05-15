@@ -1,8 +1,8 @@
 import json
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
-from .logic.MatchManager import MatchManager
-from .logic.Match import Match
+from ..logic.MatchManager import MatchManager
+from ..logic.Match import Match
 
 
 class MatchConsumer(WebsocketConsumer):

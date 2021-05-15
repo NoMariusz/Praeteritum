@@ -1,8 +1,12 @@
 import asyncio
 import weakref
+import time
+
 from typing import Optional
 from django.contrib.auth.models import User
 from .SearcherThread import SearcherThread
+
+from match.constants import MATCH_FINDING_TIME_LIMIT
 
 
 class MatchFinder:
@@ -45,18 +49,41 @@ class MatchFinder:
 
     # finding
 
-    async def find_match(self) -> Optional[int]:
+    async def find_match(self) -> dict:
         """ run loop trying to find other player, make match for it and return
-        new match id, in special case return id when other instance give her
-        id directly to self.match_id """
-        while self.search_for_match:
+        dict containig information about results of finding, when find match
+        return in that dict match id """
+
+        # get searching start time
+        start_time: float = time.time()
+
+        # search for match by some time, after that end searching
+        while time.time() - start_time < MATCH_FINDING_TIME_LIMIT:
             # wait some time before next check
             await asyncio.sleep(3)
 
             # if finder have set match return it
             if self.match_id is not None:
-                return self.match_id
-        return None
+                return {
+                    "status_code": 1,
+                    "status_message": "Found match",
+                    "match_id": self.match_id,
+                }
+
+            # when instance stop searching, return proper result
+            if not self.search_for_match:
+                return {
+                    "status_code": 4,
+                    "status_message": "Cancel finding",
+                    "match_id": None,
+                }
+
+        # default return information that searching ended
+        return {
+            "status_code": 5,
+            "status_message": "Searching time end",
+            "match_id": None,
+        }
 
     # canceling finding
 

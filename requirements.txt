@@ -25,6 +25,7 @@ mccabe==0.6.1
 msgpack==1.0.2
 packaging==20.9
 pluggy==0.13.1
+psycopg2==2.8.6
 py==1.10.0
 pyasn1==0.4.8
 pyasn1-modules==0.2.8
@@ -37,12 +38,14 @@ pyparsing==2.4.7
 pytest==6.2.2
 pytest-asyncio==0.14.0
 pytest-django==4.1.0
+python-dotenv==0.17.1
 pytz==2020.5
 service-identity==18.1.0
 six==1.15.0
 sqlparse==0.4.1
 toml==0.10.2
 Twisted==21.2.0
-twisted-iocpsupport==1.0.1
+twisted-iocpsupport==1.0.1; platform_system == "Windows"
 txaio==20.12.1
+whitenoise==5.2.0
 zope.interface==5.2.0
