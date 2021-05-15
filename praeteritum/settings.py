@@ -98,8 +98,8 @@ CHANNEL_LAYERS = {
     },
 }
 
-default_channel_layer = os.environ.get('DJANGO_CHANNEL_LAYER', 'main')
-CHANNEL_LAYERS['default'] = CHANNEL_LAYERS[default_channel_layer]
+DEFAULT_CHANNEL_LAYER = os.environ.get('DJANGO_CHANNEL_LAYER', 'dev')
+CHANNEL_LAYERS['default'] = CHANNEL_LAYERS[DEFAULT_CHANNEL_LAYER]
 
 
 # Database
@@ -120,8 +120,8 @@ DATABASES = {
     }
 }
 
-default_database = os.environ.get('DJANGO_DATABASE', 'main')
-DATABASES['default'] = DATABASES[default_database]
+DEFAULT_DATABASE = os.environ.get('DJANGO_DATABASE', 'dev')
+DATABASES['default'] = DATABASES[DEFAULT_DATABASE]
 
 
 # Password validation
