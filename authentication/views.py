@@ -5,43 +5,40 @@ from rest_framework import generics, status
 from rest_framework.views import APIView, Response
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
-from django.http import HttpResponse
 
 from .serializers import UserSerializer, CreateUserSerializer
 from .utils import create_user
-from utils.AsyncView import AsyncView
-from asgiref.sync import sync_to_async
 
 
-class RegisterUser(AsyncView):
-    serializer_class = CreateUserSerializer
+class RegisterUser(APIView):
+    """ View registering users to application """
+    def post(self, request, format=None):
+        # serialize data
+        serializer = CreateUserSerializer(
+            data=json.loads(request.body)
+        )
 
-    async def post(self, request, format=None):
-        """ Async because it took time to register user """
-        serializer = self.serializer_class(
-            data=await sync_to_async(json.loads)(request.body))
-        if await sync_to_async(serializer.is_valid)():
+        if serializer.is_valid():
+            # create user object if all is ok
             username = serializer.validated_data["username"]
             password = serializer.validated_data["password"]
             email = serializer.validated_data["email"]
 
-            user = await sync_to_async(create_user)(
+            user = create_user(
                 username=username, password=password, email=email)
 
             # auto login after create user
-            user = await sync_to_async(authenticate)(
+            user = authenticate(
                 request, username=username, password=password)
             if user is not None:
-                await sync_to_async(login)(request, user)
+                login(request, user)
 
-            return HttpResponse(
-                json.dumps({"message": "User created"}),
-                status=status.HTTP_201_CREATED
+            return Response(
+                {"message": "User created"}, status=status.HTTP_201_CREATED
             )
 
-        return HttpResponse(
-            json.dumps({"error": serializer.errors}),
-            status=status.HTTP_400_BAD_REQUEST
+        return Response(
+            {"error": serializer.errors}, status=status.HTTP_400_BAD_REQUEST
         )
 
 
