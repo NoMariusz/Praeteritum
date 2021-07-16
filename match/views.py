@@ -27,7 +27,6 @@ class IsFindingMatch(APIView):
 
 
 class ActiveMatches(APIView):
-    serializer_class = RunningMatchSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, format=None):
