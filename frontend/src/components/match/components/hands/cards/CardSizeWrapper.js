@@ -2,7 +2,7 @@ import React from "react";
 import { Box } from "@material-ui/core";
 import { makeStyles, createMuiTheme } from "@material-ui/core/styles";
 
-import { FULL_CARD_WIDTH } from "../constants.js";
+import { FULL_CARD_WIDTH } from "../constants";
 
 // to make custom css styles
 const useStyles = makeStyles({

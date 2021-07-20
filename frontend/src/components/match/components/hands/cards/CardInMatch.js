@@ -1,13 +1,13 @@
 import React, { useContext, useState } from "react";
 import { Box, Slide, ClickAwayListener } from "@material-ui/core";
 
-import Card_ from "components/card/Card_.js";
+import Card_ from "components/card/Card_";
 import {
     SELECTABLE_ELEMENTS,
     SELECTED_ELEMENT_TEMPLATE,
-} from "../../../constants.js";
-import { SelectedElementContext } from "../../../matchContexts.js";
-import CardSizeWrapper from "./CardSizeWrapper.js";
+} from "../../../constants";
+import { SelectedElementContext } from "../../../matchContexts";
+import CardSizeWrapper from "./CardSizeWrapper";
 
 export const CardInMatch = ({ cardData, cardsCount }) => {
     /* adapt Card_ to work with match, handle card hover effect and selecting card */

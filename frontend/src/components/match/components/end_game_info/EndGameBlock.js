@@ -1,9 +1,9 @@
 import React, { useContext } from "react";
-import { PlayerIndexContext } from "../../matchContexts.js";
-import EndGameDialog from "./EndGameDialog.js";
-import VictoryContent from "./VictoryContent.js";
-import DefeatContent from "./DefeatContent.js";
-import DrawContent from "./DrawContent.js";
+import { PlayerIndexContext } from "../../matchContexts";
+import EndGameDialog from "./EndGameDialog";
+import VictoryContent from "./VictoryContent";
+import DefeatContent from "./DefeatContent";
+import DrawContent from "./DrawContent";
 
 export const EndGameBlock = ({ winnerIndex, playerName }) => {
     const playerIndex = useContext(PlayerIndexContext);

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Box } from "@material-ui/core";
-import AuthorizedMenu from "./AuthorizedMenu.js";
-import UnauthorizedMenu from "./UnauthorizedMenu.js";
+import AuthorizedMenu from "./AuthorizedMenu";
+import UnauthorizedMenu from "./UnauthorizedMenu";
 
 export const AuthBlock = () => {
     /* block responsible for changing and displaying information about login

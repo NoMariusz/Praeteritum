@@ -4,7 +4,7 @@ import { BrowserRouter, Route, Switch } from "react-router-dom";
 import LoginPage from "./authentication/LoginPage";
 import RegisterPage from "./authentication/RegisterPage";
 import HomePage from "./home/HomePage";
-import MenuPage from "./game_menu/MenuPage.js";
+import MenuPage from "./game_menu/MenuPage";
 import Match from "./match/Match";
 
 

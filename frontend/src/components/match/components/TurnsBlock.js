@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect } from "react";
 import { Box, Grid, Button, Radio, CircularProgress } from "@material-ui/core";
-import { PlayerIndexContext } from "../matchContexts.js";
+import { PlayerIndexContext } from "../matchContexts";
 
 export const TurnsBlock = ({ matchSocket, turn }) => {
     // context values

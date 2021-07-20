@@ -1,6 +1,6 @@
 import React from "react";
 import { Box } from "@material-ui/core";
-import Deck from "./Deck.js";
+import Deck from "./Deck";
 
 export const DecksBlock = ({playerData, enemyData}) => {
     return (

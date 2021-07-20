@@ -2,11 +2,11 @@ import React from "react";
 import { Box, Typography, Collapse } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
-import { CARD_IMAGES_PATH, HIGHLIGHT_COLOR } from "../match/constants.js";
-import AttackParam from "./cards_elements/AttackParam.js";
-import HpParam from "./cards_elements/HpParam.js";
-import TypeParam from "./cards_elements/TypeParam.js";
-import RarityParam from "./cards_elements/RarityParam.js";
+import { CARD_IMAGES_PATH, HIGHLIGHT_COLOR } from "../match/constants";
+import AttackParam from "./cards_elements/AttackParam";
+import HpParam from "./cards_elements/HpParam";
+import TypeParam from "./cards_elements/TypeParam";
+import RarityParam from "./cards_elements/RarityParam";
 
 // to make custom css styles
 const useStyles = makeStyles({

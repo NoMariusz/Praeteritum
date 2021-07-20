@@ -3,8 +3,8 @@ import { Box, Typography, Tooltip } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import {
     CARD_IMAGES_PATH,
-} from "../../../constants.js";
-import { CARD_TYPES } from "components/card/constants.js";
+} from "../../../constants";
+import { CARD_TYPES } from "components/card/constants";
 
 const useStyles = makeStyles({
     backgroundUnitImage: {

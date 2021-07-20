@@ -1,16 +1,16 @@
 import React, { useContext } from "react";
 import { Box } from "@material-ui/core";
-import UnitInMatch from "./unit/UnitInMatch.js";
+import UnitInMatch from "./unit/UnitInMatch";
 import {
     BOARD_COLUMNS,
     BOARD_ROWS,
     HIGHLIGHT_UNIT_ATTACK_COLOR,
-} from "./constants.js";
-import { SELECTABLE_ELEMENTS, HIGHLIGHT_COLOR } from "../../constants.js";
+} from "./constants";
+import { SELECTABLE_ELEMENTS, HIGHLIGHT_COLOR } from "../../constants";
 import {
     PlayerIndexContext,
     SelectedElementContext,
-} from "../../matchContexts.js";
+} from "../../matchContexts";
 
 export const Field = ({
     fieldData,
