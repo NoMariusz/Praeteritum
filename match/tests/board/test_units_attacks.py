@@ -1,7 +1,8 @@
 from cards.models import CardModel
-from match.logic.match_modules.board_items.Unit import Unit
+from match.logic.match_modules.board.items.Unit import Unit
 from match.constants import BOARD_COLUMNS, DEFAULT_ATTACK_POINTS
 from ..utils import make_test_card
+from match.logic.match_modules.board.utils import get_unit_by_id
 from ..MatchWithCardDataTestCase import MatchWithCardDataTestCase
 
 
@@ -49,7 +50,9 @@ class UnitsAttacks(MatchWithCardDataTestCase):
 
     def test_attacking_out_of_range(self):
         # make bad attack because unit is too far
-        unit2 = self.match._board._get_unit_by_id(self.unit2_id)   # get unit2
+
+        # get unit2
+        unit2 = get_unit_by_id(self.unit2_id, self.match._board._units)
         unit2.move_points += 999    # modify move_points to move them far
         # move unit2 far from unit1
         self.match._board.move_unit(
@@ -68,7 +71,7 @@ class UnitsAttacks(MatchWithCardDataTestCase):
         """ check if units of type MISSLEMAN only deal damage when they attack
         """
         # get start hp of normal INFANTRYMAN Unit
-        unit1: Unit = self.match._board._get_unit_by_id(self.unit1_id)
+        unit1: Unit = get_unit_by_id(self.unit1_id, self.match._board._units)
         start_hp: int = unit1.hp
         # attack as INFANTRYMAN MISSLEMAN Unit
         self.match._board.attack_unit(

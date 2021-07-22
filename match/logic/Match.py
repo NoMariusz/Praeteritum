@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from channels_redis.core import RedisChannelLayer
 
 from .utils import run_only_when_player_has_turn, get_opposed_index
-from .match_modules.Board import Board
+from .match_modules.board.Board import Board
 from .match_modules.TurnManager import TurnManager
 from .match_modules.CardsManager import CardsManager
 from .match_modules.MatchDeleter import MatchDeleter
