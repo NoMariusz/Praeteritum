@@ -21,3 +21,7 @@ export const SELECTABLE_ELEMENTS = Object.freeze({
     unit: 1,
 });
 export const HIGHLIGHT_COLOR = "warning.main"
+
+// ending match elements
+
+export const AFTER_MATCH_REDIRECT = "/menu"
