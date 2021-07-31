@@ -1,5 +1,5 @@
 from match.logic.match_modules.board.utils import make_fields
-from match.logic.match_modules.CardsManager import CardsManager
+from match.logic.match_modules.cards.CardsManager import CardsManager
 from match.logic.match_modules.board.UnitsManager import UnitsManager
 from django.test import TestCase
 
@@ -21,7 +21,7 @@ class UnitsCreating(TestCase):
         # made card
         card = make_test_card()
         # made unit by card
-        card_data: dict = cards_manager.made_card_data_by_id(card.id)
+        card_data: dict = cards_manager.made_card_data(card)
 
         unit = unit_manager._create_new_unit(card_data, 1, -1)
         # check some information

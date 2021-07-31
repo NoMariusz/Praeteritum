@@ -16,8 +16,8 @@ class UnitsAttacks(MatchWithCardDataTestCase):
         # made special MISSLEMAN card for unit
         card3 = make_test_card(CardModel.CardTypes.MISSLEMAN)
         # made MISSLEMAN unit by card3
-        card_data3: dict = self.match._cards_manager.made_card_data_by_id(
-            card3.id)
+        card_data3: dict = self.match._cards_manager.made_card_data(
+            card3)
         # made units
         self.unit1_id = self.match._board.add_unit_by_card_data(
             self.card_data, self.p1_index, 1)

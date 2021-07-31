@@ -10,4 +10,4 @@ class CardSerializer(serializers.Serializer):
     attack = serializers.IntegerField()
     hp = serializers.IntegerField()
     image = serializers.CharField(max_length=150)
-    effect = serializers.ChoiceField(choices=CardModel.CardEffects.choices)
+    kind = serializers.ChoiceField(choices=CardModel.CardKinds.choices)
