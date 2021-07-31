@@ -6,6 +6,11 @@ from match.logic.match_modules.cards.CardFactory import CardFactory
 from ..logic.Match import Match
 
 
+def send_to_sockets_dummy(message=None, modify=None):
+    print("\tTry to send data to sockets, with params: message:%s, modify:%s"
+          % (message, modify))
+
+
 def make_match(players: list) -> Match:
     """ making match directly by Class constructor and return it """
     return Match(

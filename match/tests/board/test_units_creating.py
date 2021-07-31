@@ -1,19 +1,16 @@
+from django.test import TestCase
+
 from match.logic.match_modules.board.utils import make_fields
 from match.logic.match_modules.cards.CardsManager import CardsManager
 from match.logic.match_modules.board.UnitsManager import UnitsManager
-from django.test import TestCase
 
-from ..utils import make_test_card, make_test_users
+from ..utils import make_test_card, make_test_users, send_to_sockets_dummy
 
 
 class UnitsCreating(TestCase):
     def test_units_made_proper(self):
         """ check if board made proper units by given card data """
         # prepare variables
-
-        def send_to_sockets_dummy():
-            print("\tTry to send data to sockets")
-
         test_users = make_test_users()
         cards_manager = CardsManager(send_to_sockets_dummy, test_users)
         unit_manager = UnitsManager(send_to_sockets_dummy, make_fields())

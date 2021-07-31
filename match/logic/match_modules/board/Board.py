@@ -11,7 +11,7 @@ class Board(Delegator):
         """ :param send_to_sockets: Callable - function from parent who enable
         sending messages to sockets from board """
         # _fields is list of Field ordered by id
-        self._fields: list = make_fields()
+        self._fields: list[Field] = make_fields()
 
         self._units_manager = UnitsManager(send_to_sockets, self._fields)
         self._units = self._units_manager._units
