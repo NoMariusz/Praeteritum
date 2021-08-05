@@ -50,6 +50,21 @@ export const UnitInMatch = ({
         }
     };
 
+    const makeTooltipContent = () => {
+        return (
+            <Box p={1}>
+            {unitData.name}
+                <ul>
+                    <li>Health: {unitData.hp}</li>
+                    <li>Attack: {unitData.attack}</li>
+                    <li>Move points: {unitData.move_points}</li>
+                    <li>Attack points: {unitData.attack_points}</li>
+                    <li>Attack range: {unitData.attack_range}</li>
+                </ul>
+            </Box>
+        );
+    };
+
     return (
         <Zoom in>
             <Box width={1} height={1}>
@@ -58,6 +73,7 @@ export const UnitInMatch = ({
                     unitData={unitData}
                     highlight={highlight}
                     belongsToPlayer={belongsToPlayer}
+                    tooltipContent={makeTooltipContent()}
                 />
             </Box>
         </Zoom>

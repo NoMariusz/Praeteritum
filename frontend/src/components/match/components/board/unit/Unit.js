@@ -20,6 +20,7 @@ export const Unit = ({
     unitData,
     highlight,
     belongsToPlayer,
+    tooltipContent,
 }) => {
     // styles to set css
     const imgPath = `url("${CARD_IMAGES_PATH + unitData.image}")`;
@@ -44,7 +45,7 @@ export const Unit = ({
             onClick={clickCallback}
         >
             <Tooltip
-                title={unitData.name}
+                title={tooltipContent}
                 disableFocusListener
                 enterDelay={1500}
                 leaveDelay={10}
