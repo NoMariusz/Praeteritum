@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 
-import { MATCH_CONNECTION_STATUSES } from "./constants.js";
-import MatchLoading from "./MatchLoading.js";
-import MatchConnectError from "./MatchConnectError.js";
-import MatchGame from "./MatchGame.js";
-import ChangeOrientationInfo from "./ChangeOrientationInfo.js";
+import { MATCH_CONNECTION_STATUSES } from "./constants";
+import MatchLoading from "./MatchLoading";
+import MatchConnectError from "./MatchConnectError";
+import MatchGame from "./MatchGame";
+import ChangeOrientationInfo from "./ChangeOrientationInfo";
 
 export const Match = (props) => {
     /* main match component managing connection with socket and checking

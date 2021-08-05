@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { Button } from "@material-ui/core";
-import { getCSRF, sleep } from "../../../utils";
+import { getCSRF } from "../../../utils";
 
 export const SearchMatchBlock = ({isSearching, setIsSearching}) => {
     /* component enabling to search for match and cancel searching */
@@ -39,7 +39,6 @@ export const SearchMatchBlock = ({isSearching, setIsSearching}) => {
 
             case 503:
                 // when searching time out, retry searching
-                await sleep(1500)
                 searchMatch();
                 break;
 

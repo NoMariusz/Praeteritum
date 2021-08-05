@@ -1,11 +1,11 @@
 import React, { useContext } from "react";
 import { Box } from "@material-ui/core";
-import Field from "./Field.js";
+import Field from "./Field";
 import {
     SELECTABLE_ELEMENTS,
     SELECTED_ELEMENT_TEMPLATE,
-} from "../../constants.js";
-import { SelectedElementContext } from "../../matchContexts.js";
+} from "../../constants";
+import { SelectedElementContext } from "../../matchContexts";
 
 const MATCH_BOARD_SIZE = "40rem";
 

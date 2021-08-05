@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useHistory, Link } from "react-router-dom";
 import { IconButton, Menu, MenuItem } from "@material-ui/core";
 import { AccountCircle as AccountCircleIcon } from "@material-ui/icons";
-import { getCSRF } from "../../../utils.js";
+import { getCSRF } from "../../../utils";
 
 export const AuthorizedMenu = ({ username }) => {
     /* mini menu displaying when user is authenticated, enable to log out and

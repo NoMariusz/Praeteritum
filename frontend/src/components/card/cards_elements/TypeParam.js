@@ -1,7 +1,7 @@
 import React from "react";
 import { Typography, Tooltip } from "@material-ui/core";
-import CardParam from "./CardParam.js";
-import { CARD_TYPES } from "../constants.js";
+import CardParam from "./CardParam";
+import { CARD_TYPES } from "../constants";
 
 export const TypeParam = ({ typeIndex }) => {
     // const storing card type shortname at index 0, and fullname at index 1

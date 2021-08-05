@@ -1,7 +1,7 @@
 from django.test import TestCase
 
 from ...logic.Match import Match
-from ...logic.utils import get_opposed_index
+from match.logic.utils import get_opposed_index
 from ..utils import make_test_users, make_match
 
 

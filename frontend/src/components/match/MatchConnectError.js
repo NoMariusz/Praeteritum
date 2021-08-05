@@ -41,7 +41,7 @@ export const MatchConnectError = () => {
                             </Grid>
                         </Grid>
                         <Typography variant="subtitle1">
-                            Connection with matchSocked closed !
+                            Connection with matchSocket closed !
                         </Typography>
                         <Box my={2}>
                             <Divider variant="middle" />

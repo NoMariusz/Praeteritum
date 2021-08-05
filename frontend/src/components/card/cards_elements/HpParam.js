@@ -1,6 +1,6 @@
 import React from "react";
 import { Typography } from "@material-ui/core";
-import CardParam from "./CardParam.js";
+import CardParam from "./CardParam";
 
 export const HpParam = ({ hp, isFull }) => {
     return (

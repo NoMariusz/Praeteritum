@@ -19,5 +19,5 @@ class MatchWithCardDataTestCase(TestCase):
         self.p1_index = 0
         self.p2_index = 1
         # made card data
-        self.card_data: dict = self.match._cards_manager.made_card_data_by_id(
-            card.id)
+        self.card_data: dict = self.match._cards_manager.made_card_data(
+            card)

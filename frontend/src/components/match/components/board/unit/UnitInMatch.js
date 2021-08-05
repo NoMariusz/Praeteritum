@@ -3,12 +3,12 @@ import { Box, Zoom } from "@material-ui/core";
 import {
     SELECTABLE_ELEMENTS,
     SELECTED_ELEMENT_TEMPLATE,
-} from "../../../constants.js";
+} from "../../../constants";
 import {
     PlayerIndexContext,
     SelectedElementContext,
-} from "../../../matchContexts.js";
-import Unit from "./Unit.js";
+} from "../../../matchContexts";
+import Unit from "./Unit";
 
 export const UnitInMatch = ({
     unitData,

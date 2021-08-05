@@ -6,8 +6,8 @@ import {
     responsiveFontSizes,
     ThemeProvider,
 } from "@material-ui/core/styles";
-import { PLAYER_INFO_POSITIONS } from "../constants.js";
-import { formatIfTooLong } from "../../../utils.js";
+import { PLAYER_INFO_POSITIONS } from "../constants";
+import { formatIfTooLong } from "../../../utils";
 
 let theme = createMuiTheme();
 theme = responsiveFontSizes(theme);

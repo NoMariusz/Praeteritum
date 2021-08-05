@@ -19,8 +19,8 @@ class CardModel(models.Model):
         EPIC = 3, _('Epic')
         MYTHIC = 4, _('Mythic')
 
-    class CardEffects(models.IntegerChoices):
-        pass
+    class CardKinds(models.IntegerChoices):
+        UNIT = 0, _('Unit')
 
     name = models.CharField(max_length=50, null=False)
     category = models.IntegerField(choices=CardTypes.choices, null=False)
@@ -32,9 +32,8 @@ class CardModel(models.Model):
     )
     defaultInCollection = models.BooleanField(null=False, default=False)
     defaultInDeck = models.BooleanField(null=False, default=False)
-    effect = models.IntegerField(
-        choices=CardEffects.choices, null=True, default=None
-    )
+    kind = models.IntegerField(
+        choices=CardKinds.choices, null=False, default=CardKinds.UNIT)
 
     def __str__(self):
         return self.name

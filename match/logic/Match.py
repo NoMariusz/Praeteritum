@@ -4,9 +4,10 @@ from django.contrib.auth.models import User
 from channels_redis.core import RedisChannelLayer
 
 from .utils import run_only_when_player_has_turn, get_opposed_index
-from .match_modules.Board import Board
+from .match_modules.board.Board import Board
 from .match_modules.TurnManager import TurnManager
-from .match_modules.CardsManager import CardsManager
+from .match_modules.cards.CardsManager import CardsManager
+from .match_modules.cards.CardPlayer import CardPlayer
 from .match_modules.MatchDeleter import MatchDeleter
 from .DbInformationManager import DbInformationManager
 from ..constants import DEFAULT_BASE_POINTS, CARDS_DRAWED_AT_START_COUNT, \
@@ -47,6 +48,7 @@ class Match:
         self._cards_manager = CardsManager(
             self._send_to_sockets, self._players)
         self._match_deleter = MatchDeleter(self._delete_self)
+        self._card_player = CardPlayer(self._cards_manager, self._board)
 
         # draw cards at start
         self._cards_manager.draw_cards(
@@ -141,12 +143,12 @@ class Match:
     # cards stuff
 
     @property
-    def _hand_cards_ids(self) -> list:
-        return self._cards_manager.hand_cards_ids
+    def _hand_cards(self) -> list:
+        return self._cards_manager.hand_cards
 
     @property
-    def _deck_cards_ids(self) -> list:
-        return self._cards_manager.deck_cards_ids
+    def _deck_cards(self) -> list:
+        return self._cards_manager.deck_cards
 
     # base points stuff
 
@@ -214,8 +216,8 @@ class Match:
 
         players_actions = [0, 0]
         for player_index in range(2):
-            cards_count: int = len(self._hand_cards_ids[player_index]) + \
-                len(self._deck_cards_ids[player_index])
+            cards_count: int = len(self._hand_cards[player_index]) + \
+                len(self._deck_cards[player_index])
             units_count: int = self._board.get_units_count_for_player(
                 player_index)
             players_actions[player_index] = cards_count + units_count
@@ -252,15 +254,15 @@ class Match:
                     "username": self._players[player_index].username,
                     "base_points": self._base_points[player_index],
                     "deck_cards_count": len(
-                        self._deck_cards_ids[player_index]),
+                        self._deck_cards[player_index]),
                     "hand_cards": self._cards_manager.get_cards_data(
                         player_index)
                 },
                 "enemy": {
                     "username": self._players[enemy_index].username,
                     "base_points": self._base_points[enemy_index],
-                    "deck_cards_count": len(self._deck_cards_ids[enemy_index]),
-                    "hand_cards_count": len(self._hand_cards_ids[enemy_index])
+                    "deck_cards_count": len(self._deck_cards[enemy_index]),
+                    "hand_cards_count": len(self._hand_cards[enemy_index])
                 }
             }
         }
@@ -288,26 +290,9 @@ class Match:
     @run_only_when_player_has_turn
     def play_a_card(
             self, player_index: int, card_id: int, field_id: int) -> bool:
-        """ try to play a card from hand to board
-        :param player_index: int - index of player trying to play a card
-        :param card_id: int - card id to play
-        :param field_id: int - field id to play there card
+        """ delegate playing card to proper support class
         :return: bool - whether it worked """
-        # get list with cards ids in hand, and check if card in hand
-        player_hand: list = self._hand_cards_ids[player_index]
-        if card_id not in player_hand:
-            return False
-        # check if player can play card at that field
-        if not self._board.check_if_player_can_play_card(
-                player_index, field_id):
-            return False
-
-        player_hand.remove(card_id)
-        self._cards_manager.send_to_sockets_hand_changed(player_index)
-        # create and add unit to board
-        card_data: dict = self._cards_manager.made_card_data_by_id(card_id)
-        self._board.add_unit_by_card_data(card_data, player_index, field_id)
-        return True
+        return self._card_player.play_a_card(player_index, card_id, field_id)
 
     @run_only_when_player_has_turn
     def move_unit(

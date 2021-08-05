@@ -1,20 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { Box } from "@material-ui/core";
 
-import MatchLoading from "./MatchLoading.js";
+import MatchLoading from "./MatchLoading";
 import {
     PLAYER_INFO_POSITIONS,
     SELECTED_ELEMENT_TEMPLATE,
-} from "./constants.js";
-import { PlayerIndexContext, SelectedElementContext } from "./matchContexts.js";
-import PlayerInfoMatchBlock from "./components/PlayerInfoMatchBlock.js";
-import TurnsBlock from "./components/TurnsBlock.js";
-import Board from "./components/board/Board.js";
-import DecksBlock from "./components/deck/DecksBlock.js";
-import HandBlock from "./components/hands/HandBlock.js";
-import EndGameBlock from "./components/end_game_info/EndGameBlock.js";
-import OptionsBlock from "./components/OptionsBlock.js";
-import InfoSnackbar from "./components/InfoSnackbar.js";
+} from "./constants";
+import { PlayerIndexContext, SelectedElementContext } from "./matchContexts";
+import PlayerInfoMatchBlock from "./components/PlayerInfoMatchBlock";
+import TurnsBlock from "./components/TurnsBlock";
+import Board from "./components/board/Board";
+import DecksBlock from "./components/deck/DecksBlock";
+import HandBlock from "./components/hands/HandBlock";
+import EndGameBlock from "./components/end_game_info/EndGameBlock";
+import OptionsBlock from "./components/OptionsBlock";
+import InfoSnackbar from "./components/InfoSnackbar";
 
 export const MatchGame = ({ matchSocket }) => {
     /* represents Match object from backend and enable to play a match by store
