@@ -1,5 +1,5 @@
 # overall Match stuff
-DEFAULT_BASE_POINTS = 10
+DEFAULT_BASE_POINTS = 15
 MATCH_DELETE_TIMEOUT = 180
 
 MATCH_FINDING_TIME_LIMIT = 25
@@ -11,8 +11,8 @@ CARDS_DRAWED_AT_TURN_COUNT = 1
 
 # turns stuff
 
-TURN_TIME = 40  # time in seconds
-TURN_STATUS_REFRESH_TIME = 4
+TURN_TIME = 100  # time in seconds
+TURN_STATUS_REFRESH_TIME = 5
 
 # board stuff
 
