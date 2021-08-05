@@ -60,7 +60,7 @@ class CardsManager:
 
     # managing cards utils
 
-    def _get_card_by_id(self, card_id: int) -> Optional[CardAbstract]:
+    def get_card_by_id(self, card_id: int) -> Optional[CardAbstract]:
         # get card
         results = [card for card in self.cards_coll if card.id == card_id]
         return results[0] if len(results) > 0 else None
@@ -81,7 +81,7 @@ class CardsManager:
         collection = self.hand_cards[player_index] if from_hand else \
             self.deck_cards[player_index]
         # remove card with specified id from array
-        card = self._get_card_by_id(card_id)
+        card = self.get_card_by_id(card_id)
         collection.remove(card)
         # send info to sockets
         self.send_to_sockets_hand_changed(player_index)
@@ -93,12 +93,6 @@ class CardsManager:
         """ Made card data dict friendly for frontend """
         card_serializer: CardSerializer = CardSerializer(card)
         return card_serializer.data
-
-    def made_card_data_by_id(self, card_id: int) -> dict:
-        card: CardAbstract = self._get_card_by_id(card_id)
-        if card is None:
-            raise ValueError("Can't found card with given id")
-        return CardsManager.made_card_data(card)
 
     def get_cards_data(self, player_index: int) -> list[dict]:
         """ Get list of cards dicts for specified player """

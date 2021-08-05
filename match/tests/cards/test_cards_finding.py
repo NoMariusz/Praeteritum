@@ -23,6 +23,6 @@ class Cardsfinding(TestCase):
         # add card to manager have that card in his cards collection
         cards_manager.deck_cards[0].append(card_match_obj)
         # try to fing card
-        found_card = cards_manager._get_card_by_id(card_match_obj.id)
+        found_card = cards_manager.get_card_by_id(card_match_obj.id)
         # assert
         self.assertEqual(card_match_obj.id, found_card.id)

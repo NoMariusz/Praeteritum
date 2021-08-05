@@ -39,7 +39,7 @@ class CardsDeckHandTests(TestCase):
         # get test card that exists after setup from cards_manager
         test_card = self.cards_manager.deck_cards[0][0]
 
-        found_card = self.cards_manager._get_card_by_id(test_card.id)
+        found_card = self.cards_manager.get_card_by_id(test_card.id)
 
         # test if test and found card are same
         self.assertEqual(test_card, found_card)
@@ -53,5 +53,5 @@ class CardsDeckHandTests(TestCase):
         self.cards_manager.remove_card(test_card.id, player_index, False)
 
         # test if card isn't now in deck
-        found_card = self.cards_manager._get_card_by_id(test_card.id)
+        found_card = self.cards_manager.get_card_by_id(test_card.id)
         self.assertEqual(found_card, None)

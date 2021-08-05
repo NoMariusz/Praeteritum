@@ -7,6 +7,7 @@ from .utils import run_only_when_player_has_turn, get_opposed_index
 from .match_modules.board.Board import Board
 from .match_modules.TurnManager import TurnManager
 from .match_modules.cards.CardsManager import CardsManager
+from .match_modules.cards.CardPlayer import CardPlayer
 from .match_modules.MatchDeleter import MatchDeleter
 from .DbInformationManager import DbInformationManager
 from ..constants import DEFAULT_BASE_POINTS, CARDS_DRAWED_AT_START_COUNT, \
@@ -47,6 +48,7 @@ class Match:
         self._cards_manager = CardsManager(
             self._send_to_sockets, self._players)
         self._match_deleter = MatchDeleter(self._delete_self)
+        self._card_player = CardPlayer(self._cards_manager, self._board)
 
         # draw cards at start
         self._cards_manager.draw_cards(
@@ -288,24 +290,9 @@ class Match:
     @run_only_when_player_has_turn
     def play_a_card(
             self, player_index: int, card_id: int, field_id: int) -> bool:
-        """ try to play a card from hand to board
-        :param player_index: int - index of player trying to play a card
-        :param card_id: int - card id to play
-        :param field_id: int - field id to play there card
+        """ delegate playing card to proper support class
         :return: bool - whether it worked """
-        if not self._cards_manager.check_if_card_in_hand(
-                card_id, player_index):
-            return False
-        # check if player can play card at that field
-        if not self._board.check_if_player_can_play_card(
-                player_index, field_id):
-            return False
-        card_data: dict = self._cards_manager.made_card_data_by_id(card_id)
-        # remove card from hand
-        self._cards_manager.remove_card(card_id, player_index)
-        # create and add unit to board
-        self._board.add_unit_by_card_data(card_data, player_index, field_id)
-        return True
+        return self._card_player.play_a_card(player_index, card_id, field_id)
 
     @run_only_when_player_has_turn
     def move_unit(
