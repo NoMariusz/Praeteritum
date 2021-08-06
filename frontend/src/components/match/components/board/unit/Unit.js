@@ -1,9 +1,7 @@
 import React from "react";
 import { Box, Typography, Tooltip } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import {
-    CARD_IMAGES_PATH,
-} from "../../../constants";
+import { CARD_IMAGES_PATH } from "../../../constants";
 import { CARD_TYPES } from "components/card/constants";
 
 const useStyles = makeStyles({

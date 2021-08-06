@@ -9,6 +9,7 @@ import {
     SelectedElementContext,
 } from "../../../matchContexts";
 import Unit from "./Unit";
+import UnitMatchAnimations from "./animations/UnitMatchAnimations";
 
 export const UnitInMatch = ({
     unitData,
@@ -53,7 +54,7 @@ export const UnitInMatch = ({
     const makeTooltipContent = () => {
         return (
             <Box p={1}>
-            {unitData.name}
+                {unitData.name}
                 <ul>
                     <li>Health: {unitData.hp}</li>
                     <li>Attack: {unitData.attack}</li>
@@ -68,13 +69,15 @@ export const UnitInMatch = ({
     return (
         <Zoom in>
             <Box width={1} height={1}>
-                <Unit
-                    clickCallback={handleClick}
-                    unitData={unitData}
-                    highlight={highlight}
-                    belongsToPlayer={belongsToPlayer}
-                    tooltipContent={makeTooltipContent()}
-                />
+                <UnitMatchAnimations unitData={unitData}>
+                    <Unit
+                        clickCallback={handleClick}
+                        unitData={unitData}
+                        highlight={highlight}
+                        belongsToPlayer={belongsToPlayer}
+                        tooltipContent={makeTooltipContent()}
+                    />
+                </UnitMatchAnimations>
             </Box>
         </Zoom>
     );
