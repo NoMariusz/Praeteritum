@@ -42,11 +42,17 @@ export const usePrevious = (value) => {
     return ref.current;
 };
 
-export const useClearState = (state, setState, valueWhenChange, newValue, timeout) => {
+export const useClearState = (
+    state,
+    setState,
+    valueWhenChange,
+    newValue,
+    timeout
+) => {
     /**
      * Custom hook to change value of state to resetValue when state value is
      * valueWhenReset after some timeout
-     * 
+     *
      * @param state state to modify
      * @param setState function to enable modify state
      * @param valueWhenChange value which state could have when state should be changed
@@ -55,9 +61,8 @@ export const useClearState = (state, setState, valueWhenChange, newValue, timeou
      */
     return useEffect(async () => {
         if (state == valueWhenChange) {
-            setTimeout(() => {
-                if (state == valueWhenChange) setState(newValue);
-            }, timeout);
+            await sleep(timeout);
+            if (state == valueWhenChange) setState(newValue);
         }
     }, [state]);
 };

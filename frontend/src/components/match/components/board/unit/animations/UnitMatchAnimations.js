@@ -1,18 +1,15 @@
 import React, { useEffect, useState } from "react";
 
 import { usePrevious } from "src/utils.js";
-import HpLightChange from "./HpLightAnim";
-import HpStandardAnim from "./HpAstandardAnim";
-import HpHeavyAnim from "./HpHeavyAnim";
+import UnitAnimPlayer from "./UnitAnimPlayer";
+import { UNIT_ANIMS } from "./UnitAnimsData";
 
 export const UnitMatchAnimations = ({ unitData, children }) => {
     /* Wrapper watching at unitData and playing animations in response of data
     change */
 
     const prevUnitData = usePrevious(unitData);
-    const [hpLightToggle, setHpLightToggle] = useState(false);
-    const [hpStandardToggle, setHpStandardToggle] = useState(false);
-    const [hpHeavyToggle, setHpHeavyToggle] = useState(false);
+    const [actualAnim, setActualAnim] = useState(null);
 
     useEffect(() => {
         // play animations in result of state changes
@@ -26,27 +23,29 @@ export const UnitMatchAnimations = ({ unitData, children }) => {
         }
         // calc hp change
         const hpChange = unitData.hp - prevUnitData.hp;
+        if (hpChange == 0) {
+            return false;
+        }
         // decide which anim play
         if (hpChange < 0 && hpChange > -5) {
-            setHpLightToggle(true);
+            setActualAnim(UNIT_ANIMS.hpLight.name);
         } else if (hpChange <= -5 && hpChange >= -10) {
-            setHpStandardToggle(true);
+            setActualAnim(UNIT_ANIMS.hpStandard.name);
         } else if (hpChange < -10) {
-            setHpHeavyToggle(true);
+            setActualAnim(UNIT_ANIMS.hpHeavy.name);
         }
+
+        return true;
     };
 
     return (
-        <HpLightChange show={hpLightToggle} setShow={setHpLightToggle}>
-            <HpStandardAnim
-                show={hpStandardToggle}
-                setShow={setHpStandardToggle}
-            >
-                <HpHeavyAnim show={hpHeavyToggle} setShow={setHpHeavyToggle}>
-                    <>{children}</>
-                </HpHeavyAnim>
-            </HpStandardAnim>
-        </HpLightChange>
+        <UnitAnimPlayer
+            animName={actualAnim}
+            animState={actualAnim}
+            setAnimState={setActualAnim}
+        >
+            <>{children}</>
+        </UnitAnimPlayer>
     );
 };
 
