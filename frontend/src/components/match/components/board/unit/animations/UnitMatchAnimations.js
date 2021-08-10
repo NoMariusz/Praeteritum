@@ -1,8 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
+import { Box } from "@material-ui/core";
 
 import { usePrevious } from "src/utils.js";
 import UnitAnimPlayer from "./UnitAnimPlayer";
 import { UNIT_ANIMS } from "./UnitAnimsData";
+import StatAnimation from "./statistic_animation/StatAnimation";
+import StatAnimManager from "./statistic_animation/StatAnimManager";
 
 export const UnitMatchAnimations = ({ unitData, children }) => {
     /* Wrapper watching at unitData and playing animations in response of data
@@ -10,6 +13,8 @@ export const UnitMatchAnimations = ({ unitData, children }) => {
 
     const prevUnitData = usePrevious(unitData);
     const [actualAnim, setActualAnim] = useState(null);
+
+    const [statAnimMgr] = useState(()=>new StatAnimManager());
 
     useEffect(() => {
         // play animations in result of state changes
@@ -35,17 +40,26 @@ export const UnitMatchAnimations = ({ unitData, children }) => {
             setActualAnim(UNIT_ANIMS.hpHeavy.name);
         }
 
+        // run statistic animation showing damage taken
+        statAnimMgr.playAnim({
+            statisticName: "hp",
+            value: hpChange,
+        });
+
         return true;
     };
 
     return (
-        <UnitAnimPlayer
-            animName={actualAnim}
-            animState={actualAnim}
-            setAnimState={setActualAnim}
-        >
-            <>{children}</>
-        </UnitAnimPlayer>
+        <Box width={1} height={1} position="relative">
+            <UnitAnimPlayer
+                animName={actualAnim}
+                animState={actualAnim}
+                setAnimState={setActualAnim}
+            >
+                <>{children}</>
+            </UnitAnimPlayer>
+            <StatAnimation statAnimManager={statAnimMgr} />
+        </Box>
     );
 };
 

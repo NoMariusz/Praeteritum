@@ -14,3 +14,10 @@ export const CARD_TYPES = [
     ["C", "Cavalryman"],
     ["M", "Missleman"],
 ];
+
+export const CARD_ATTRIBUTES_COLORS = {
+    hp: "success.main",
+    attack: "error.main",
+    move_points: "info.main",
+    attack_points: "warning.main",
+}

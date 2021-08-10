@@ -2,7 +2,7 @@ import React from "react";
 import { Box, Typography, Tooltip } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { CARD_IMAGES_PATH } from "../../../constants";
-import { CARD_TYPES } from "components/card/constants";
+import { CARD_TYPES, CARD_ATTRIBUTES_COLORS } from "components/card/constants";
 
 const useStyles = makeStyles({
     backgroundUnitImage: {
@@ -66,7 +66,7 @@ export const Unit = ({
             >
                 <Box
                     width={0.3}
-                    bgcolor="error.main"
+                    bgcolor={CARD_ATTRIBUTES_COLORS.attack}
                     color="error.contrastText"
                     borderRadius={8}
                 >
@@ -86,7 +86,7 @@ export const Unit = ({
                 </Box>
                 <Box
                     width={0.3}
-                    bgcolor="success.main"
+                    bgcolor={CARD_ATTRIBUTES_COLORS.hp}
                     color="primary.contrastText"
                     borderRadius={8}
                 >
