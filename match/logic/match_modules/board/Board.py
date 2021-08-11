@@ -46,7 +46,7 @@ class Board(Delegator):
         if not field.is_base or field.player_half != player_index:
             return False
         # check if is unit there
-        if field.unit is not None:
+        if not field.is_free:
             return False
         return True
 
@@ -62,6 +62,7 @@ class Board(Delegator):
                 unit_in_field: Unit = field.unit
                 # if is Unit on Field and is enemy
                 if (unit_in_field is not None
+                        and unit_in_field.is_live
                         and unit_in_field.owner_index != player_index):
                     lost_base_points += 1
         return lost_base_points

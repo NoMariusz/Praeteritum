@@ -9,7 +9,7 @@ import {
     SelectedElementContext,
 } from "../../../matchContexts";
 import Unit from "./Unit";
-import UnitMatchAnimations from "./animations/UnitMatchAnimations";
+import UnitMatchAnimations from "../animations/unit/UnitAnimator";
 
 export const UnitInMatch = ({
     unitData,

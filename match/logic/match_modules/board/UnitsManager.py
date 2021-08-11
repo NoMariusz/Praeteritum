@@ -68,7 +68,9 @@ class UnitsManager:
         """ calculate how many is units that belong to player with given index
         """
         player_units = list(filter(
-            lambda unit: unit.owner_index == player_index, self._units))
+            lambda unit:
+                unit.owner_index == player_index and unit.is_live, self._units
+            ))
         return len(player_units)
 
     def _send_to_sockets_units_changed(self):
@@ -129,8 +131,8 @@ class UnitsManager:
         """ safely deletes all died units (such that with health <= 0) """
         died_units: list = [u for u in self._units if u.hp <= 0]
         for unit in died_units:
-            # delete units from fields
+            # delete unit from fields
             field = self._fields[unit.field_id]
             field.unit = None
-            # remove from units
-            self._units.remove(unit)
+            # set that unit is dead
+            unit.is_live = False

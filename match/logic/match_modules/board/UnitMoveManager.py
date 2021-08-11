@@ -44,6 +44,10 @@ class UnitMoveManager:
             self, player_index: int, unit: Unit, new_field: Field) -> bool:
         """ checking if unit can be moved at that field
         :return: bool - if can move """
+        # check if unit is live
+        if not unit.is_live:
+            return False
+
         # check if field is occupied by other unit
         if new_field.unit is not None:
             return False

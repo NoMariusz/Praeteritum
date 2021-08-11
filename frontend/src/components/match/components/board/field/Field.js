@@ -1,16 +1,17 @@
 import React, { useContext } from "react";
 import { Box } from "@material-ui/core";
-import UnitInMatch from "./unit/UnitInMatch";
+import UnitInMatch from "../unit/UnitInMatch";
 import {
     BOARD_COLUMNS,
     BOARD_ROWS,
     HIGHLIGHT_UNIT_ATTACK_COLOR,
-} from "./constants";
-import { SELECTABLE_ELEMENTS, HIGHLIGHT_COLOR } from "../../constants";
+} from "../constants";
+import { SELECTABLE_ELEMENTS, HIGHLIGHT_COLOR } from "../../../constants";
 import {
     PlayerIndexContext,
     SelectedElementContext,
-} from "../../matchContexts";
+} from "../../../matchContexts";
+import FieldAnimator from "../animations/field/FieldAnimator";
 
 export const Field = ({
     fieldData,
@@ -24,7 +25,9 @@ export const Field = ({
     const playerIndex = useContext(PlayerIndexContext);
     const { selectedElement, _ } = useContext(SelectedElementContext);
 
-    const unitInField = units.find((unit) => unit.field_id == fieldData.id);
+    const unitInField = units.find(
+        (unit) => unit.field_id == fieldData.id && unit.is_live
+    );
 
     const fieldClick = () => {
         // disable clicks on field if is unit on it
@@ -119,7 +122,9 @@ export const Field = ({
             }
             onClick={fieldClick}
         >
-            {unitBlock}
+            <FieldAnimator unitData={unitInField} units={units}>
+                {unitBlock}
+            </FieldAnimator>
         </Box>
     );
 };

@@ -39,7 +39,8 @@ class UnitsAttacks(MatchWithCardDataTestCase):
                 self.p1_index, self.unit1_id, self.unit2_id)
         action_2_success = self.match._board.attack_unit(
             self.p1_index, self.unit1_id, self.unit2_id)
-        self.match._board.on_turn_change()   # to restore attack points
+        # to restore attack points
+        self.match._board.on_turn_change(self.p1_index)
         self.assertFalse(action_2_success)
 
     def test_attacking_by_enemy_unit(self):

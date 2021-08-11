@@ -1,23 +1,24 @@
 import React from "react";
 import { Box } from "@material-ui/core";
 
-import { UNIT_ANIMS, UNIT_ANIMS_STYLES } from "./UnitAnimsData";
 import { useClearState } from "src/utils";
 
-export const UnitAnimPlayer = ({
+export const AnimationPlayer = ({
     animState,
     setAnimState,
     animName,
     children,
+    animationsData,
+    animationsStylesData,
 }) => {
-    /* Wrapper handling unit animations */
+    /* Wrapper playing animations controlled by state from parrent */
 
     // check if is anim to play
     if (animName == null) {
         return <>{children}</>;
     }
 
-    const classes = UNIT_ANIMS_STYLES[animName]();
+    const classes = animationsStylesData[animName]();
 
     // to clear state value after play animation
     useClearState(
@@ -25,7 +26,7 @@ export const UnitAnimPlayer = ({
         setAnimState,
         animName,
         null,
-        UNIT_ANIMS[animName].duration
+        animationsData[animName].duration
     );
 
     return (
@@ -35,4 +36,4 @@ export const UnitAnimPlayer = ({
     );
 };
 
-export default UnitAnimPlayer;
+export default AnimationPlayer;

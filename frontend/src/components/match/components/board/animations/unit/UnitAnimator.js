@@ -2,12 +2,12 @@ import React, { useEffect, useState } from "react";
 import { Box } from "@material-ui/core";
 
 import { usePrevious } from "src/utils.js";
-import UnitAnimPlayer from "./UnitAnimPlayer";
-import { UNIT_ANIMS } from "./UnitAnimsData";
-import StatAnimation from "./statistic_animation/StatAnimation";
-import StatAnimManager from "./statistic_animation/StatAnimManager";
+import UnitAnimPlayer from "../AnimationPlayer";
+import { UNIT_ANIMS, UNIT_ANIMS_STYLES } from "./UnitAnimsData";
+import StatAnimation from "../statistic_animation/StatAnimation";
+import StatAnimManager from "../statistic_animation/StatAnimManager";
 
-export const UnitMatchAnimations = ({ unitData, children }) => {
+export const UnitAnimator = ({ unitData, children }) => {
     /* Wrapper watching at unitData and playing animations in response of data
     change */
 
@@ -83,6 +83,8 @@ export const UnitMatchAnimations = ({ unitData, children }) => {
                 animName={actualAnim}
                 animState={actualAnim}
                 setAnimState={setActualAnim}
+                animationsData={UNIT_ANIMS}
+                animationsStylesData={UNIT_ANIMS_STYLES}
             >
                 <>{children}</>
             </UnitAnimPlayer>
@@ -91,4 +93,4 @@ export const UnitMatchAnimations = ({ unitData, children }) => {
     );
 };
 
-export default UnitMatchAnimations;
+export default UnitAnimator;

@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { Box } from "@material-ui/core";
-import Field from "./Field";
+import Field from "./field/Field";
 import {
     SELECTABLE_ELEMENTS,
     SELECTED_ELEMENT_TEMPLATE,

@@ -24,6 +24,7 @@ class Unit:
         self.move_points = DEFAULT_MOVE_POINTS
         self.attack_points = DEFAULT_ATTACK_POINTS
         self.attack_range = ATACK_RANGE_FOR_TYPES[self.category]
+        self.is_live = True
 
     def get_data_for_frontend(self) -> dict:
         """ :return: dict - contain data for frontend in dict that can be
@@ -41,4 +42,5 @@ class Unit:
             "move_points": self.move_points,
             "attack_points": self.attack_points,
             "attack_range": self.attack_range,
+            "is_live": self.is_live,
         }

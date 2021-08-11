@@ -253,10 +253,10 @@ const UNIT_ANIMS_CODES = {
                 opacity: 0,
             },
             "40%": {
-                opacity: 1,
+                opacity: 0.5,
             },
             "80%": {
-                opacity: 1,
+                opacity: 0.5,
             },
             "100%": {
                 opacity: 0,

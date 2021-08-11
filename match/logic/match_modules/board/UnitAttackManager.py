@@ -44,6 +44,10 @@ class UnitAttackManager:
     ) -> bool:
         """ check if attacker Unit can attack defender Unit
         :return: bool - if can attack """
+        # both must be live
+        if not(attacker.is_live and defender.is_live):
+            return False
+
         # if player try to attack by not his unit
         if attacker.owner_index != player_index:
             return False
