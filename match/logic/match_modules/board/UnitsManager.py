@@ -22,12 +22,15 @@ class UnitsManager:
             self._units, self._fields)
         self._unit_move_manager = UnitMoveManager(self._units, self._fields)
 
-    def on_turn_change(self):
+    def on_turn_change(self, player_with_turn_idx):
         """ make all actions necessary for board when turn change """
-        # restore units move points
+        # restore units move points when start their turn
         for unit in self._units:
-            unit.move_points = DEFAULT_MOVE_POINTS
-            unit.attack_points = DEFAULT_ATTACK_POINTS
+            if unit.owner_index == player_with_turn_idx:
+                unit.move_points = DEFAULT_MOVE_POINTS
+                unit.attack_points = DEFAULT_ATTACK_POINTS
+
+        self._send_to_sockets_units_changed()
 
     # managing units
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { Box } from "@material-ui/core";
 
 import { usePrevious } from "src/utils.js";
@@ -14,18 +14,20 @@ export const UnitMatchAnimations = ({ unitData, children }) => {
     const prevUnitData = usePrevious(unitData);
     const [actualAnim, setActualAnim] = useState(null);
 
-    const [statAnimMgr] = useState(()=>new StatAnimManager());
+    const [statAnimMgr] = useState(() => new StatAnimManager());
 
     useEffect(() => {
         // play animations in result of state changes
-        playHpChangeAnims();
+        if (prevUnitData) {
+            // play anims only if prev state is loaded
+            ["attack", "move_points", "attack_points"].forEach((name) => {
+                playOtherChangesAnims(name);
+            });
+            playHpChangeAnims();
+        }
     }, [unitData]);
 
     const playHpChangeAnims = () => {
-        // play anims only if prev state is loaded
-        if (!prevUnitData) {
-            return false;
-        }
         // calc hp change
         const hpChange = unitData.hp - prevUnitData.hp;
         if (hpChange == 0) {
@@ -38,12 +40,38 @@ export const UnitMatchAnimations = ({ unitData, children }) => {
             setActualAnim(UNIT_ANIMS.hpStandard.name);
         } else if (hpChange < -10) {
             setActualAnim(UNIT_ANIMS.hpHeavy.name);
+        } else if (hpChange > 0) {
+            setActualAnim(UNIT_ANIMS.buff.name);
         }
 
         // run statistic animation showing damage taken
         statAnimMgr.playAnim({
-            statisticName: "hp",
+            attributeName: "hp",
             value: hpChange,
+        });
+
+        return true;
+    };
+
+    const playOtherChangesAnims = (attributeName) => {
+        // calc change
+        const attributeChange =
+            unitData[attributeName] - prevUnitData[attributeName];
+        if (attributeChange == 0) {
+            return false;
+        }
+
+        // play if change is not 0
+
+        if (attributeChange > 0) {
+            setActualAnim(UNIT_ANIMS.buff.name);
+        } else {
+            setActualAnim(UNIT_ANIMS.debuff.name);
+        }
+
+        statAnimMgr.playAnim({
+            attributeName: attributeName,
+            value: attributeChange,
         });
 
         return true;

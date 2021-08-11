@@ -20,9 +20,9 @@ class Board(Delegator):
         self._delegate_subsystems = [self._units_manager]
         super().__init__()
 
-    def on_turn_change(self):
+    def on_turn_change(self, player_with_turn_idx):
         """ make all actions necessary for board when turn change """
-        self._units_manager.on_turn_change()
+        self._units_manager.on_turn_change(player_with_turn_idx)
 
     # fields
 

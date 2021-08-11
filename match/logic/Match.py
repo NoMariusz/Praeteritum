@@ -136,7 +136,7 @@ class Match:
         # modify players basepoints
         self._modify_base_points()
         # send info to board that turn change
-        self._board.on_turn_change()
+        self._board.on_turn_change(self._player_turn)
         # check is someone win
         self._check_someone_win()
 

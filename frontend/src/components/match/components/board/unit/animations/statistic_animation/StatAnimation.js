@@ -57,7 +57,7 @@ export const StatAnimation = ({ statAnimManager }) => {
             display="flex"
             alignItems="center"
             justifyContent="center"
-            color={CARD_ATTRIBUTES_COLORS[animData.statisticName]}
+            color={CARD_ATTRIBUTES_COLORS[animData.attributeName]}
             className={classes.animated}
         >
             <Typography variant="h6" align="center" noWrap>
