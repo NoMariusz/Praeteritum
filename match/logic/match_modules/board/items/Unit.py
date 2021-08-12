@@ -1,5 +1,4 @@
-from match.constants import DEFAULT_MOVE_POINTS, DEFAULT_ATTACK_POINTS, \
-    ATACK_RANGE_FOR_TYPES
+from match.constants import DEFAULT_ENERGY, ATACK_RANGE_FOR_TYPES
 
 
 class Unit:
@@ -21,8 +20,7 @@ class Unit:
         self.category = category
         self.image = image
         # points determining how far unit can move
-        self.move_points = DEFAULT_MOVE_POINTS
-        self.attack_points = DEFAULT_ATTACK_POINTS
+        self.energy = DEFAULT_ENERGY
         self.attack_range = ATACK_RANGE_FOR_TYPES[self.category]
         self.is_live = True
 
@@ -39,8 +37,7 @@ class Unit:
             "attack": self.attack,
             "category": self.category,
             "image": self.image,
-            "move_points": self.move_points,
-            "attack_points": self.attack_points,
+            "energy": self.energy,
             "attack_range": self.attack_range,
             "is_live": self.is_live,
         }

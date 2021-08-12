@@ -35,8 +35,8 @@ class UnitMoveManager:
         # add unit to new field
         new_field.unit = unit
         unit.field_id = new_field.id_
-        # change unit move_points after move
-        unit.move_points -= distance
+        # change unit energy after move
+        unit.energy -= distance
 
         return True
 
@@ -56,11 +56,11 @@ class UnitMoveManager:
         if unit.owner_index != player_index:
             return False
 
-        # if unit have enough move_points
+        # if unit have enough energy
         old_field: Field = self._fields[unit.field_id]
         distance: int = calc_distance_from_fields(
             old_field, new_field)
-        if distance > unit.move_points:
+        if distance > unit.energy:
             return False
 
         return True

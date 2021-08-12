@@ -1,7 +1,7 @@
 from match.logic.match_modules.board.UnitMoveManager import UnitMoveManager
 from match.logic.match_modules.board.UnitAttackManager import UnitAttackManager
 from typing import Callable
-from ....constants import DEFAULT_MOVE_POINTS, DEFAULT_ATTACK_POINTS
+from ....constants import DEFAULT_ENERGY
 from .items.Field import Field
 from .items.Unit import Unit
 
@@ -27,8 +27,7 @@ class UnitsManager:
         # restore units move points when start their turn
         for unit in self._units:
             if unit.owner_index == player_with_turn_idx:
-                unit.move_points = DEFAULT_MOVE_POINTS
-                unit.attack_points = DEFAULT_ATTACK_POINTS
+                unit.energy = DEFAULT_ENERGY
 
         self._send_to_sockets_units_changed()
 

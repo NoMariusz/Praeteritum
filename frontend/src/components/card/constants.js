@@ -18,6 +18,5 @@ export const CARD_TYPES = [
 export const CARD_ATTRIBUTES_COLORS = {
     hp: "success.main",
     attack: "error.main",
-    move_points: "info.main",
-    attack_points: "warning.main",
+    energy: "warning.main",
 }

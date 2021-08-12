@@ -20,7 +20,7 @@ export const UnitAnimator = ({ unitData, children }) => {
         // play animations in result of state changes
         if (prevUnitData) {
             // play anims only if prev state is loaded
-            ["attack", "move_points", "attack_points"].forEach((name) => {
+            ["attack", "energy"].forEach((name) => {
                 playOtherChangesAnims(name);
             });
             playHpChangeAnims();

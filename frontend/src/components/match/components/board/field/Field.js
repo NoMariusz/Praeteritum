@@ -71,7 +71,7 @@ export const Field = ({
         // active when player select unit that can move there
         if (selectedUnitField != null) {
             const unitDistanceToField = calculateDistance(selectedUnitField);
-            if (unitDistanceToField <= selectedUnit.move_points) {
+            if (unitDistanceToField <= selectedUnit.energy) {
                 return true;
             }
         }
@@ -91,7 +91,7 @@ export const Field = ({
         if (
             selectedUnit != null &&
             unitInField.owner != playerIndex &&
-            selectedUnit.attack_points > 0
+            selectedUnit.energy > 0
         ) {
             const unitDistanceToField = calculateDistance(selectedUnitField);
             if (unitDistanceToField <= selectedUnit.attack_range) {

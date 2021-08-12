@@ -31,7 +31,7 @@ class BasePointsChange(MatchWithCardDataTestCase):
         player2_field = self._find_player2_base_field()
         # make move to player2 base field
         unit1: Unit = get_unit_by_id(self.unit_id, self.match._board._units)
-        unit1.move_points += 999    # modify move_points to move them far
+        unit1.energy += 999    # modify energy to move them far
         self.match._board.move_unit(
             self.p1_index, self.unit_id, player2_field.id_)
         # get start base points of player2

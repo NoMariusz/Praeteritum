@@ -24,8 +24,7 @@ BASE_FIELDS_IDS = [
     59, 60, 61, 62]
 
 # units stuff
-DEFAULT_MOVE_POINTS = 2
-DEFAULT_ATTACK_POINTS = 1
+DEFAULT_ENERGY = 2
 ATACK_RANGE_FOR_TYPES = [1, 1, 1, 3]
 # list ordered that at index x is Unit of type y such as Unit type x is strong
 # against Unit type y cat = category

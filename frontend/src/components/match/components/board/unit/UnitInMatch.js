@@ -58,8 +58,7 @@ export const UnitInMatch = ({
                 <ul>
                     <li>Health: {unitData.hp}</li>
                     <li>Attack: {unitData.attack}</li>
-                    <li>Move points: {unitData.move_points}</li>
-                    <li>Attack points: {unitData.attack_points}</li>
+                    <li>Energy: {unitData.energy}</li>
                     <li>Attack range: {unitData.attack_range}</li>
                 </ul>
             </Box>
