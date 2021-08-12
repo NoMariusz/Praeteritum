@@ -30,6 +30,7 @@ export const Unit = ({
         <Box
             width={1}
             height={1}
+            position="relative"
             display="flex"
             direction="column"
             flexWrap="wrap"
@@ -64,6 +65,7 @@ export const Unit = ({
                 justifyContent="space-between"
                 alignItems="center"
             >
+                {/* hp param */}
                 <Box
                     width={0.3}
                     bgcolor={CARD_ATTRIBUTES_COLORS.attack}
@@ -74,6 +76,7 @@ export const Unit = ({
                         {unitData.attack}
                     </Typography>
                 </Box>
+                {/* category param */}
                 <Box
                     width={0.3}
                     bgcolor="text.secondary"
@@ -84,6 +87,7 @@ export const Unit = ({
                         {CARD_TYPES[unitData.category][0]}
                     </Typography>
                 </Box>
+                {/* hp param */}
                 <Box
                     width={0.3}
                     bgcolor={CARD_ATTRIBUTES_COLORS.hp}
@@ -95,6 +99,26 @@ export const Unit = ({
                     </Typography>
                 </Box>
             </Box>
+            {/* energy param - show only if unit have some energy */}
+            {unitData.energy > 0 && (
+                <Box
+                    position="absolute"
+                    top={0}
+                    right={0}
+                    width="1rem"
+                    height="1rem"
+                    bgcolor={CARD_ATTRIBUTES_COLORS.energy}
+                    color="primary.contrastText"
+                    borderRadius="50%"
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="center"
+                >
+                    <Typography variant="subtitle2" align="center">
+                        {unitData.energy}
+                    </Typography>
+                </Box>
+            )}
         </Box>
     );
 };
