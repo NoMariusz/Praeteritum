@@ -1,7 +1,6 @@
 from match.logic.match_modules.board.UnitMoveManager import UnitMoveManager
 from match.logic.match_modules.board.UnitAttackManager import UnitAttackManager
 from typing import Callable
-from ....constants import DEFAULT_ENERGY
 from .items.Field import Field
 from .items.Unit import Unit
 
@@ -24,10 +23,12 @@ class UnitsManager:
 
     def on_turn_change(self, player_with_turn_idx):
         """ make all actions necessary for board when turn change """
-        # restore units move points when start their turn
+        # restore units points when start their turn
         for unit in self._units:
             if unit.owner_index == player_with_turn_idx:
-                unit.energy = DEFAULT_ENERGY
+                unit.attack = unit.max_attack
+                unit.energy = unit.max_energy
+                unit.attack_range = unit.max_attack_range
 
         self._send_to_sockets_units_changed()
 

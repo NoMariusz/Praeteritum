@@ -56,10 +56,10 @@ export const UnitInMatch = ({
             <Box p={1}>
                 {unitData.name}
                 <ul>
-                    <li>Health: {unitData.hp}</li>
-                    <li>Attack: {unitData.attack}</li>
-                    <li>Energy: {unitData.energy}</li>
-                    <li>Attack range: {unitData.attack_range}</li>
+                    <li>Health: {unitData.hp}/{unitData.max_hp}</li>
+                    <li>Attack: {unitData.attack}/{unitData.max_attack}</li>
+                    <li>Energy: {unitData.energy}/{unitData.max_energy}</li>
+                    <li>Attack range: {unitData.attack_range}/{unitData.max_attack_range}</li>
                 </ul>
             </Box>
         );
