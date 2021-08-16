@@ -9,14 +9,14 @@ export const CARD_RARITIES_COLORS = [
 
 // list storing lists with cards types name and fullname
 export const CARD_TYPES = [
-    ["S", "Spearman"],
-    ["I", "Infantryman"],
-    ["C", "Cavalryman"],
-    ["M", "Missleman"],
+    { letter: "S", name: "Spearman" },
+    { letter: "I", name: "Infantryman" },
+    { letter: "C", name: "Cavalryman" },
+    { letter: "M", name: "Missleman" },
 ];
 
 export const CARD_ATTRIBUTES_COLORS = {
     hp: "success.main",
     attack: "error.main",
     energy: "warning.main",
-}
+};

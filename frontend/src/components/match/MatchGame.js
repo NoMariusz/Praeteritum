@@ -142,8 +142,6 @@ export const MatchGame = ({ matchSocket }) => {
         }
     };
 
-    // useEffect with [] as second argument trigger the callback only after
-    // the first render
     useEffect(() => {
         // to get start data about match
         matchSocket.send(JSON.stringify({ message: "get-initial-data" }));

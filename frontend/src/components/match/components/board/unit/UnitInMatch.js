@@ -15,6 +15,7 @@ export const UnitInMatch = ({
     unitData,
     handleClickOnEnemyUnit,
     highlight,
+    showSmall
 }) => {
     // contexts
     const playerIndex = useContext(PlayerIndexContext);
@@ -75,6 +76,7 @@ export const UnitInMatch = ({
                         highlight={highlight}
                         belongsToPlayer={belongsToPlayer}
                         tooltipContent={makeTooltipContent()}
+                        showSmall={showSmall}
                     />
                 </UnitMatchAnimations>
             </Box>

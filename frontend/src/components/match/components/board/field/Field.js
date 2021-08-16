@@ -21,6 +21,7 @@ export const Field = ({
     handleClickOnEnemyUnit,
     units,
     turn,
+    rootSize,
 }) => {
     const playerIndex = useContext(PlayerIndexContext);
     const { selectedElement, _ } = useContext(SelectedElementContext);
@@ -28,6 +29,9 @@ export const Field = ({
     const unitInField = units.find(
         (unit) => unit.field_id == fieldData.id && unit.is_live
     );
+
+    // to tell if content should be display as small
+    const showSmall = rootSize < 25;
 
     const fieldClick = () => {
         // disable clicks on field if is unit on it
@@ -107,6 +111,7 @@ export const Field = ({
                 unitData={unitInField}
                 handleClickOnEnemyUnit={handleClickOnEnemyUnit}
                 highlight={getUnitHighlight()}
+                showSmall={showSmall}
             />
         ) : null;
 
