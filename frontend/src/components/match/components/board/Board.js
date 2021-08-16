@@ -8,7 +8,7 @@ import {
 import { SelectedElementContext } from "../../matchContexts";
 import SizeChanger from "./SizeChanger";
 
-export const Board = ({ matchSocket, fields, units, turn }) => {
+export const Board = ({ matchSocket, fields, units, turn, menuContainer }) => {
     /* represents Board object in backend and is responsible for rendering
     fields and units on itself and communicating with socket to perform
     actions related with board */
@@ -131,7 +131,7 @@ export const Board = ({ matchSocket, fields, units, turn }) => {
                     />
                 ))}
             </Box>
-            <SizeChanger size={boardSize} setSize={setBoardSize} />
+            <SizeChanger size={boardSize} setSize={setBoardSize} menuContainer={menuContainer} />
         </Box>
     );
 };

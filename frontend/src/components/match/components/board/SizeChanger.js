@@ -1,62 +1,39 @@
 import React from "react";
-import { Box, Typography, Slider, Paper } from "@material-ui/core";
+import { Portal, MenuItem, ListItemText, ListItemIcon } from "@material-ui/core";
+import { ZoomIn, ZoomOut } from "@material-ui/icons";
 
-export const SizeChanger = ({ size, setSize }) => {
-    /* Enable to change size state from parent */
+const SIZES = [10, 20, 40];
 
-    const onSliderValueChange = (event, value) => {
-        setSize(value);
-    };
+export const SizeChanger = ({ size, setSize, menuContainer }) => {
+    /* Allows to change size state from parent */
 
-    const marks = [
-        {
-          value: 10,
-          label: 'xs',
-        },
-        {
-          value: 20,
-          label: 's',
-        },
-        {
-          value: 40,
-          label: 'm',
+    const changeSize = (offset) => {
+        /* Change size value to other value from SIZES array depending on
+        given offset */
+        const index = SIZES.indexOf(size) + offset
+        if (index < 0 || index >= SIZES.length){
+            return false
         }
-      ];
+
+        setSize(SIZES[index])
+        return true
+    }
 
     return (
-        <Box
-            position="fixed"
-            right="0"
-            bottom="0"
-            z-index="2"
-            width="10%"
-            px={1}
-        >
-            <Paper elevation={1}>
-                <Box
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="center"
-                    flexDirection="column"
-                    m={1}
-                >
-                    <Typography id="discrete-slider" gutterBottom variant="h6">
-                        Board size
-                    </Typography>
-                    <Slider
-                        aria-labelledby="discrete-slider"
-                        valueLabelDisplay="auto"
-                        marks={marks}
-                        step={null}
-                        defaultValue={size}
-                        min={10}
-                        max={40}
-                        onChange={onSliderValueChange}
-                        getAriaValueText={(v) => v + "rem"}
-                    />
-                </Box>
-            </Paper>
-        </Box>
+        <Portal container={menuContainer.current}>
+            <MenuItem onClick={() => {changeSize(1)}}>
+                <ListItemIcon>
+                    <ZoomIn/>
+                </ListItemIcon>
+                <ListItemText>Zoom in board</ListItemText>
+            </MenuItem>
+            <MenuItem onClick={() => {changeSize(-1)}}>
+                <ListItemIcon>
+                    <ZoomOut/>
+                </ListItemIcon>
+                <ListItemText>Zoom out board</ListItemText>
+            </MenuItem>
+        </Portal>
     );
 };
 

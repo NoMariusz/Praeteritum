@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Box } from "@material-ui/core";
 
 import MatchLoading from "./MatchLoading";
@@ -13,8 +13,8 @@ import Board from "./components/board/Board";
 import DecksBlock from "./components/deck/DecksBlock";
 import HandBlock from "./components/hands/HandBlock";
 import EndGameBlock from "./components/end_game_info/EndGameBlock";
-import OptionsBlock from "./components/OptionsBlock";
 import InfoSnackbar from "./components/InfoSnackbar";
+import OptionsMenu from "./components/OptionsMenu";
 
 export const MatchGame = ({ matchSocket }) => {
     /* represents Match object from backend and enable to play a match by store
@@ -60,6 +60,9 @@ export const MatchGame = ({ matchSocket }) => {
     const closeSnackbar = () => {
         setSnackbarVisible(false);
     };
+
+    // ref for portals to options menu content
+    const menuContainer = useRef(null)
 
     // make handler for socket messages
     const matchSocketMessageHandler = (e) => {
@@ -197,6 +200,7 @@ export const MatchGame = ({ matchSocket }) => {
                 fields={fields}
                 units={units}
                 turn={turn}
+                menuContainer={menuContainer}
             />
 
             {/* Right block with deck cards counter */}
@@ -221,6 +225,7 @@ export const MatchGame = ({ matchSocket }) => {
                 snackbarMessage={snackbarMessage}
                 closeSnackbar={closeSnackbar}
             />
+            <OptionsMenu menuContainer={menuContainer}/>
             <EndGameBlock
                 winnerIndex={winnerIndex}
                 playerName={playerData.username}
