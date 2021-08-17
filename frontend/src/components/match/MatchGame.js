@@ -1,11 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Box } from "@material-ui/core";
 
 import MatchLoading from "./MatchLoading";
-import {
-    PLAYER_INFO_POSITIONS,
-    SELECTED_ELEMENT_TEMPLATE,
-} from "./constants";
+import { PLAYER_INFO_POSITIONS, SELECTED_ELEMENT_TEMPLATE } from "./constants";
 import { PlayerIndexContext, SelectedElementContext } from "./matchContexts";
 import PlayerInfoMatchBlock from "./components/PlayerInfoMatchBlock";
 import TurnsBlock from "./components/TurnsBlock";
@@ -13,8 +10,9 @@ import Board from "./components/board/Board";
 import DecksBlock from "./components/deck/DecksBlock";
 import HandBlock from "./components/hands/HandBlock";
 import EndGameBlock from "./components/end_game_info/EndGameBlock";
-import OptionsBlock from "./components/OptionsBlock";
 import InfoSnackbar from "./components/InfoSnackbar";
+import OptionsMenu from "./components/OptionsMenu";
+import SurrenderOption from "./components/SurrenderOption";
 
 export const MatchGame = ({ matchSocket }) => {
     /* represents Match object from backend and enable to play a match by store
@@ -60,6 +58,9 @@ export const MatchGame = ({ matchSocket }) => {
     const closeSnackbar = () => {
         setSnackbarVisible(false);
     };
+
+    // ref for portals to options menu content
+    const menuContainer = useRef(null);
 
     // make handler for socket messages
     const matchSocketMessageHandler = (e) => {
@@ -142,12 +143,10 @@ export const MatchGame = ({ matchSocket }) => {
         }
     };
 
-    // useEffect with [] as second argument trigger the callback only after
-    // the first render
     useEffect(() => {
         // to get start data about match
         matchSocket.send(JSON.stringify({ message: "get-initial-data" }));
-    }, [])
+    }, []);
 
     useEffect(() => {
         // connect to websocket messages
@@ -155,8 +154,11 @@ export const MatchGame = ({ matchSocket }) => {
 
         return () => {
             // to delete listener for deleted components
-            matchSocket.removeEventListener("message", matchSocketMessageHandler);
-        }
+            matchSocket.removeEventListener(
+                "message",
+                matchSocketMessageHandler
+            );
+        };
     });
 
     // rendering
@@ -183,10 +185,7 @@ export const MatchGame = ({ matchSocket }) => {
                     playerData={enemyData}
                     positionInBox={PLAYER_INFO_POSITIONS.top}
                 />
-                <TurnsBlock
-                    matchSocket={matchSocket}
-                    turn={turn}
-                />
+                <TurnsBlock matchSocket={matchSocket} turn={turn} />
                 <PlayerInfoMatchBlock
                     playerData={playerData}
                     positionInBox={PLAYER_INFO_POSITIONS.bottom}
@@ -199,6 +198,7 @@ export const MatchGame = ({ matchSocket }) => {
                 fields={fields}
                 units={units}
                 turn={turn}
+                menuContainer={menuContainer}
             />
 
             {/* Right block with deck cards counter */}
@@ -222,6 +222,11 @@ export const MatchGame = ({ matchSocket }) => {
                 snackbarVisible={snackbarVisible}
                 snackbarMessage={snackbarMessage}
                 closeSnackbar={closeSnackbar}
+            />
+            <OptionsMenu menuContainer={menuContainer} />
+            <SurrenderOption
+                matchSocket={matchSocket}
+                menuContainer={menuContainer}
             />
             <EndGameBlock
                 winnerIndex={winnerIndex}

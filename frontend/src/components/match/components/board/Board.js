@@ -1,15 +1,14 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { Box } from "@material-ui/core";
-import Field from "./Field";
+import Field from "./field/Field";
 import {
     SELECTABLE_ELEMENTS,
     SELECTED_ELEMENT_TEMPLATE,
 } from "../../constants";
 import { SelectedElementContext } from "../../matchContexts";
+import SizeChanger from "./SizeChanger";
 
-const MATCH_BOARD_SIZE = "40rem";
-
-export const Board = ({ matchSocket, fields, units, turn }) => {
+export const Board = ({ matchSocket, fields, units, turn, menuContainer }) => {
     /* represents Board object in backend and is responsible for rendering
     fields and units on itself and communicating with socket to perform
     actions related with board */
@@ -17,6 +16,8 @@ export const Board = ({ matchSocket, fields, units, turn }) => {
     const { selectedElement, setSelectedElement } = useContext(
         SelectedElementContext
     );
+
+    const [boardSize, setBoardSize] = useState(40);
 
     // operating on fields
 
@@ -109,9 +110,9 @@ export const Board = ({ matchSocket, fields, units, turn }) => {
             height={1}
         >
             <Box
-                width={MATCH_BOARD_SIZE}
+                width={boardSize + "rem"}
                 mx="auto" // to center Board in parent
-                height={MATCH_BOARD_SIZE}
+                height={boardSize + "rem"}
                 display="flex"
                 // to turn the board towards the player
                 flexWrap="wrap-reverse"
@@ -126,9 +127,11 @@ export const Board = ({ matchSocket, fields, units, turn }) => {
                         units={units}
                         turn={turn}
                         key={field.id}
+                        rootSize={boardSize}
                     />
                 ))}
             </Box>
+            <SizeChanger size={boardSize} setSize={setBoardSize} menuContainer={menuContainer} />
         </Box>
     );
 };

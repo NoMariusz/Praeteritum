@@ -136,7 +136,7 @@ class Match:
         # modify players basepoints
         self._modify_base_points()
         # send info to board that turn change
-        self._board.on_turn_change()
+        self._board.on_turn_change(self._player_turn)
         # check is someone win
         self._check_someone_win()
 
@@ -308,3 +308,18 @@ class Match:
         """ delegate board to attack unit
         :return: bool - if board attack_unit """
         return self._board.attack_unit(player_index, attacker_id, defender_id)
+
+    def player_surrender(self, player_index: int) -> bool:
+        """ handle player surrendering match
+        :player_index: int - index of player which want to surrender
+        :return: bool - if surrendering success """
+        # check if can surrender
+        if self.winner_index != -1:
+            return False
+
+        # change points
+        self._base_points[player_index] = 0
+        self._send_to_socket_base_points_changed(player_index)
+        # check win
+        self._check_someone_win()
+        return True

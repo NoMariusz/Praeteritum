@@ -1,5 +1,5 @@
 # overall Match stuff
-DEFAULT_BASE_POINTS = 10
+DEFAULT_BASE_POINTS = 15
 MATCH_DELETE_TIMEOUT = 180
 
 MATCH_FINDING_TIME_LIMIT = 25
@@ -11,8 +11,8 @@ CARDS_DRAWED_AT_TURN_COUNT = 1
 
 # turns stuff
 
-TURN_TIME = 40  # time in seconds
-TURN_STATUS_REFRESH_TIME = 4
+TURN_TIME = 100  # time in seconds
+TURN_STATUS_REFRESH_TIME = 5
 
 # board stuff
 
@@ -24,8 +24,8 @@ BASE_FIELDS_IDS = [
     59, 60, 61, 62]
 
 # units stuff
-DEFAULT_MOVE_POINTS = 2
-DEFAULT_ATTACK_POINTS = 1
+DEFAULT_ENERGY = 2
+DEFAULT_ENERGY_AT_START = 1
 ATACK_RANGE_FOR_TYPES = [1, 1, 1, 3]
 # list ordered that at index x is Unit of type y such as Unit type x is strong
 # against Unit type y cat = category

@@ -1,4 +1,4 @@
-from match.constants import DEFAULT_MOVE_POINTS, DEFAULT_ATTACK_POINTS, \
+from match.constants import DEFAULT_ENERGY, DEFAULT_ENERGY_AT_START, \
     ATACK_RANGE_FOR_TYPES
 
 
@@ -16,14 +16,24 @@ class Unit:
         self.owner_index = owner_index
         self.field_id = field_id
         self.name = name
-        self.hp = hp
-        self.attack = attack
         self.category = category
         self.image = image
-        # points determining how far unit can move
-        self.move_points = DEFAULT_MOVE_POINTS
-        self.attack_points = DEFAULT_ATTACK_POINTS
+
+        # how much damage unit can deal
+        self.attack = attack
+        self.max_attack = attack
+        # number of damage that unit can absorb before die
+        self.hp = hp
+        self.max_hp = hp
+        # points determining how far unit can move and how many times can
+        # attack
+        self.energy = DEFAULT_ENERGY_AT_START
+        self.max_energy = DEFAULT_ENERGY
+        # tell how much away enemies can attack
         self.attack_range = ATACK_RANGE_FOR_TYPES[self.category]
+        self.max_attack_range = ATACK_RANGE_FOR_TYPES[self.category]
+
+        self.is_live = True
 
     def get_data_for_frontend(self) -> dict:
         """ :return: dict - contain data for frontend in dict that can be
@@ -34,11 +44,15 @@ class Unit:
             "owner": self.owner_index,
             "field_id": self.field_id,
             "name": self.name,
-            "hp": self.hp,
-            "attack": self.attack,
-            "category": self.category,
             "image": self.image,
-            "move_points": self.move_points,
-            "attack_points": self.attack_points,
+            "category": self.category,
+            "is_live": self.is_live,
+            "attack": self.attack,
+            "max_attack": self.max_attack,
+            "hp": self.hp,
+            "max_hp": self.max_hp,
+            "energy": self.energy,
+            "max_energy": self.max_energy,
             "attack_range": self.attack_range,
+            "max_attack_range": self.max_attack_range,
         }

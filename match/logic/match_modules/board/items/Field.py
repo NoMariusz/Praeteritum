@@ -1,3 +1,7 @@
+from typing import Optional
+from .Unit import Unit
+
+
 class Field:
     def __init__(self, id_: int, row: int, column: int, is_base: bool,
                  player_half: int):
@@ -13,7 +17,7 @@ class Field:
         self.column = column
         self.is_base = is_base
         self.player_half = player_half
-        self.unit = None
+        self.unit: Optional[Unit] = None
 
     def get_data_for_frontend(self, for_player: int) -> dict:
         """ :return: dict - contain data for frontend in dict that can be
@@ -26,3 +30,7 @@ class Field:
             "is_base": self.is_base,
             "in_player_half": self.player_half == for_player,
         }
+
+    @property
+    def is_free(self) -> bool:
+        return self.unit is None or not self.unit.is_live

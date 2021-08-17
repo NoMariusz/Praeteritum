@@ -1,7 +1,6 @@
 import abc
 
 from cards.models import CardModel
-from ..board.items.Unit import Unit
 
 
 class CardAbstract(metaclass=abc.ABCMeta):
@@ -17,10 +16,6 @@ class CardAbstract(metaclass=abc.ABCMeta):
         self.hp: int = card_object.hp
         self.image: str = card_object.image
         self.kind: int = card_object.kind
-
-    @abc.abstractmethod
-    def play(self) -> bool or Unit:
-        raise NotImplementedError
 
     def __str__(self) -> str:
         return "<%s id: %s, db_model_id: %s, name: %s, hp: %s, attack: %s/>" \

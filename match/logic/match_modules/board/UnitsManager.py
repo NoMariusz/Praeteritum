@@ -1,7 +1,6 @@
 from match.logic.match_modules.board.UnitMoveManager import UnitMoveManager
 from match.logic.match_modules.board.UnitAttackManager import UnitAttackManager
 from typing import Callable
-from ....constants import DEFAULT_MOVE_POINTS, DEFAULT_ATTACK_POINTS
 from .items.Field import Field
 from .items.Unit import Unit
 
@@ -22,12 +21,16 @@ class UnitsManager:
             self._units, self._fields)
         self._unit_move_manager = UnitMoveManager(self._units, self._fields)
 
-    def on_turn_change(self):
+    def on_turn_change(self, player_with_turn_idx):
         """ make all actions necessary for board when turn change """
-        # restore units move points
+        # restore units points when start their turn
         for unit in self._units:
-            unit.move_points = DEFAULT_MOVE_POINTS
-            unit.attack_points = DEFAULT_ATTACK_POINTS
+            if unit.owner_index == player_with_turn_idx:
+                unit.attack = unit.max_attack
+                unit.energy = unit.max_energy
+                unit.attack_range = unit.max_attack_range
+
+        self._send_to_sockets_units_changed()
 
     # managing units
 
@@ -65,7 +68,9 @@ class UnitsManager:
         """ calculate how many is units that belong to player with given index
         """
         player_units = list(filter(
-            lambda unit: unit.owner_index == player_index, self._units))
+            lambda unit:
+                unit.owner_index == player_index and unit.is_live, self._units
+            ))
         return len(player_units)
 
     def _send_to_sockets_units_changed(self):
@@ -126,8 +131,8 @@ class UnitsManager:
         """ safely deletes all died units (such that with health <= 0) """
         died_units: list = [u for u in self._units if u.hp <= 0]
         for unit in died_units:
-            # delete units from fields
+            # delete unit from fields
             field = self._fields[unit.field_id]
             field.unit = None
-            # remove from units
-            self._units.remove(unit)
+            # set that unit is dead
+            unit.is_live = False

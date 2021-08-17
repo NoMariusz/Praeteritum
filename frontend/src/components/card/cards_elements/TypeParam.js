@@ -5,17 +5,17 @@ import { CARD_TYPES } from "../constants";
 
 export const TypeParam = ({ typeIndex }) => {
     // const storing card type shortname at index 0, and fullname at index 1
-    const cardTypeList = CARD_TYPES[typeIndex];
+    const cardType = CARD_TYPES[typeIndex];
     return (
         <CardParam color="text.secondary">
             <Tooltip
-                title={`Card type - ${cardTypeList[1]}`}
+                title={`Card type - ${cardType.name}`}
                 disableFocusListener
                 enterDelay={1500}
                 leaveDelay={10}
             >
                 <Typography variant="body1" align="center">
-                    {cardTypeList[0]}
+                    {cardType.letter}
                 </Typography>
             </Tooltip>
         </CardParam>

@@ -1,3 +1,4 @@
+from django.contrib import admin
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from .constants import BASE_CARD_IMAGE
@@ -34,6 +35,10 @@ class CardModel(models.Model):
     defaultInDeck = models.BooleanField(null=False, default=False)
     kind = models.IntegerField(
         choices=CardKinds.choices, null=False, default=CardKinds.UNIT)
+
+    @admin.display(description='Card strength(attack + hp)')
+    def card_strength(self):
+        return '%d' % (self.attack + self.hp)
 
     def __str__(self):
         return self.name

@@ -149,3 +149,7 @@ psd
 thumb
 sketch
 
+# hide images for models
+frontend/static/images/cards_images
+!frontend/static/images/cards_images/baseCardImage.jpg
+
