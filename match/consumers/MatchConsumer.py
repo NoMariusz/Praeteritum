@@ -28,6 +28,7 @@ class MatchConsumer(WebsocketConsumer):
             "play-a-card": self.play_a_card,
             "move-unit": self.move_unit,
             "attack-unit": self.attack_unit,
+            "surrender": self.handle_surrender,
         }
 
         self.match_id = None
@@ -233,6 +234,19 @@ class MatchConsumer(WebsocketConsumer):
         result: bool = match.attack_unit(
             player_index=self.player_index, attacker_id=attacker_id,
             defender_id=defender_id)
+
+        self.send(text_data=json.dumps({
+            'message': {
+                'name': message,
+                'data': {
+                    'result': result
+                }
+            }
+        }))
+
+    def handle_surrender(self, _, message):
+        match: Match = self._get_match()
+        result = match.player_surrender(self.player_index)
 
         self.send(text_data=json.dumps({
             'message': {
