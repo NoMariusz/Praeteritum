@@ -59,6 +59,10 @@ class Match:
     # lifecycle / deleting self stuff
 
     def __del__(self):
+        self.cleanup()
+
+    def cleanup(self):
+        """ make necessary operations to end properly match """
         # to set information in db that match is ended
         DbInformationManager.set_match_ended(self._winner, self.id_)
         # to definitely stop turn change thread
@@ -68,8 +72,8 @@ class Match:
         print("\tInfo: Match: Deleting %s" % self)
         # to delete references in match_manager
         self._delete_callback(self)
-        # to set information in db about match status
-        DbInformationManager.set_match_ended(self._winner, self.id_)
+
+        self.cleanup()
 
     # sockets / connection stuff
 
