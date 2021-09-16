@@ -1,6 +1,6 @@
 from match.logic.match_modules.board.UnitMoveManager import UnitMoveManager
 from match.logic.match_modules.board.UnitAttackManager import UnitAttackManager
-from typing import Callable
+from typing import Callable, Optional
 from .items.Field import Field
 from .items.Unit import Unit
 
@@ -70,8 +70,13 @@ class UnitsManager:
         player_units = list(filter(
             lambda unit:
                 unit.owner_index == player_index and unit.is_live, self._units
-            ))
+        ))
         return len(player_units)
+
+    def get_unit_by_id(self, unit_id: int) -> Optional[Unit]:
+        # get cards with given id collection
+        results = [unit for unit in self._units if unit.id_ == unit_id]
+        return results[0] if len(results) > 0 else None
 
     def _send_to_sockets_units_changed(self):
         """ sending message to sockets with new units """

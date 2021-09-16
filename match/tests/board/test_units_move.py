@@ -1,4 +1,3 @@
-from match.constants import BOARD_COLUMNS
 from ..MatchWithCardDataTestCase import MatchWithCardDataTestCase
 
 
@@ -14,6 +13,8 @@ class UnitsMove(MatchWithCardDataTestCase):
             self.card_data, self.p1_index, 0)
         self.unit2_id = self.match._board.add_unit_by_card_data(
             self.card_data, self.p2_index, 1)
+        # set energy to unit, to control move range
+        self.match._board.get_unit_by_id(self.unit1_id).energy = 3
 
     def test_normal_move(self):
         # make good move
@@ -36,5 +37,5 @@ class UnitsMove(MatchWithCardDataTestCase):
     def test_too_far_move(self):
         # make bad move because field is too far
         move_success = self.match._board.move_unit(
-            self.p1_index, self.unit1_id, BOARD_COLUMNS-1)
+            self.p1_index, self.unit1_id, 4)
         self.assertFalse(move_success)
