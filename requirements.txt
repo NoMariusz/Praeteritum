@@ -42,7 +42,7 @@ python-dotenv==0.17.1
 pytz==2020.5
 service-identity==18.1.0
 six==1.15.0
-sqlparse==0.4.1
+sqlparse==0.4.2
 toml==0.10.2
 Twisted==21.2.0
 twisted-iocpsupport==1.0.1; platform_system == "Windows"
