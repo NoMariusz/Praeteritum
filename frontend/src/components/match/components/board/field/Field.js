@@ -119,11 +119,11 @@ export const Field = ({
         <Box
             width={1 / BOARD_COLUMNS}
             height={1 / BOARD_ROWS}
-            bgcolor={fieldData.is_base ? "#CCCCCC" : ""}
+            bgcolor={fieldData.is_base ? "text.secondary" : ""}
             color="text.primary"
             border={1}
             borderColor={
-                getIfFieldIsHighlighted() ? HIGHLIGHT_COLOR : "text.primary"
+                getIfFieldIsHighlighted() ? HIGHLIGHT_COLOR : "text.disabled"
             }
             onClick={fieldClick}
         >

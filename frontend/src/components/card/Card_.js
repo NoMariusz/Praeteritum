@@ -47,7 +47,7 @@ export const Card_ = ({
             borderRadius={8}
             borderColor={isSelected ? HIGHLIGHT_COLOR : "primary.main"}
             overflow="hidden"
-            bgcolor="white"
+            bgcolor="background.paper"
             onClick={onCardClick}
         >
             {/* Displaying card name */}

@@ -7,7 +7,7 @@ export const TypeParam = ({ typeIndex }) => {
     // const storing card type shortname at index 0, and fullname at index 1
     const cardType = CARD_TYPES[typeIndex];
     return (
-        <CardParam color="text.secondary">
+        <CardParam color="text.disabled">
             <Tooltip
                 title={`Card type - ${cardType.name}`}
                 disableFocusListener
