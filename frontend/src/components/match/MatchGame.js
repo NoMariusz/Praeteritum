@@ -12,7 +12,8 @@ import HandBlock from "./components/hands/HandBlock";
 import EndGameBlock from "./components/end_game_info/EndGameBlock";
 import InfoSnackbar from "./components/InfoSnackbar";
 import OptionsMenu from "./components/OptionsMenu";
-import SurrenderOption from "./components/SurrenderOption";
+import SurrenderOption from "./components/menu_options/SurrenderOption";
+import ChangeModeOption from "./components/menu_options/ChangeModeOption";
 
 export const MatchGame = ({ matchSocket }) => {
     /* represents Match object from backend and enable to play a match by store
@@ -223,11 +224,15 @@ export const MatchGame = ({ matchSocket }) => {
                 snackbarMessage={snackbarMessage}
                 closeSnackbar={closeSnackbar}
             />
+
             <OptionsMenu menuContainer={menuContainer} />
+            {/* main options for OptionsMenu */}
+            <ChangeModeOption menuContainer={menuContainer}/>
             <SurrenderOption
                 matchSocket={matchSocket}
                 menuContainer={menuContainer}
             />
+
             <EndGameBlock
                 winnerIndex={winnerIndex}
                 playerName={playerData.username}
