@@ -6,7 +6,6 @@ Online game combining original battle strategy games with fast-paced card games 
 
 ![Match UI](https://user-images.githubusercontent.com/60425872/109867369-b0d21b00-7c66-11eb-8637-49fd04a0ff60.jpg)
 
-### See the project in action 👉 [https://praeteritum.herokuapp.com](https://praeteritum.herokuapp.com)
 
 > ⚠️ Project is in very early stage of development
 
@@ -29,7 +28,6 @@ Online game combining original battle strategy games with fast-paced card games 
 ## Installation
 
 Praeteritum requires Python 3.9.1, pip >= 20.2.3 and Redis >= 5.0
-> ⚠️ Redis service should be active to django-channels can run correctly
 
 Clone repository from github
 ```
@@ -45,6 +43,8 @@ It will be good to make now .env file with all necessary environment variables
 ```
 echo > .env
 ```
+
+> ⚠️ Redis service should be active to django-channels can run correctly, [here is how to install](https://redis.io/docs/latest/operate/oss_and_stack/install/install-redis/)
 
 Now run migrate to django create database
 ```
@@ -62,6 +62,20 @@ py manage.py runserver 127.0.0.1:80
 ```
 
 > Hint! If you want to play a match, don't forgot add some cards from admin page
+
+### Example of minimal .env file content
+
+```
+SECRET_KEY=someSecretKey
+DJANGO_DATABASE=dev
+MAIN_REDIS_CONNECT_STRING=127.0.0.1:6379
+DJANGO_CHANNEL_LAYER=dev
+MAIN_DB_NAME=
+MAIN_DB_USER=
+MAIN_DB_PASSWORD=
+MAIN_DB_HOST=
+MAIN_DB_PORT=
+```
 
 ## Contributing
 
